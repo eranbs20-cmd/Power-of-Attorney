@@ -56,7 +56,7 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
 #form-date-line{font-size:10pt;margin-bottom:24px}
 #form-sigs{display:flex;justify-content:space-between;margin-top:8px;direction:rtl}
 .sig-box{width:46%;text-align:center}
-#ov-sig-p{min-height:65px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:4px}
+#ov-sig-p{min-height:65px;max-height:70px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;margin-bottom:4px}
 .sig-label{border-top:1px solid #000;padding-top:4px;font-size:9pt;text-align:center}
 .sig-atty-text{font-size:9pt;font-weight:bold;text-align:center;padding-top:4px;border-top:1px solid #000;line-height:1.4}
 #mob-preview-btn{display:none}
@@ -104,7 +104,7 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
     <input type="text" id="p_id" placeholder="9 ספרות" oninput="formatID(this)" maxlength="9" inputmode="numeric">
     <div class="stat" id="id-stat"></div>
     <label>מהות השירות (אחרי "ל")</label>
-    <textarea id="p_service" rows="3" placeholder="לדוגמה: ליישוב סכסוך / להגשת תביעה למזונות..." oninput="sync()"></textarea>
+    <input type="text" id="p_service" placeholder="לדוגמה: ליישוב סכסוך" oninput="sync()">
     <div style="margin:4px 0 6px">
       <span class="qbtn" onclick="addService('ליישוב סכסוך')">ליישוב סכסוך</span>
       <span class="qbtn" onclick="addService('להגשת תביעה למזונות')">למזונות</span>
@@ -275,7 +275,7 @@ let _sigRole='p',_sigP='',_sigR='';
 function applySig(role,url){
   if(role==='p')_sigP=url;else _sigR=url;
   const ov=$('ov-sig-'+role);
-  ov.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:contain;display:block">';
+  ov.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:65px;object-fit:contain;display:block">';
   ov.style.cursor='pointer';ov.style.pointerEvents='auto';
   ov.onclick=()=>openSig(role);
   closeSigModal();showStat('sig-stat','✓ חתימה נשמרה — לחץ לתיקון','ok');
