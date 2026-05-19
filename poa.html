@@ -185,7 +185,7 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
   <div style="background:#fff;border-radius:14px;padding:20px;width:min(420px,95vw);direction:rtl;font-family:Arial,sans-serif">
     <div style="font-weight:bold;font-size:15px;color:#2d1b69;margin-bottom:10px" id="sig-title">חתימת הלקוח</div>
     <div style="font-size:11px;color:#888;margin-bottom:6px">צייר את חתימתך בתיבה:</div>
-    <canvas id="sig-canvas" width="420" height="170" style="border:2px solid #c0a8e8;border-radius:8px;touch-action:none;cursor:crosshair;background:#f8faff;display:block;max-width:100%"></canvas>
+    <canvas id="sig-canvas" width="700" height="300" style="border:2px solid #c0a8e8;border-radius:8px;touch-action:none;cursor:crosshair;background:#f8faff;display:block;width:100%;height:180px"></canvas>
     <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
       <button onclick="clearSigCanvas()" style="background:#aaa;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">נקה</button>
       <button onclick="saveSig()" style="background:#1a6b3a;color:#fff;border:none;border-radius:6px;padding:8px 18px;cursor:pointer;font-size:13px;font-weight:bold">שמור ✓</button>
@@ -340,13 +340,15 @@ async function exportPDF(){
     const ppHidden=getComputedStyle(pp).display==='none';
     if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
     fp.style.zoom='';
-    await new Promise(r=>setTimeout(r,80));
-    const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:1123,scrollX:0,scrollY:0});
+    await new Promise(r=>setTimeout(r,300));
+    const fullH=fp.scrollHeight||1123;
+    const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:fullH,windowWidth:794,windowHeight:fullH,scrollX:0,scrollY:0});
     fp.style.zoom=savedZoom;
     if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
     const {jsPDF}=window.jspdf;
-    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
-    pdf.addImage(canvas.toDataURL('image/jpeg',0.97),'JPEG',0,0,210,297);
+    const pdfH=Math.round(fullH*0.2646);
+    const pdf=new jsPDF({unit:'mm',format:[210,pdfH],orientation:'portrait'});
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.97),'JPEG',0,0,210,pdfH);
     const name=v('p_name')||'לקוח';
     pdf.save('יפוי-כוח-'+name+'.pdf');
     s.className='stat ok';s.textContent='הקובץ נשמר ✓';
@@ -436,13 +438,15 @@ async function confirmAndSend(){
     const ppHidden=getComputedStyle(pp).display==='none';
     if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
     fp.style.zoom='';
-    await new Promise(r=>setTimeout(r,80));
-    const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:1123,scrollX:0,scrollY:0});
+    await new Promise(r=>setTimeout(r,300));
+    const fullH=fp.scrollHeight||1123;
+    const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:fullH,windowWidth:794,windowHeight:fullH,scrollX:0,scrollY:0});
     fp.style.zoom=savedZoom;
     if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
     const {jsPDF}=window.jspdf;
-    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
-    pdf.addImage(canvas.toDataURL('image/jpeg',0.97),'JPEG',0,0,210,297);
+    const pdfH=Math.round(fullH*0.2646);
+    const pdf=new jsPDF({unit:'mm',format:[210,pdfH],orientation:'portrait'});
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.97),'JPEG',0,0,210,pdfH);
     const pdfBlob=pdf.output('blob');
     const clientName=v('p_name')||'לקוח';
     const file=new File([pdfBlob],'יפוי-כוח-'+clientName+'-חתום.pdf',{type:'application/pdf'});
