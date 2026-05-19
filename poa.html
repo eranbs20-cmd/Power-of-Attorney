@@ -49,6 +49,7 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
 #form-title{text-align:center;font-size:14pt;font-weight:bold;text-decoration:underline;margin:0 0 18px}
 #form-intro{font-weight:bold;font-size:10pt;margin-bottom:14px;text-align:justify}
 .dyn{color:#1a3fa8;font-weight:bold;border-bottom:1.5px solid #1a3fa8;min-width:4px;display:inline}
+#form-doc.pdf-mode .dyn{color:#000!important;border-bottom:none!important;font-weight:bold}
 #form-clauses{font-size:9.5pt;padding-right:20px;margin-bottom:18px;list-style-type:decimal}
 #form-clauses li{margin-bottom:7px;text-align:justify}
 #form-clauses li.clause-intro{font-weight:bold}
@@ -340,9 +341,11 @@ async function exportPDF(){
     const ppHidden=getComputedStyle(pp).display==='none';
     if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
     fp.style.zoom='';
+    const fd=$('form-doc');fd.classList.add('pdf-mode');
     await new Promise(r=>setTimeout(r,300));
     const fullH=fp.scrollHeight||1123;
     const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:fullH,windowWidth:794,windowHeight:fullH,scrollX:0,scrollY:0});
+    fd.classList.remove('pdf-mode');
     fp.style.zoom=savedZoom;
     if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
     const {jsPDF}=window.jspdf;
@@ -438,9 +441,11 @@ async function confirmAndSend(){
     const ppHidden=getComputedStyle(pp).display==='none';
     if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
     fp.style.zoom='';
+    const fd2=$('form-doc');fd2.classList.add('pdf-mode');
     await new Promise(r=>setTimeout(r,300));
     const fullH=fp.scrollHeight||1123;
     const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:fullH,windowWidth:794,windowHeight:fullH,scrollX:0,scrollY:0});
+    fd2.classList.remove('pdf-mode');
     fp.style.zoom=savedZoom;
     if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
     const {jsPDF}=window.jspdf;
