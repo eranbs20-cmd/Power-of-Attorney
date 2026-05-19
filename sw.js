@@ -1,4 +1,4 @@
-const CACHE = 'poa-v4';
+const CACHE = 'poa-v5';
 const CORE = ['./poa.html','./manifest.json','./icon-192.png','./icon-512.png'];
 const CDN = [
   'https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap',
