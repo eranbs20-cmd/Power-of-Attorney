@@ -251,7 +251,7 @@ async function generateAndSendPDF(isShare=false){
 
     const [pdfBytes,fontBytes]=await Promise.all([
       fetch('./base.pdf').then(r=>r.arrayBuffer()),
-      fetch('https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFV0Uw.ttf').then(r=>r.arrayBuffer())
+      fetch('https://fonts.gstatic.com/s/heebo/v22/NGS6v5_NC0k9P9H2TbE.ttf').then(r=>r.arrayBuffer())
     ]);
 
     const pdfDoc=await PDFLib.PDFDocument.load(pdfBytes);
@@ -259,11 +259,13 @@ async function generateAndSendPDF(isShare=false){
     const hebrewFont=await pdfDoc.embedFont(fontBytes);
     const page=pdfDoc.getPage(0);
 
+    const blueColor=PDFLib.rgb(0.102,0.247,0.659);
+
     const fields=[
-      {text:name,   rightEdge:437,y:762,maxWidth:145,size:11},
-      {text:id,     rightEdge:280,y:762,maxWidth:70, size:11},
-      {text:service,rightEdge:437,y:740,maxWidth:245,size:11},
-      {text:date,   rightEdge:297,y:188,maxWidth:90, size:11},
+      {text:name,   rightEdge:440,y:733,maxWidth:145,size:12},
+      {text:id,     rightEdge:250,y:733,maxWidth:80, size:12},
+      {text:service,rightEdge:440,y:708,maxWidth:245,size:12},
+      {text:date,   rightEdge:297,y:180,maxWidth:90, size:12},
     ];
 
     for(const f of fields){
@@ -271,7 +273,7 @@ async function generateAndSendPDF(isShare=false){
       let size=f.size;
       let width=hebrewFont.widthOfTextAtSize(f.text,size);
       while(width>f.maxWidth&&size>7){size-=0.5;width=hebrewFont.widthOfTextAtSize(f.text,size);}
-      page.drawText(f.text,{x:f.rightEdge-width,y:f.y,size,font:hebrewFont,color:PDFLib.rgb(0,0,0)});
+      page.drawText(f.text,{x:f.rightEdge-width,y:f.y,size,font:hebrewFont,color:blueColor});
     }
 
     if(_sigP){
