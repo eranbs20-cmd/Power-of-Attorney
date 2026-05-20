@@ -1,9 +1,8 @@
-const CACHE = 'poa-v10';
-const CORE = ['./poa.html','./manifest.json','./icon-192.png','./icon-512.png'];
+const CACHE = 'poa-v11';
+const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png'];
 const CDN = [
-  'https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+  'https://unpkg.com/pdf-lib/dist/pdf-lib.min.js',
+  'https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js',
 ];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>{c.addAll(CORE);CDN.forEach(u=>c.add(u).catch(()=>{}));}));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
