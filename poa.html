@@ -302,8 +302,8 @@ function uploadSigImage(input){
   reader.onload=function(e){applySig(_sigRole,e.target.result);};
   reader.readAsDataURL(file);input.value='';
 }
-function openSig(role){_sigRole=role;$('sig-title').textContent='חתימת הלקוח';clearSigCanvas();$('sig-modal').style.display='flex';}
-function closeSigModal(){$('sig-modal').style.display='none';}
+function openSig(role){_sigRole=role;$('sig-title').textContent='חתימת הלקוח';clearSigCanvas();$('sig-modal').style.display='flex';document.body.style.overflow='hidden';}
+function closeSigModal(){$('sig-modal').style.display='none';document.body.style.overflow='';}
 function clearSigCanvas(){const c=$('sig-canvas'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
 function saveSig(){
   const c=$('sig-canvas'),ctx=c.getContext('2d');
