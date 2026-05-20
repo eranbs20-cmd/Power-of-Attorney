@@ -10,18 +10,16 @@
 <meta name="apple-mobile-web-app-title" content="ייפוי כוח">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#2d1b69">
-<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
 .topbar{background:#2d1b69;color:#fff;padding:12px 24px;font-size:17px;font-weight:bold;
   text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.3)}
-.wrap{display:flex;gap:20px;padding:18px 20px;max-width:1540px;margin:0 auto;align-items:flex-start}
-.fp{width:310px;min-width:290px;background:#fff;border-radius:8px;
-  box-shadow:0 2px 10px rgba(0,0,0,.12);position:sticky;top:54px;
-  max-height:calc(100vh - 70px);overflow-y:auto;padding-bottom:14px}
+.wrap{display:flex;gap:20px;padding:18px 20px;max-width:680px;margin:0 auto;align-items:flex-start}
+.fp{width:100%;background:#fff;border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.12);padding-bottom:14px}
 .sh{background:#ede8f6;color:#2d1b69;padding:6px 14px;font-size:11.5px;font-weight:bold}
 .fg{padding:0 14px}
 .fg label{display:block;font-size:11px;color:#444;margin:7px 0 2px;font-weight:bold}
@@ -41,57 +39,13 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
 .btn-r:hover{background:#1a0f40}
 .stat{font-size:11px;color:#666;text-align:center;min-height:14px;margin:2px 14px}
 .stat.ok{color:#27ae60}.stat.err{color:#c0392b}
-.pp{flex:1;background:#c5c8cc;padding:20px;border-radius:8px;overflow:auto;min-width:0}
-.pp-ttl{text-align:center;color:#555;margin:0 0 14px;font-size:12.5px;font-weight:normal}
-.pp-ctr{display:flex;justify-content:center}
-#form-preview{position:relative;width:794px;background:#fff;box-shadow:0 4px 28px rgba(0,0,0,.4);display:inline-block}
-#form-preview.pdf-capture{height:1123px;overflow:hidden}
-#form-doc{width:738px;margin:28px;direction:rtl;font-family:'Frank Ruhl Libre','Times New Roman',serif;font-size:10pt;color:#000;line-height:1.45}
-#form-title{text-align:center;font-size:14pt;font-weight:bold;text-decoration:underline;margin:0 0 12px}
-#form-intro{font-weight:bold;font-size:10pt;margin-bottom:10px;text-align:justify}
-.dyn{color:#1a3fa8;font-weight:bold;border-bottom:1.5px solid #1a3fa8;min-width:4px;display:inline}
-#form-doc.pdf-mode .dyn{color:#000!important;border-bottom:none!important;font-weight:bold}
-#form-clauses{font-size:9pt;list-style:none!important;padding-right:0;margin:0 0 10px}
-#form-clauses li{margin-bottom:4px;text-align:justify;padding-right:25px;text-indent:-25px}
-#form-clauses li.clause-intro{font-weight:bold;padding-right:0;text-indent:0;margin-bottom:8px}
-.list-num{display:inline-block;width:25px;font-weight:bold}
-#form-footer{margin-top:14px}
-#form-date-line{font-size:10pt;margin-bottom:16px}
-#form-sigs{display:flex;justify-content:space-between;margin-top:8px;direction:rtl}
-.sig-box{width:46%;text-align:center}
-#ov-sig-p{min-height:65px;max-height:70px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;margin-bottom:4px}
-.sig-label{border-top:1px solid #000;padding-top:4px;font-size:9pt;text-align:center}
-.sig-atty-text{font-size:9pt;font-weight:bold;text-align:center;padding-top:4px;border-top:1px solid #000;line-height:1.4}
-#mob-preview-btn{display:none}
 @media screen and (max-width:768px){
   body{background:#e2e5e9}
   .topbar{font-size:14px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top))}
-  .wrap{flex-direction:column;padding:10px;gap:10px}
-  .fp{width:100%!important;min-width:unset!important;position:static!important;
-    max-height:unset!important;border-radius:8px}
+  .wrap{padding:10px;gap:10px}
   .fg input[type=text],.fg textarea{padding:10px;font-size:15px;min-height:44px}
   .btn-g{padding:13px;font-size:15px}
   .btn-r{padding:14px;font-size:16px}
-  #mob-preview-btn{display:block;width:calc(100% - 28px);margin:6px 14px 2px;
-    padding:11px;border:none;border-radius:6px;background:#2d1b69;color:#fff;
-    font-size:14px;font-family:Arial,sans-serif;font-weight:bold;cursor:pointer}
-  .pp{display:none}
-  .pp.mob-show{display:block}
-  .pp-ctr{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  #form-preview{transform-origin:top center}
-}
-@media print{
-  .topbar,.fp{display:none!important}
-  body{background:#fff!important}
-  .wrap{display:block!important;padding:0!important;margin:0!important}
-  .pp{display:block!important;background:#fff!important;padding:0!important;border-radius:0!important}
-  .pp-ttl{display:none!important}
-  .pp-ctr{display:block!important;line-height:0!important}
-  #form-preview{display:block!important;box-shadow:none!important;margin:0!important;width:210mm!important;transform:none!important;zoom:1!important;overflow:hidden!important}
-  #form-preview{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .dyn{color:#1a3fa8!important}
-  @page{size:A4 portrait;margin:0}
-  html,body{margin:0!important;padding:0!important}
 }
 </style>
 </head>
@@ -133,7 +87,7 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
     <div class="sh" style="margin-top:8px">שליחה ב-WhatsApp</div>
     <div class="fg">
       <label>טלפון לקוח (לשליחה ב-WhatsApp)</label>
-      <input type="text" id="p_phone" placeholder="05XXXXXXXX" inputmode="tel" oninput="sync()">
+      <input type="text" id="p_phone" placeholder="05XXXXXXXX" inputmode="tel">
       <button class="btn-g" style="background:#25d366;margin-top:6px" onclick="shareViaWhatsApp()">📲 שלח ללקוח ב-WhatsApp</button>
       <button class="btn-g" style="background:#c97a00;margin-top:4px;font-size:11px" onclick="shareSigLink()">🔗 העתק קישור לחתימה</button>
       <div class="stat" id="share-stat"></div>
@@ -147,41 +101,6 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
   <button class="btn-r" onclick="exportPDF()" style="margin-top:10px">⬇ ייצא PDF</button>
   <div class="stat" id="pdf-stat"></div>
 </div>
-
-<button id="mob-preview-btn" onclick="toggleMobPreview()">👁 הצג תצוגה מקדימה</button>
-
-<div class="pp">
-  <p class="pp-ttl">תצוגה מקדימה — A4 | לחץ "ייצא PDF" לשמירה</p>
-  <div class="pp-ctr">
-  <div id="form-preview">
-<div id="form-doc">
-  <h1 id="form-title">ייפוי כח</h1>
-  <p id="form-intro">אני החתום מטה, <span class="dyn" id="ov-name"></span>, ת.ז. <span class="dyn" id="ov-id"></span>, ממנה בזאת את עו״ד ערן בן שושן מ.ר 99036 , להיות בא כוחי ולפעול בשמי ומטעמי בכל עניין הנוגע ל<span class="dyn" id="ov-svc"></span>,בפני כל ערכאה מוסמכת, ולביצוע בשמי של כל פעולה הנדרשת בקשר עם ההליך האמור, כולן או מקצתן, לפי שיקול דעתו של בא-כוחי, לרבות ייצוגי בדיונים, הגשת כתבי טענות ובקשות, חתימה על מסמכים, קבלת כתבי בי-דין ומסמכים אחרים, התנהלות מול רשויות וגופים ציבוריים וכל פעולה נדרשת אחרת לצורך טיפול וייצוג בהליך.</p>
-  <ul id="form-clauses">
-    <li class="clause-intro">מבלי לפגוע בכלליות המינוי הנ"ל יהיו באי כחי רשאים לעשות ולפעול בשמי ובמקומי בכל הפעולות הבאות, כולן או מקצתן הכל בקשר לעניין הנ"ל ולכל הנובע ממנו כדלקמן:</li>
-    <li><span class="list-num">1.</span>לחתום על ולהגיש בשמי כל תביעה או תביעה שכנגד, ו/או כל בקשה, הגנה, התנגדות, בקשה למתן רשות לערער, ערעור, דיון נוסף, הודעה, טענה, השגה, ערר, תובענה או כל הליך אחר הנוגע או הנובע מההליך הנ"ל ללא יוצא מן הכלל. ומבלי לפגוע באמור לעיל גם להודות ו/או לכפור בשמי במשפטים פליליים.</li>
-    <li><span class="list-num">2.</span>לחתום על ו/או לשלוח התראות נוטריוניות או אחרות, לדרוש הכרזת פשיטת רגל, או פירוק גוף משפטי ולעשות את כל הפעולות הקשורות והנובעות מהעניין הנ"ל.</li>
-    <li><span class="list-num">3.</span>לבקש וקבל כל חוות דעת רפואית ו/או כל מסמך רפואי אחר מכל רופא או מוסד שבדק אותי ו/או כל חוות דעת אחרת הנוגעת לעניין הנ"ל.</li>
-    <li><span class="list-num">4.</span>לייצגני ולהופיע בשמי ובמקומי בקשר לכל אחת מהפעולות הנ"ל בפני כל בתי המשפט, בתי הדין למיניהם, רשויות ממשלתיות, עיריות, מועצות מקומיות ו/או כל רשות אחרת, עד לערכאתם העליונה, ככל שהדברים נוגעים או קשורים לעניין הנ"ל.</li>
-    <li><span class="list-num">5.</span>לנקוט בכל הפעולות הכרוכות בייצוג האמור והמותרות על-פי סדרי הדין הקיימים או שיהיו קיימים בעתיד ובכללם הזמנת עדים ומינוי מומחים, והכל על-פי הדין שיחול וכפי שבא כחי ימצא לנכון.</li>
-    <li><span class="list-num">6.</span>למסור כל עניין הנובע מהעניין האמור לעיל לבוררות ולחתום על שטר בוררות כפי שבא כחי ימצא לנכון. להתפשר בכל עניין הנוגע או הנובע מהעניינים האמורים לעיל לפי שקול דעתו של בא כחי ולחתום על פשרה כזו בבית המשפט או מחוצה לו.</li>
-    <li><span class="list-num">7.</span>להוציא לפועל כל פס"ד או החלטה או צו, לדרוש צווי מכירה או פקודות מאסר ולנקוט בכל הפעולות המותרות על פי חוק ההוצאה לפועל ותקנותיו.</li>
-    <li><span class="list-num">8.</span>לנקוט בכל הפעולות ולחתום על כל מסמך או כתב בלי יוצא מן הכלל אשר בא כחי ימצא לנכון בכל עניין הנובע ו/או הנוגע לעניין הנ"ל.</li>
-    <li><span class="list-num">9.</span>לבקש ולקבל מידע שהנני זכאי לקבלו על פי כל דין מכל מאגר מידע של רשות כלשהי הנוגע לעניין הנ"ל. להופיע בשמי ולייצגני בעניין הנ"ל בפני רשם המקרקעין, בלשכות רישום המקרקעין, לחתום בשמי ובמקומי על כל בקשה, הצהרה ומסמכים אחרים למיניהם ולבצע בשמי כל עסקה המוכרת על פי דין וליתן הצהרות, קבלות ואישורים וקבל בשמי ובמקומי כל מסמך שאני רשאי לקבלו על פי דין.</li>
-    <li><span class="list-num">10.</span>להעביר יפוי כח זה על כל הסמכויות שבו או חלק מהן לעו"ד אחר עם זכות העברה לאחרים, לפטרם ולמנות אחרים במקומם ולנהל את עניני הנ"ל לפי ראות עיניי ובכלל לעשות את כל הצעדים שימצא לנכון ומועיל בקשר עם המשפט או עם עניני הנ"ל והריני מאשר את מעשיו או מעשי ממלאי המקום בתוקף יפוי כח זה מראש.</li>
-  </ul>
-  <div id="form-footer">
-    <p id="form-date-line">ולראיה באתי על החתום, היום יום <span class="dyn" id="ov-date"></span></p>
-    <div id="form-sigs">
-      <div class="sig-box" id="sig-right">
-        <div id="ov-sig-p"></div>
-        <div class="sig-label">חתימה לקוח</div>
-      </div>
-      <div class="sig-box" id="sig-left">
-        <div class="sig-atty-text">הנני מאשר את חתימת מרשי<br>עו"ד ערן בן שושן</div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div id="sig-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;align-items:center;justify-content:center">
@@ -202,14 +121,13 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
 <script>
 const $=id=>document.getElementById(id);
 const v=id=>($(id)||{}).value||'';
+function sync(){}
 
 function addService(txt){
   const el=$('p_service');
   el.value=el.value?el.value+' / '+txt:txt;
-  sync();
 }
 
-// ── Israeli ID validation (Luhn-style) ──
 function validateIsraeliID(id){
   if(!/^\d{9}$/.test(id))return false;
   let sum=0;
@@ -220,69 +138,48 @@ function validateIsraeliID(id){
 function formatID(el){
   const digits=el.value.replace(/\D/g,'').slice(0,9);
   el.value=digits;
-  sync();
   if(digits.length===9){
     const ok=validateIsraeliID(digits);
     showStat('id-stat',ok?'✓ ת.ז. תקינה':'⚠ ספרת ביקורת שגויה',ok?'ok':'err');
   }else{showStat('id-stat','','');}
 }
 
-// ── Extract name & ID from pasted text ──
 function extractFromText(){
   const text=v('extract-input');
   const idMatch=text.match(/\d{9}/);
   if(!idMatch){showStat('extract-stat','לא נמצא מספר ת.ז. (9 ספרות) בטקסט','err');return;}
   const rawID=idMatch[0];
   $('p_id').value=rawID;
-  // Find name: text before the ID, after last comma or newline
   const before=text.slice(0,text.indexOf(rawID)).replace(/[,.:;\s]+$/,'').replace(/ת\.?\s*ז\.?\s*$/,'').trim();
   const parts=before.split(/[\s,.:;]+/).filter(Boolean);
-  if(parts.length>0){
-    const name=parts.slice(-3).join(' ');
-    $('p_name').value=name;
-  }
+  if(parts.length>0)$('p_name').value=parts.slice(-3).join(' ');
   const ok=validateIsraeliID(rawID);
   showStat('id-stat',ok?'✓ ת.ז. תקינה':'⚠ ספרת ביקורת שגויה',ok?'ok':'err');
-  sync();
   showStat('extract-stat','✓ שם ות.ז. חולצו בהצלחה','ok');
   setTimeout(()=>showStat('extract-stat','',''),4000);
 }
 
-function sync(){
-  const name=v('p_name');
-  const rawID=v('p_id').replace(/\D/g,'').slice(0,9);
-  const displayID=rawID?' '+rawID+' ':'';
-  const svc=v('p_service'),date=v('p_date');
-  $('ov-name').textContent=name;
-  $('ov-id').textContent=displayID;
-  $('ov-svc').textContent=svc;
-  $('ov-date').textContent=date;
+function extractFromFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){const ta=$('extract-input');if(ta)ta.value=e.target.result;extractFromText();};
+  reader.readAsText(file,'UTF-8');input.value='';
 }
 
-// ── Auto-fill today's date ──
 (function(){
   const d=new Date();
-  const dd=String(d.getDate()).padStart(2,'0');
-  const mm=String(d.getMonth()+1).padStart(2,'0');
-  const yyyy=d.getFullYear();
-  const today=dd+'/'+mm+'/'+yyyy;
+  const today=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
   window.addEventListener('DOMContentLoaded',()=>{
     const el=$('p_date');if(el&&!el.value)el.value=today;
     _checkHash();
-    sync();
   });
 })();
 
-// ── Signature ──
 let _sigRole='p',_sigP='',_sigR='';
 function applySig(role,url){
   if(role==='p')_sigP=url;else _sigR=url;
-  const ov=$('ov-sig-'+role);
-  ov.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:65px;object-fit:contain;display:block">';
-  ov.style.cursor='pointer';ov.style.pointerEvents='auto';
-  ov.onclick=()=>openSig(role);
-  closeSigModal();showStat('sig-stat','✓ חתימה נשמרה — לחץ לתיקון','ok');
-  setTimeout(()=>showStat('sig-stat','',''),4000);
+  showStat('sig-stat','✓ חתימה נשמרה','ok');
+  closeSigModal();
 }
 function trimmedDataURL(canvas){
   const ctx=canvas.getContext('2d');
@@ -333,48 +230,87 @@ function saveSig(){
 
 function showStat(id,msg,cls){const el=$(id);if(!el)return;el.textContent=msg;el.className='stat'+(cls?' '+cls:'');}
 
-async function exportPDF(){
-  const s=$('pdf-stat');
-  s.className='stat';s.textContent='מייצר PDF...';
+function reverseHebrewRTL(str){
+  if(!str)return'';
+  return str.split(' ').map(word=>{
+    if(/^[\d/a-zA-Z]+$/.test(word))return word;
+    return word.split('').reverse().join('');
+  }).reverse().join(' ');
+}
+
+async function generateAndSendPDF(isShare=false){
+  const statId=isShare?'sig-stat':'pdf-stat';
+  if(isShare&&!_sigP){showStat(statId,'יש לחתום תחילה','err');return;}
+  showStat(statId,'מייצר מסמך...','');
   try{
-    const pp=document.querySelector('.pp');
-    const fp=$('form-preview');
-    const savedZoom=fp.style.zoom;
-    const ppHidden=getComputedStyle(pp).display==='none';
-    if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
-    fp.style.zoom='';
-    const fd=$('form-doc');fd.classList.add('pdf-mode');fp.classList.add('pdf-capture');
-    await new Promise(r=>setTimeout(r,300));
-    const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:1123,scrollX:0,scrollY:0});
-    fd.classList.remove('pdf-mode');fp.classList.remove('pdf-capture');
-    fp.style.zoom=savedZoom;
-    if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
-    const {jsPDF}=window.jspdf;
-    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
-    pdf.addImage(canvas.toDataURL('image/jpeg',0.97),'JPEG',0,0,210,297);
-    const name=v('p_name')||'לקוח';
-    pdf.save('יפוי-כוח-'+name+'.pdf');
-    s.className='stat ok';s.textContent='הקובץ נשמר ✓';
-    setTimeout(()=>{s.textContent='';s.className='stat';},5000);
-  }catch(e){s.className='stat err';s.textContent='שגיאה: '+e.message;}
+    const rawName=v('p_name'),rawId=v('p_id'),rawSvc=v('p_service'),rawDate=v('p_date');
+    const name=reverseHebrewRTL(rawName);
+    const id=reverseHebrewRTL(rawId);
+    const service=reverseHebrewRTL(rawSvc);
+    const date=reverseHebrewRTL(rawDate);
+
+    const [pdfBytes,fontBytes]=await Promise.all([
+      fetch('./base.pdf').then(r=>r.arrayBuffer()),
+      fetch('https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFV0Uw.ttf').then(r=>r.arrayBuffer())
+    ]);
+
+    const pdfDoc=await PDFLib.PDFDocument.load(pdfBytes);
+    pdfDoc.registerFontkit(window.fontkit);
+    const hebrewFont=await pdfDoc.embedFont(fontBytes);
+    const page=pdfDoc.getPage(0);
+
+    const fields=[
+      {text:name,   rightEdge:437,y:762,maxWidth:145,size:11},
+      {text:id,     rightEdge:280,y:762,maxWidth:70, size:11},
+      {text:service,rightEdge:437,y:740,maxWidth:245,size:11},
+      {text:date,   rightEdge:297,y:188,maxWidth:90, size:11},
+    ];
+
+    for(const f of fields){
+      if(!f.text)continue;
+      let size=f.size;
+      let width=hebrewFont.widthOfTextAtSize(f.text,size);
+      while(width>f.maxWidth&&size>7){size-=0.5;width=hebrewFont.widthOfTextAtSize(f.text,size);}
+      page.drawText(f.text,{x:f.rightEdge-width,y:f.y,size,font:hebrewFont,color:PDFLib.rgb(0,0,0)});
+    }
+
+    if(_sigP){
+      let emb;
+      if(_sigP.includes('image/png'))emb=await pdfDoc.embedPng(_sigP);
+      else emb=await pdfDoc.embedJpg(_sigP);
+      const dim=emb.scale(0.35);
+      page.drawImage(emb,{x:360,y:115,width:dim.width,height:dim.height});
+    }
+
+    const finalBytes=await pdfDoc.save();
+    const pdfBlob=new Blob([finalBytes],{type:'application/pdf'});
+    const fileName='יפוי-כוח-'+(rawName||'לקוח')+(isShare?'-חתום':'')+'.pdf';
+
+    if(isShare){
+      const file=new File([pdfBlob],fileName,{type:'application/pdf'});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+        try{await navigator.share({title:'ייפוי כוח חתום',text:'שלום, חתמתי על ייפוי כוח.',files:[file]});showStat(statId,'הקובץ נשלח ✓','ok');return;}
+        catch(se){if(se.name==='AbortError')return;}
+      }
+    }
+
+    const burl=URL.createObjectURL(pdfBlob);
+    const a=document.createElement('a');a.href=burl;a.download=fileName;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(burl),8000);
+    showStat(statId,'הקובץ נשמר ✓','ok');
+    setTimeout(()=>showStat(statId,'',''),5000);
+    if(isShare)_showSendModal();
+  }catch(e){showStat(statId,'שגיאה: '+e.message,'err');}
 }
 
-function toggleMobPreview(){
-  const pp=document.querySelector('.pp');
-  const btn=$('mob-preview-btn');
-  const showing=pp.classList.toggle('mob-show');
-  btn.textContent=showing?'✕ סגור תצוגה מקדימה':'👁 הצג תצוגה מקדימה';
-  if(showing){
-    const scale=Math.min(1,(window.innerWidth-20)/794);
-    $('form-preview').style.zoom=scale;
-  }
-}
+function exportPDF(){generateAndSendPDF(false);}
+async function confirmAndSend(){await generateAndSendPDF(true);}
 
-if('serviceWorker' in navigator){
+if('serviceWorker'in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
 
-// ── WhatsApp state encode/decode ──
 function encodeState(){
   const s={};
   const fields={p_name:'n',p_id:'i',p_service:'s',p_date:'d',p_phone:'ph'};
@@ -386,26 +322,23 @@ function decodeState(enc){
     const s=JSON.parse(decodeURIComponent(escape(atob(enc))));
     const map={n:'p_name',i:'p_id',s:'p_service',d:'p_date',ph:'p_phone'};
     Object.entries(map).forEach(([k,id])=>{if(k in s&&$(id))$(id).value=s[k];});
-    sync();
     _enterClientMode();
   }catch(e){console.error('decodeState:',e);}
 }
 function _enterClientMode(){
   const attyPanel=document.querySelector('.fp');if(attyPanel)attyPanel.style.display='none';
   const lt=$('lawyer-tools');if(lt)lt.style.display='none';
-  const mpb=$('mob-preview-btn');if(mpb)mpb.style.display='none';
-  const svp=$('ov-sig-p');
-  if(svp&&!svp.querySelector('img')){
-    svp.style.pointerEvents='auto';svp.style.cursor='pointer';
-    svp.style.border='2px dashed #1a6b3a';svp.style.borderRadius='4px';
-    svp.innerHTML='<span style="color:#1a6b3a;font-size:11px;font-family:Arial;font-weight:normal">✍ לחץ לחתימה</span>';
-    svp.onclick=()=>{svp.innerHTML='';svp.style.border='';svp.style.cursor='';svp.style.pointerEvents='none';openSig('p');};
-  }
   if(!$('sign-banner')){
     const b=document.createElement('div');b.id='sign-banner';
-    b.style.cssText='background:#1a6b3a;color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:10px;direction:rtl;text-align:center;line-height:1.5';
-    b.innerHTML='✍ מצב חתימה<br><span style="font-size:11px;opacity:.85">לחץ "✍ לחץ לחתימה" בטופס, חתום ואז לחץ שלח</span>';
-    const pp2=document.querySelector('.pp');if(pp2)pp2.prepend(b);
+    b.style.cssText='background:#1a6b3a;color:#fff;padding:12px 14px;border-radius:8px;font-size:14px;margin:14px;direction:rtl;text-align:center;line-height:1.5';
+    b.innerHTML='✍ מצב חתימה<br><span style="font-size:12px;opacity:.85">לחץ "חתימת הלקוח", חתום ואז לחץ שלח</span>';
+    document.body.prepend(b);
+  }
+  if(!$('_float-sign')){
+    const fb=document.createElement('button');fb.id='_float-sign';
+    fb.style.cssText='display:block;width:calc(100% - 28px);margin:8px 14px 4px;background:#1a6b3a;color:#fff;border:none;border-radius:8px;padding:14px;font-size:16px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif';
+    fb.textContent='✍ חתימת הלקוח';fb.onclick=()=>openSig('p');
+    document.body.appendChild(fb);
   }
   if(!$('_float-send')){
     const fb=document.createElement('button');fb.id='_float-send';
@@ -413,8 +346,6 @@ function _enterClientMode(){
     fb.textContent='✅ שלח PDF לעורך הדין';fb.onclick=confirmAndSend;
     document.body.appendChild(fb);
   }
-  const pp=document.querySelector('.pp');
-  if(pp){pp.classList.add('mob-show');const scale=Math.min(1,(window.innerWidth-20)/794);const fpr=$('form-preview');if(fpr)fpr.style.zoom=scale;}
 }
 function shareViaWhatsApp(){
   const phone=v('p_phone').replace(/\D/g,'');
@@ -427,48 +358,17 @@ function shareViaWhatsApp(){
 function shareSigLink(){
   const enc=encodeState();
   const url=location.href.split('#')[0]+'#s='+enc;
-  const copy=u=>{navigator.clipboard.writeText(u).then(()=>showStat('share-stat','קישור הועתק ✓','ok')).catch(()=>{const ta=document.createElement('textarea');ta.value=u;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showStat('share-stat','קישור הועתק ✓','ok');});};
-  copy(url);
+  navigator.clipboard.writeText(url).then(()=>showStat('share-stat','קישור הועתק ✓','ok')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showStat('share-stat','קישור הועתק ✓','ok');
+  });
   setTimeout(()=>showStat('share-stat','',''),4000);
-}
-async function confirmAndSend(){
-  const sigEl=$('ov-sig-p');
-  if(!sigEl||!sigEl.querySelector('img')){showStat('sig-stat','יש לחתום תחילה','err');return;}
-  showStat('sig-stat','מייצר PDF...','');
-  try{
-    const pp=document.querySelector('.pp');const fp=$('form-preview');
-    const savedZoom=fp.style.zoom;
-    const ppHidden=getComputedStyle(pp).display==='none';
-    if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
-    fp.style.zoom='';
-    const fd2=$('form-doc');fd2.classList.add('pdf-mode');fp.classList.add('pdf-capture');
-    await new Promise(r=>setTimeout(r,300));
-    const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:1123,scrollX:0,scrollY:0});
-    fd2.classList.remove('pdf-mode');fp.classList.remove('pdf-capture');
-    fp.style.zoom=savedZoom;
-    if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
-    const {jsPDF}=window.jspdf;
-    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
-    pdf.addImage(canvas.toDataURL('image/jpeg',0.97),'JPEG',0,0,210,297);
-    const pdfBlob=pdf.output('blob');
-    const clientName=v('p_name')||'לקוח';
-    const file=new File([pdfBlob],'יפוי-כוח-'+clientName+'-חתום.pdf',{type:'application/pdf'});
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({title:'ייפוי כוח חתום',text:'שלום עו"ד ערן, חתמתי על ייפוי כוח.',files:[file]});showStat('sig-stat','הקובץ נשלח ✓','ok');return;}
-      catch(se){if(se.name==='AbortError')return;}
-    }
-    const burl=URL.createObjectURL(pdfBlob);
-    const a=document.createElement('a');a.href=burl;a.download='יפוי-כוח-'+clientName+'-חתום.pdf';document.body.appendChild(a);a.click();document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(burl),8000);
-    _showSendModal();
-  }catch(e){showStat('sig-stat','שגיאה: '+e.message,'err');}
 }
 function _showSendModal(){
   if($('_send-modal'))return;
   const waUrl='https://wa.me/972522499887?text='+encodeURIComponent('שלום עו"ד ערן, חתמתי על ייפוי כוח. מצרף קובץ PDF חתום.');
   const m=document.createElement('div');m.id='_send-modal';
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:3000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 20px;width:min(360px,93vw);direction:rtl;font-family:Arial,sans-serif;text-align:center">'
+  m.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 20px;width:90%;max-width:360px;direction:rtl;font-family:Arial,sans-serif;text-align:center">'
     +'<div style="font-size:38px;margin-bottom:8px">✅</div>'
     +'<div style="font-weight:bold;font-size:16px;color:#1a3f7a;margin-bottom:12px">הקובץ החתום מוכן!</div>'
     +'<div style="font-size:13px;color:#444;line-height:1.85;margin-bottom:18px;text-align:right">'
@@ -487,18 +387,6 @@ function _checkHash(){
   const h=location.hash;
   if(h.startsWith('#s='))decodeState(h.slice(3));
 }
-function extractFromFile(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const ta=$('extract-input');if(ta)ta.value=e.target.result;
-    extractFromText();
-  };
-  reader.readAsText(file,'UTF-8');
-  input.value='';
-}
-
-
 </script>
 </body>
 </html>
