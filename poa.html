@@ -44,7 +44,8 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
 .pp{flex:1;background:#c5c8cc;padding:20px;border-radius:8px;overflow:auto;min-width:0}
 .pp-ttl{text-align:center;color:#555;margin:0 0 14px;font-size:12.5px;font-weight:normal}
 .pp-ctr{display:flex;justify-content:center}
-#form-preview{position:relative;width:794px;height:1123px;overflow:hidden;background:#fff;box-shadow:0 4px 28px rgba(0,0,0,.4);display:inline-block}
+#form-preview{position:relative;width:794px;background:#fff;box-shadow:0 4px 28px rgba(0,0,0,.4);display:inline-block}
+#form-preview.pdf-capture{height:1123px;overflow:hidden}
 #form-doc{width:738px;margin:28px;direction:rtl;font-family:'Frank Ruhl Libre','Times New Roman',serif;font-size:10pt;color:#000;line-height:1.45}
 #form-title{text-align:center;font-size:14pt;font-weight:bold;text-decoration:underline;margin:0 0 12px}
 #form-intro{font-weight:bold;font-size:10pt;margin-bottom:10px;text-align:justify}
@@ -341,10 +342,10 @@ async function exportPDF(){
     const ppHidden=getComputedStyle(pp).display==='none';
     if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
     fp.style.zoom='';
-    const fd=$('form-doc');fd.classList.add('pdf-mode');
+    const fd=$('form-doc');fd.classList.add('pdf-mode');fp.classList.add('pdf-capture');
     await new Promise(r=>setTimeout(r,300));
     const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:1123,scrollX:0,scrollY:0});
-    fd.classList.remove('pdf-mode');
+    fd.classList.remove('pdf-mode');fp.classList.remove('pdf-capture');
     fp.style.zoom=savedZoom;
     if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
     const {jsPDF}=window.jspdf;
@@ -439,10 +440,10 @@ async function confirmAndSend(){
     const ppHidden=getComputedStyle(pp).display==='none';
     if(ppHidden){pp.style.position='fixed';pp.style.top='-9999px';pp.style.left='0';pp.style.display='block';}
     fp.style.zoom='';
-    const fd2=$('form-doc');fd2.classList.add('pdf-mode');
+    const fd2=$('form-doc');fd2.classList.add('pdf-mode');fp.classList.add('pdf-capture');
     await new Promise(r=>setTimeout(r,300));
     const canvas=await html2canvas(fp,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#fff',width:794,height:1123,scrollX:0,scrollY:0});
-    fd2.classList.remove('pdf-mode');
+    fd2.classList.remove('pdf-mode');fp.classList.remove('pdf-capture');
     fp.style.zoom=savedZoom;
     if(ppHidden){pp.style.position='';pp.style.top='';pp.style.left='';pp.style.display='';}
     const {jsPDF}=window.jspdf;
