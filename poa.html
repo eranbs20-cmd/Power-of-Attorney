@@ -247,19 +247,48 @@ function showToast(msg,cls){
   let t=$('_toast');
   if(!t){
     t=document.createElement('div');t.id='_toast';
-    t.style.cssText='position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:2500;font-family:Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;max-width:90vw';
+    t.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:2500;font-family:Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;max-width:90vw;text-align:center';
     document.body.appendChild(t);
   }
   t.textContent=msg;
   t.style.background=cls==='err'?'#c0392b':(cls==='ok'?'#1a6b3a':'#333');
   t.style.display='block';
+  if(cls==='ok'||cls==='err')setTimeout(()=>{if(t.textContent===msg)hideToast();},cls==='ok'?3000:6000);
 }
 function hideToast(){const t=$('_toast');if(t)t.style.display='none';}
 
 let _cachedFontBytes=null,_cachedPdfBytes=null;
+const FONT_URLS=[
+  'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/heebo/static/Heebo-Bold.ttf',
+  'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/assistant/static/Assistant-Bold.ttf',
+  'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/rubik/static/Rubik-Bold.ttf',
+  'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notosanshebrew/static/NotoSansHebrew-Bold.ttf'
+];
+async function _loadFont(){
+  let lastErr;
+  for(const u of FONT_URLS){
+    try{
+      const r=await fetch(u);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const bytes=await r.arrayBuffer();
+      if(bytes.byteLength<1000)throw new Error('font too small');
+      const head=new Uint8Array(bytes,0,4);
+      const tag=String.fromCharCode(...head);
+      if(tag!=='\x00\x01\x00\x00'&&tag!=='OTTO'&&tag!=='true'&&tag!=='typ1'){
+        throw new Error('not a TTF/OTF: '+tag);
+      }
+      return bytes;
+    }catch(e){lastErr=e;console.warn('font URL failed:',u,e.message);}
+  }
+  throw new Error('all font sources failed: '+(lastErr&&lastErr.message));
+}
 async function _loadAssets(){
-  if(!_cachedPdfBytes)_cachedPdfBytes=await fetch('./base.pdf').then(r=>r.arrayBuffer());
-  if(!_cachedFontBytes)_cachedFontBytes=await fetch('https://fonts.gstatic.com/s/heebo/v22/NGS6v5_NC0k9P9H2TbE.ttf').then(r=>r.arrayBuffer());
+  if(!_cachedPdfBytes){
+    const r=await fetch('./base.pdf');
+    if(!r.ok)throw new Error('base.pdf לא נמצא ('+r.status+')');
+    _cachedPdfBytes=await r.arrayBuffer();
+  }
+  if(!_cachedFontBytes)_cachedFontBytes=await _loadFont();
   return {pdfBytes:_cachedPdfBytes,fontBytes:_cachedFontBytes};
 }
 
@@ -299,18 +328,27 @@ async function _buildPDFBlob(includeSig){
   return new Blob([bytes],{type:'application/pdf'});
 }
 
+const _isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+
 async function _renderPreview(){
-  const ifr=$('client-preview');
-  if(!ifr)return;
+  const container=$('client-preview');
+  if(!container)return;
   try{
     showToast('טוען מסמך...');
     const blob=await _buildPDFBlob(!!_sigP);
     const url=URL.createObjectURL(blob);
-    if(ifr.dataset.url)URL.revokeObjectURL(ifr.dataset.url);
-    ifr.src=url+'#view=FitH&toolbar=0';
-    ifr.dataset.url=url;
+    if(container.dataset.url)URL.revokeObjectURL(container.dataset.url);
+    container.dataset.url=url;
+    if(_isIOS){
+      container.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;text-align:center;color:#fff;direction:rtl;font-family:Arial,sans-serif"><div style="font-size:52px;margin-bottom:12px">📄</div><div style="font-size:16px;margin-bottom:18px;line-height:1.5">המסמך מוכן לסקירה'+(_sigP?' עם החתימה':'')+'</div><a id="_view-pdf-btn" href="'+url+'" target="_blank" rel="noopener" style="background:#fff;color:#2d1b69;border:none;border-radius:10px;padding:14px 26px;font-size:15px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif;text-decoration:none;display:inline-block">👁 פתח מסמך לצפייה</a></div>';
+    }else{
+      container.innerHTML='<iframe style="display:block;width:100%;height:100%;border:none" src="'+url+'#view=FitH&toolbar=0"></iframe>';
+    }
     setTimeout(hideToast,500);
-  }catch(e){showToast('שגיאה בטעינת מסמך: '+e.message,'err');}
+  }catch(e){
+    console.error('renderPreview failed:',e);
+    showToast('שגיאה בטעינת מסמך: '+e.message,'err');
+  }
 }
 
 async function generateAndSendPDF(isShare=false){
@@ -384,10 +422,10 @@ function _enterClientMode(){
     document.body.prepend(b);
   }
   if(!$('client-preview')){
-    const ifr=document.createElement('iframe');
-    ifr.id='client-preview';
-    ifr.style.cssText='display:block;width:100%;height:calc(100vh - 200px);border:none;background:#525659';
-    document.body.appendChild(ifr);
+    const c=document.createElement('div');
+    c.id='client-preview';
+    c.style.cssText='display:block;width:100%;height:calc(100vh - 210px);background:#525659;overflow:hidden';
+    document.body.appendChild(c);
   }
   if(!$('_float-sign')){
     const fb=document.createElement('button');fb.id='_float-sign';
