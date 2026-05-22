@@ -305,10 +305,10 @@ async function _buildPDFBlob(includeSig){
   const page=pdfDoc.getPage(0);
   const blueColor=PDFLib.rgb(0.102,0.247,0.659);
   const fields=[
-    {text:name,   rightEdge:440,y:733,maxWidth:145,size:12},
-    {text:id,     rightEdge:250,y:733,maxWidth:80, size:12},
-    {text:service,rightEdge:440,y:708,maxWidth:245,size:12},
-    {text:date,   rightEdge:297,y:180,maxWidth:90, size:12},
+    {text:name,   rightEdge:454,y:740,maxWidth:120,size:11},
+    {text:id,     rightEdge:309,y:740,maxWidth:48, size:11},
+    {text:service,rightEdge:310,y:727,maxWidth:165,size:11},
+    {text:date,   rightEdge:364,y:171,maxWidth:48, size:11},
   ];
   for(const f of fields){
     if(!f.text)continue;
@@ -321,8 +321,10 @@ async function _buildPDFBlob(includeSig){
     let emb;
     if(_sigP.includes('image/png'))emb=await pdfDoc.embedPng(_sigP);
     else emb=await pdfDoc.embedJpg(_sigP);
-    const dim=emb.scale(0.35);
-    page.drawImage(emb,{x:360,y:115,width:dim.width,height:dim.height});
+    const maxW=88,maxH=45;
+    const scale=Math.min(maxW/emb.width,maxH/emb.height,0.5);
+    const w=emb.width*scale,h=emb.height*scale;
+    page.drawImage(emb,{x:458.75-w/2,y:118,width:w,height:h});
   }
   const bytes=await pdfDoc.save();
   return new Blob([bytes],{type:'application/pdf'});
