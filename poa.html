@@ -178,8 +178,13 @@ function extractFromFile(input){
 let _sigRole='p',_sigP='',_sigR='';
 function applySig(role,url){
   if(role==='p')_sigP=url;else _sigR=url;
-  showStat('sig-stat','✓ חתימה נשמרה','ok');
   closeSigModal();
+  if($('client-preview')){
+    showToast('✓ חתימה נשמרה — מעדכן מסמך','ok');
+    _renderPreview();
+  }else{
+    showStat('sig-stat','✓ חתימה נשמרה','ok');
+  }
 }
 function trimmedDataURL(canvas){
   const ctx=canvas.getContext('2d');
@@ -238,61 +243,100 @@ function reverseHebrewRTL(str){
   }).reverse().join(' ');
 }
 
-async function generateAndSendPDF(isShare=false){
-  const statId=isShare?'sig-stat':'pdf-stat';
-  if(isShare&&!_sigP){showStat(statId,'יש לחתום תחילה','err');return;}
-  showStat(statId,'מייצר מסמך...','');
+function showToast(msg,cls){
+  let t=$('_toast');
+  if(!t){
+    t=document.createElement('div');t.id='_toast';
+    t.style.cssText='position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:2500;font-family:Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;max-width:90vw';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.background=cls==='err'?'#c0392b':(cls==='ok'?'#1a6b3a':'#333');
+  t.style.display='block';
+}
+function hideToast(){const t=$('_toast');if(t)t.style.display='none';}
+
+let _cachedFontBytes=null,_cachedPdfBytes=null;
+async function _loadAssets(){
+  if(!_cachedPdfBytes)_cachedPdfBytes=await fetch('./base.pdf').then(r=>r.arrayBuffer());
+  if(!_cachedFontBytes)_cachedFontBytes=await fetch('https://fonts.gstatic.com/s/heebo/v22/NGS6v5_NC0k9P9H2TbE.ttf').then(r=>r.arrayBuffer());
+  return {pdfBytes:_cachedPdfBytes,fontBytes:_cachedFontBytes};
+}
+
+async function _buildPDFBlob(includeSig){
+  const rawName=v('p_name'),rawId=v('p_id'),rawSvc=v('p_service'),rawDate=v('p_date');
+  const name=reverseHebrewRTL(rawName);
+  const id=reverseHebrewRTL(rawId);
+  const service=reverseHebrewRTL(rawSvc);
+  const date=reverseHebrewRTL(rawDate);
+  const {pdfBytes,fontBytes}=await _loadAssets();
+  const pdfDoc=await PDFLib.PDFDocument.load(pdfBytes);
+  pdfDoc.registerFontkit(window.fontkit);
+  const hebrewFont=await pdfDoc.embedFont(fontBytes);
+  const page=pdfDoc.getPage(0);
+  const blueColor=PDFLib.rgb(0.102,0.247,0.659);
+  const fields=[
+    {text:name,   rightEdge:440,y:733,maxWidth:145,size:12},
+    {text:id,     rightEdge:250,y:733,maxWidth:80, size:12},
+    {text:service,rightEdge:440,y:708,maxWidth:245,size:12},
+    {text:date,   rightEdge:297,y:180,maxWidth:90, size:12},
+  ];
+  for(const f of fields){
+    if(!f.text)continue;
+    let size=f.size;
+    let width=hebrewFont.widthOfTextAtSize(f.text,size);
+    while(width>f.maxWidth&&size>7){size-=0.5;width=hebrewFont.widthOfTextAtSize(f.text,size);}
+    page.drawText(f.text,{x:f.rightEdge-width,y:f.y,size,font:hebrewFont,color:blueColor});
+  }
+  if(includeSig&&_sigP){
+    let emb;
+    if(_sigP.includes('image/png'))emb=await pdfDoc.embedPng(_sigP);
+    else emb=await pdfDoc.embedJpg(_sigP);
+    const dim=emb.scale(0.35);
+    page.drawImage(emb,{x:360,y:115,width:dim.width,height:dim.height});
+  }
+  const bytes=await pdfDoc.save();
+  return new Blob([bytes],{type:'application/pdf'});
+}
+
+async function _renderPreview(){
+  const ifr=$('client-preview');
+  if(!ifr)return;
   try{
-    const rawName=v('p_name'),rawId=v('p_id'),rawSvc=v('p_service'),rawDate=v('p_date');
-    const name=reverseHebrewRTL(rawName);
-    const id=reverseHebrewRTL(rawId);
-    const service=reverseHebrewRTL(rawSvc);
-    const date=reverseHebrewRTL(rawDate);
+    showToast('טוען מסמך...');
+    const blob=await _buildPDFBlob(!!_sigP);
+    const url=URL.createObjectURL(blob);
+    if(ifr.dataset.url)URL.revokeObjectURL(ifr.dataset.url);
+    ifr.src=url+'#view=FitH&toolbar=0';
+    ifr.dataset.url=url;
+    setTimeout(hideToast,500);
+  }catch(e){showToast('שגיאה בטעינת מסמך: '+e.message,'err');}
+}
 
-    const [pdfBytes,fontBytes]=await Promise.all([
-      fetch('./base.pdf').then(r=>r.arrayBuffer()),
-      fetch('https://fonts.gstatic.com/s/heebo/v22/NGS6v5_NC0k9P9H2TbE.ttf').then(r=>r.arrayBuffer())
-    ]);
-
-    const pdfDoc=await PDFLib.PDFDocument.load(pdfBytes);
-    pdfDoc.registerFontkit(window.fontkit);
-    const hebrewFont=await pdfDoc.embedFont(fontBytes);
-    const page=pdfDoc.getPage(0);
-
-    const blueColor=PDFLib.rgb(0.102,0.247,0.659);
-
-    const fields=[
-      {text:name,   rightEdge:440,y:733,maxWidth:145,size:12},
-      {text:id,     rightEdge:250,y:733,maxWidth:80, size:12},
-      {text:service,rightEdge:440,y:708,maxWidth:245,size:12},
-      {text:date,   rightEdge:297,y:180,maxWidth:90, size:12},
-    ];
-
-    for(const f of fields){
-      if(!f.text)continue;
-      let size=f.size;
-      let width=hebrewFont.widthOfTextAtSize(f.text,size);
-      while(width>f.maxWidth&&size>7){size-=0.5;width=hebrewFont.widthOfTextAtSize(f.text,size);}
-      page.drawText(f.text,{x:f.rightEdge-width,y:f.y,size,font:hebrewFont,color:blueColor});
-    }
-
-    if(_sigP){
-      let emb;
-      if(_sigP.includes('image/png'))emb=await pdfDoc.embedPng(_sigP);
-      else emb=await pdfDoc.embedJpg(_sigP);
-      const dim=emb.scale(0.35);
-      page.drawImage(emb,{x:360,y:115,width:dim.width,height:dim.height});
-    }
-
-    const finalBytes=await pdfDoc.save();
-    const pdfBlob=new Blob([finalBytes],{type:'application/pdf'});
+async function generateAndSendPDF(isShare=false){
+  const isClient=!!$('client-preview');
+  const statId=isShare?'sig-stat':'pdf-stat';
+  if(isShare&&!_sigP){
+    if(isClient)showToast('יש לחתום תחילה','err');
+    else showStat(statId,'יש לחתום תחילה','err');
+    return;
+  }
+  if(isClient)showToast('מייצר מסמך...');
+  else showStat(statId,'מייצר מסמך...','');
+  try{
+    const rawName=v('p_name');
+    const pdfBlob=await _buildPDFBlob(true);
     const fileName='יפוי-כוח-'+(rawName||'לקוח')+(isShare?'-חתום':'')+'.pdf';
 
     if(isShare){
       const file=new File([pdfBlob],fileName,{type:'application/pdf'});
       if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-        try{await navigator.share({title:'ייפוי כוח חתום',text:'שלום, חתמתי על ייפוי כוח.',files:[file]});showStat(statId,'הקובץ נשלח ✓','ok');return;}
-        catch(se){if(se.name==='AbortError')return;}
+        try{
+          await navigator.share({title:'ייפוי כוח חתום',text:'שלום, חתמתי על ייפוי כוח.',files:[file]});
+          if(isClient)showToast('הקובץ נשלח ✓','ok');
+          else showStat(statId,'הקובץ נשלח ✓','ok');
+          return;
+        }catch(se){if(se.name==='AbortError'){hideToast();return;}}
       }
     }
 
@@ -300,10 +344,13 @@ async function generateAndSendPDF(isShare=false){
     const a=document.createElement('a');a.href=burl;a.download=fileName;
     document.body.appendChild(a);a.click();document.body.removeChild(a);
     setTimeout(()=>URL.revokeObjectURL(burl),8000);
-    showStat(statId,'הקובץ נשמר ✓','ok');
-    setTimeout(()=>showStat(statId,'',''),5000);
+    if(isClient)showToast('הקובץ נשמר ✓','ok');
+    else{showStat(statId,'הקובץ נשמר ✓','ok');setTimeout(()=>showStat(statId,'',''),5000);}
     if(isShare)_showSendModal();
-  }catch(e){showStat(statId,'שגיאה: '+e.message,'err');}
+  }catch(e){
+    if(isClient)showToast('שגיאה: '+e.message,'err');
+    else showStat(statId,'שגיאה: '+e.message,'err');
+  }
 }
 
 function exportPDF(){generateAndSendPDF(false);}
@@ -332,22 +379,29 @@ function _enterClientMode(){
   const lt=$('lawyer-tools');if(lt)lt.style.display='none';
   if(!$('sign-banner')){
     const b=document.createElement('div');b.id='sign-banner';
-    b.style.cssText='background:#1a6b3a;color:#fff;padding:12px 14px;border-radius:8px;font-size:14px;margin:14px;direction:rtl;text-align:center;line-height:1.5';
-    b.innerHTML='✍ מצב חתימה<br><span style="font-size:12px;opacity:.85">לחץ "חתימת הלקוח", חתום ואז לחץ שלח</span>';
+    b.style.cssText='background:#1a6b3a;color:#fff;padding:10px 14px;font-size:14px;direction:rtl;text-align:center;line-height:1.4';
+    b.innerHTML='✍ סקור את המסמך, חתום ולחץ "שלח"';
     document.body.prepend(b);
+  }
+  if(!$('client-preview')){
+    const ifr=document.createElement('iframe');
+    ifr.id='client-preview';
+    ifr.style.cssText='display:block;width:100%;height:calc(100vh - 200px);border:none;background:#525659';
+    document.body.appendChild(ifr);
   }
   if(!$('_float-sign')){
     const fb=document.createElement('button');fb.id='_float-sign';
-    fb.style.cssText='display:block;width:calc(100% - 28px);margin:8px 14px 4px;background:#1a6b3a;color:#fff;border:none;border-radius:8px;padding:14px;font-size:16px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif';
+    fb.style.cssText='position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#2d1b69;color:#fff;border:none;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:Arial,sans-serif;white-space:nowrap';
     fb.textContent='✍ חתימת הלקוח';fb.onclick=()=>openSig('p');
     document.body.appendChild(fb);
   }
   if(!$('_float-send')){
     const fb=document.createElement('button');fb.id='_float-send';
-    fb.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a6b3a;color:#fff;border:none;border-radius:12px;padding:15px 28px;font-size:15px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 18px rgba(0,0,0,.35);font-family:Arial,sans-serif;direction:rtl;white-space:nowrap';
+    fb.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a6b3a;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 18px rgba(0,0,0,.35);font-family:Arial,sans-serif;direction:rtl;white-space:nowrap';
     fb.textContent='✅ שלח PDF לעורך הדין';fb.onclick=confirmAndSend;
     document.body.appendChild(fb);
   }
+  _renderPreview();
 }
 function shareViaWhatsApp(){
   const phone=v('p_phone').replace(/\D/g,'');
