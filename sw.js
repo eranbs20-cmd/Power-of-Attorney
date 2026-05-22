@@ -1,5 +1,5 @@
-const CACHE = 'poa-v15';
-const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png','./fonts/Heebo-Bold.ttf'];
+const CACHE = 'poa-v16';
+const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png','./Heebo-Bold.ttf'];
 const CDN = [
   'https://unpkg.com/pdf-lib/dist/pdf-lib.min.js',
   'https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js',
