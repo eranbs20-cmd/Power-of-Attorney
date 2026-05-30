@@ -1,4 +1,4 @@
-const CACHE = 'poa-v20';
+const CACHE = 'poa-v21';
 const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png','./Heebo-Bold.ttf'];
 const CDN = [
   'https://unpkg.com/pdf-lib/dist/pdf-lib.min.js',
