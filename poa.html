@@ -20,37 +20,43 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--ink:#1a3a52;--ink-deep:#0d2738;--gold:#c89968;--gold-soft:#e0c79a;--cream:#faf6ef;--cream-deep:#e8ded3;--surface:#fdfbf7;--border:#d4c9b8}
-body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:var(--cream);color:var(--ink);direction:rtl;line-height:1.55}
+body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--cream);color:var(--ink);direction:rtl;line-height:1.6}
 .topbar{background:linear-gradient(135deg,var(--ink) 0%,var(--ink-deep) 100%);color:#fdfbf7;padding:15px 24px;font-size:19px;font-weight:bold;letter-spacing:0.4px;
   text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25);border-bottom:3px solid var(--gold);font-family:'David Libre',Arial,sans-serif}
 .wrap{display:flex;gap:20px;padding:18px 20px;max-width:680px;margin:0 auto;align-items:flex-start}
 .fp{width:100%;background:var(--surface);border-radius:10px;border:1px solid var(--border);
   box-shadow:0 4px 18px rgba(26,58,82,.08);padding-bottom:14px;overflow:hidden}
-.sh{background:var(--cream-deep);color:var(--ink);padding:8px 14px;font-size:12.5px;font-weight:bold;border-right:4px solid var(--gold);font-family:'David Libre',Arial,sans-serif}
+.sh{background:var(--cream-deep);color:var(--ink);padding:9px 14px;font-size:14px;font-weight:bold;border-right:4px solid var(--gold);font-family:'David Libre',Arial,sans-serif}
 .fg{padding:0 14px}
-.fg label{display:block;font-size:12px;color:var(--ink);margin:7px 0 2px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
-.fg input[type=text],.fg input[type=password],.fg textarea{width:100%;padding:7px 11px;border:1px solid var(--border);
-  border-radius:5px;font-size:12px;direction:rtl;font-family:'David Libre',Arial,sans-serif;color:#1e293b;background:#fff;line-height:1.5}
+.fg label{display:block;font-size:13px;color:var(--ink);margin:8px 0 3px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
+.fg input[type=text],.fg input[type=password],.fg textarea{width:100%;padding:9px 12px;border:1px solid var(--border);
+  border-radius:5px;font-size:14px;direction:rtl;font-family:'David Libre',Arial,sans-serif;color:#1e293b;background:#fff;line-height:1.5}
 .fg textarea{resize:vertical;min-height:58px;line-height:1.5}
 .fg input:focus,.fg textarea:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px rgba(200,153,104,.22)}
-.qbtn{display:inline-block;margin:2px 2px;padding:6px 11px;background:var(--cream-deep);
-  color:var(--ink);border:1px solid var(--border);border-radius:6px;font-size:12px;
+.qbtn{display:inline-block;margin:2px 2px;padding:7px 12px;background:var(--cream-deep);
+  color:var(--ink);border:1px solid var(--border);border-radius:6px;font-size:13px;
   cursor:pointer;-webkit-appearance:none;appearance:none;font-family:'David Libre',Arial,sans-serif;transition:all .15s}
 .qbtn:hover,.qbtn:active{background:var(--gold-soft);border-color:var(--gold)}
 .btn-g,.btn-r{display:block;width:calc(100% - 28px);margin:8px 14px 3px;
-  border:none;border-radius:7px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:12px;transition:all .15s}
-.btn-g{background:#27ae60;padding:11px}
+  border:none;border-radius:7px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:14px;transition:all .15s}
+.btn-g{background:#27ae60;padding:12px}
 .btn-g:hover{background:#219150}
-.btn-r{background:var(--ink);padding:13px;border:1px solid var(--gold);color:#fdfbf7}
+.btn-r{background:var(--ink);padding:14px;border:1px solid var(--gold);color:#fdfbf7}
 .btn-r:hover{background:var(--ink-deep);box-shadow:0 4px 14px rgba(200,153,104,.25)}
-.stat{font-size:12px;color:#7a6a55;text-align:center;min-height:14px;margin:2px 14px;font-family:'David Libre',Arial,sans-serif}
+.stat{font-size:12.5px;color:#7a6a55;text-align:center;min-height:14px;margin:2px 14px;font-family:'David Libre',Arial,sans-serif}
 .stat.ok{color:#1a6b3a}.stat.err{color:#c0392b}
+.file-badge{display:inline-flex;align-items:center;background:var(--cream-deep);color:var(--ink);border:1px solid var(--border);border-radius:10px;padding:5px 6px 5px 11px;margin:4px 0;font-size:12.5px}
+.file-badge button{margin-right:8px;min-width:26px;min-height:26px;border:none;background:transparent;color:#8a7a64;border-radius:50%;font-size:14px;font-weight:bold;cursor:pointer}
+.file-badge button:hover{background:#fdecec;color:#c0392b}
 @media screen and (max-width:768px){
-  .topbar{font-size:16px;padding:12px 14px;padding-top:max(12px,env(safe-area-inset-top))}
+  .topbar{font-size:17px;padding:12px 14px;padding-top:max(12px,env(safe-area-inset-top))}
   .wrap{padding:10px;gap:10px}
-  .fg input[type=text],.fg input[type=password],.fg textarea{padding:11px;font-size:12px;min-height:44px}
-  .btn-g{padding:13px;font-size:12px;min-height:44px}
-  .btn-r{padding:14px;font-size:12px;min-height:44px}
+  .fg input[type=text],.fg input[type=password],.fg textarea{padding:11px;font-size:15px;min-height:44px}
+  .fg label{font-size:14px}
+  .sh{font-size:15px}
+  .btn-g{padding:13px;font-size:15px;min-height:46px}
+  .btn-r{padding:14px;font-size:15px;min-height:46px}
+  .qbtn{font-size:14px;padding:9px 13px}
 }
 </style>
 </head>
@@ -80,19 +86,24 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:var(--
   <div class="sh" style="margin-top:8px">חילוץ אוטומטי</div>
   <div class="fg">
     <label>הדבק טקסט — יחלץ שם ות.ז. אוטומטית</label>
-    <textarea id="extract-input" rows="3" placeholder="הדבק טקסט המכיל שם ומספר ת.ז. (9 ספרות)..." style="font-size:11px"></textarea>
+    <textarea id="extract-input" rows="3" placeholder="הדבק טקסט המכיל שם ומספר ת.ז. (9 ספרות)..."></textarea>
     <div style="display:flex;gap:6px;margin:5px 0 2px">
-      <button type="button" class="btn-g" style="flex:1;font-size:12px;margin:0" onclick="extractFromText()">🔍 חלץ</button>
-      <button type="button" class="btn-g" style="flex:1;font-size:12px;margin:0;background:var(--gold);color:var(--ink)" onclick="$('extract-file').click()">📄 קובץ</button>
+      <button type="button" class="btn-g" style="flex:1;margin:0" onclick="extractFromText()">🔍 חלץ פרטים</button>
+      <button type="button" class="btn-g" style="flex:1;margin:0;background:var(--gold);color:var(--ink)" onclick="$('extract-file').click()">📎 העלה קובץ</button>
     </div>
-    <input type="file" id="extract-file" accept=".txt,.rtf,.text" style="display:none" onchange="extractFromFile(this)">
+    <input type="file" id="extract-file" accept=".txt,.rtf,.text,.pdf,image/*" style="display:none" onchange="extractFromFile(this)">
+    <div id="poa-file-badge" style="display:none"></div>
     <div class="stat" id="extract-stat"></div>
-    <details style="margin:6px 0 2px">
-      <summary style="font-size:11px;color:#8a7a64;cursor:pointer">⚙ חילוץ חכם (Gemini) — אופציונלי</summary>
-      <div style="font-size:10.5px;color:#8a7a64;line-height:1.5;margin:5px 0 4px">חילוץ מדויק יותר עם בינה מלאכותית. הזן מפתח Gemini חינמי (נשמר במכשירך בלבד):</div>
-      <input type="password" id="poa_gemini_key" placeholder="AIzaSy..." style="direction:ltr;font-family:monospace;font-size:11px" oninput="localStorage.setItem('poa_gemini_key',this.value.trim())">
-      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="display:inline-block;margin-top:4px;font-size:10.5px;color:var(--ink);text-decoration:underline">→ קבל מפתח Gemini חינמי</a>
-    </details>
+  </div>
+  <div class="sh" style="margin-top:8px">⚙ חילוץ חכם עם בינה מלאכותית (Gemini)</div>
+  <div class="fg">
+    <label>מפתח Gemini API — חד-פעמי, נשמר במכשירך בלבד</label>
+    <input type="password" id="poa_gemini_key" placeholder="AIzaSy..." style="direction:ltr;font-family:monospace">
+    <div style="display:flex;gap:6px;margin:6px 0 2px">
+      <button type="button" class="btn-g" style="flex:1;margin:0" onclick="_saveGeminiKey()">💾 שמור מפתח</button>
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="btn-g" style="flex:1;margin:0;background:var(--gold);color:var(--ink);text-decoration:none;text-align:center;line-height:2.1">🔑 קבל מפתח חינמי</a>
+    </div>
+    <div class="stat" id="gemini-key-stat"></div>
   </div>
   <div id="lawyer-tools">
     <div class="sh" style="margin-top:8px">שליחה ב-WhatsApp</div>
@@ -245,11 +256,109 @@ async function extractFromText(){
   setTimeout(()=>showStat('extract-stat','',''),4000);
 }
 
-function extractFromFile(input){
+function _saveGeminiKey(){
+  const el=$('poa_gemini_key');if(!el)return;
+  const k=(el.value||'').trim();
+  if(k){localStorage.setItem('poa_gemini_key',k);showStat('gemini-key-stat','✓ המפתח נשמר במכשירך','ok');}
+  else{localStorage.removeItem('poa_gemini_key');showStat('gemini-key-stat','המפתח הוסר','');}
+}
+function _fileIcon(name){
+  const n=(name||'').toLowerCase();
+  if(/\.pdf$/.test(n))return'📕';
+  if(/\.(png|jpe?g|gif|webp|heic|bmp)$/.test(n))return'🖼';
+  return'📄';
+}
+function _showFileBadge(name){
+  const box=$('poa-file-badge');if(!box)return;
+  const safe=String(name).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  box.style.display='block';
+  box.innerHTML='<span class="file-badge">'+_fileIcon(name)+' '+safe+'<button type="button" title="הסר" onclick="_clearFile()">✕</button></span>';
+}
+function _clearFile(){
+  const box=$('poa-file-badge');if(box){box.style.display='none';box.innerHTML='';}
+  const ta=$('extract-input');if(ta)ta.value='';
+  const inp=$('extract-file');if(inp)inp.value='';
+}
+
+// Gemini Vision — for image/scanned-PDF uploads (needs API key)
+async function extractWithGeminiVision(file){
+  const key=(localStorage.getItem('poa_gemini_key')||'').trim();
+  if(!key)throw new Error('no key');
+  const parts=[];
+  if(file.type.startsWith('image/')){
+    const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
+    parts.push({inline_data:{mime_type:file.type,data:b64}});
+  }else{
+    // PDF → render pages to PNG via pdfjs
+    const ab=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+    for(let i=1;i<=Math.min(pdf.numPages,3);i++){
+      const page=await pdf.getPage(i);
+      const vp=page.getViewport({scale:1.5});
+      const cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;
+      await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+      parts.push({inline_data:{mime_type:'image/png',data:cv.toDataURL('image/png').split(',')[1]}});
+    }
+  }
+  parts.push({text:_buildPoaPrompt('(הטקסט נמצא בתמונות המצורפות)')});
+  let lastErr;
+  for(const model of GEMINI_MODELS){
+    try{
+      const r=await _fetchWithTimeout('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(key),
+        {method:'POST',headers:{'Content-Type':'application/json'},
+         body:JSON.stringify({contents:[{parts}],generationConfig:{temperature:0.1,maxOutputTokens:1024,responseMimeType:'application/json'}})},25000);
+      if(r.status===404||r.status===503){lastErr=new Error(model+' '+r.status);continue;}
+      if(!r.ok)throw new Error('Gemini Vision '+r.status);
+      const data=await r.json();
+      const raw=(data&&data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts&&data.candidates[0].content.parts[0].text)||'';
+      return _parseJsonLoose(raw);
+    }catch(e){lastErr=e;if(e.name==='AbortError')throw e;}
+  }
+  throw lastErr||new Error('vision failed');
+}
+function _applyExtracted(g){
+  if(!g)return false;
+  let any=false;
+  if(g.name){$('p_name').value=String(g.name).trim();any=true;}
+  if(g.id){const d=String(g.id).replace(/\D/g,'').slice(0,9);if(d){$('p_id').value=d;any=true;}}
+  if(g.service){$('p_service').value=String(g.service).trim();any=true;}
+  if(g.date&&$('p_date')){$('p_date').value=String(g.date).trim();any=true;}
+  if($('p_id').value.length===9){const ok=validateIsraeliID($('p_id').value);showStat('id-stat',ok?'✓ ת.ז. תקינה':'⚠ ספרת ביקורת שגויה',ok?'ok':'err');}
+  return any;
+}
+
+async function extractFromFile(input){
   const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){const ta=$('extract-input');if(ta)ta.value=e.target.result;extractFromText();};
-  reader.readAsText(file,'UTF-8');input.value='';
+  _showFileBadge(file.name);
+  const name=file.name.toLowerCase();
+  const isImage=file.type.startsWith('image/');
+  const isPdf=name.endsWith('.pdf');
+  const hasKey=!!(localStorage.getItem('poa_gemini_key')||'').trim();
+  try{
+    if(isImage||isPdf){
+      // Try text layer first for PDFs (fast, no key needed)
+      if(isPdf){
+        try{
+          const ab=await file.arrayBuffer();
+          const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+          let txt='';
+          for(let i=1;i<=Math.min(pdf.numPages,4);i++){const pg=await pdf.getPage(i);const tc=await pg.getTextContent();txt+=tc.items.map(it=>it.str).join(' ')+'\n';}
+          if(txt.trim().length>=40){const ta=$('extract-input');if(ta)ta.value=txt;await extractFromText();return;}
+        }catch(e){console.warn('pdf text layer failed:',e.message);}
+      }
+      // Scanned PDF or image → Gemini Vision
+      if(!hasKey){showStat('extract-stat','להעלאת תמונה/סריקה הזן מפתח Gemini למעלה','err');return;}
+      showStat('extract-stat','מנתח קובץ עם בינה מלאכותית...','');
+      const g=await extractWithGeminiVision(file);
+      if(_applyExtracted(g)){showStat('extract-stat','✓ הפרטים חולצו מהקובץ','ok');setTimeout(()=>showStat('extract-stat','',''),4000);}
+      else showStat('extract-stat','לא נמצאו פרטים בקובץ','err');
+      return;
+    }
+    // text file
+    const reader=new FileReader();
+    reader.onload=function(e){const ta=$('extract-input');if(ta)ta.value=e.target.result;extractFromText();};
+    reader.readAsText(file,'UTF-8');
+  }catch(err){showStat('extract-stat','שגיאה: '+err.message,'err');}
 }
 
 (function(){
@@ -257,7 +366,8 @@ function extractFromFile(input){
   const today=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
   window.addEventListener('DOMContentLoaded',()=>{
     const el=$('p_date');if(el&&!el.value)el.value=today;
-    const gk=$('poa_gemini_key');if(gk)gk.value=localStorage.getItem('poa_gemini_key')||'';
+    const gk=$('poa_gemini_key');const saved=localStorage.getItem('poa_gemini_key')||'';
+    if(gk&&saved){gk.value=saved;showStat('gemini-key-stat','✓ מפתח מוגדר','ok');}
     _checkHash();
   });
 })();
@@ -424,23 +534,18 @@ async function _renderPreview(){
   try{
     showToast('טוען מסמך...');
     const blob=await _buildPDFBlob(!!_sigP);
-    const ab=await blob.arrayBuffer();
-    const pdfDoc=await pdfjsLib.getDocument({data:ab}).promise;
-    container.innerHTML='';
-    container.style.padding='10px 0';
-    const dpr=window.devicePixelRatio||1;
-    const targetW=Math.min(container.clientWidth-20,900);
-    for(let i=1;i<=pdfDoc.numPages;i++){
-      const page=await pdfDoc.getPage(i);
-      const vp0=page.getViewport({scale:1});
-      const cssScale=targetW/vp0.width;
-      const vp=page.getViewport({scale:cssScale*dpr});
-      const canvas=document.createElement('canvas');
-      canvas.width=vp.width;canvas.height=vp.height;
-      canvas.style.cssText='display:block;margin:0 auto 10px;width:'+targetW+'px;height:'+(vp0.height*cssScale)+'px;box-shadow:0 4px 12px rgba(0,0,0,.4);background:#fff;border-radius:2px';
-      container.appendChild(canvas);
-      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
-    }
+    // Native browser PDF rendering (PDFium/PDFKit) — base.pdf is a Word export
+    // with per-glyph positioning that pdfjs canvas render garbles in RTL, but
+    // the browser's native engine renders it correctly (verified vs qlmanage).
+    if(window._previewURL)URL.revokeObjectURL(window._previewURL);
+    window._previewURL=URL.createObjectURL(blob);
+    container.innerHTML=
+      '<iframe src="'+window._previewURL+'#toolbar=0&navpanes=0" '+
+      'style="width:100%;height:100%;border:none;background:#fff" title="מסמך ייפוי כוח"></iframe>'+
+      '<button type="button" onclick="window.open(window._previewURL,\'_blank\')" '+
+      'style="position:fixed;bottom:140px;left:50%;transform:translateX(-50%);z-index:1400;'+
+      'background:#fff;color:#1a3a52;border:1px solid #c89968;border-radius:8px;padding:9px 18px;'+
+      'font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25)">📄 פתח את המסמך במסך מלא</button>';
     hideToast();
   }catch(e){
     console.error('renderPreview failed:',e);
@@ -554,21 +659,32 @@ function _enterClientMode(){
   }
   _renderPreview();
 }
-function shareViaWhatsApp(phoneStr){
+// Shorten the (long base64) signing link via is.gd — CORS-friendly, free, no key.
+// Always falls back to the long URL so it never blocks sharing.
+async function _shortenURL(longUrl){
+  try{
+    const r=await _fetchWithTimeout('https://is.gd/create.php?format=simple&logstats=0&url='+encodeURIComponent(longUrl),{},8000);
+    if(r.ok){const s=(await r.text()).trim();if(/^https?:\/\//.test(s))return s;}
+  }catch(e){console.warn('shorten failed:',e.message);}
+  return longUrl;
+}
+async function shareViaWhatsApp(phoneStr){
   const phone=(phoneStr||'').replace(/\D/g,'');
-  const enc=encodeState();
-  const url=location.href.split('#')[0]+'#s='+enc;
+  const longUrl=location.href.split('#')[0]+'#s='+encodeState();
+  showStat('share-stat','מקצר קישור...','');
+  const url=await _shortenURL(longUrl);
+  showStat('share-stat','','');
   const msg='שלום,\nנשלח אליך ייפוי כוח לחתימה דיגיטלית.\nלחץ על הקישור הבא וחתום:\n'+url;
   const waUrl=phone?'https://wa.me/972'+phone.replace(/^0/,'')+'?text='+encodeURIComponent(msg):'https://api.whatsapp.com/send?text='+encodeURIComponent(msg);
   window.open(waUrl,'_blank');
 }
-function shareSigLink(){
-  const enc=encodeState();
-  const url=location.href.split('#')[0]+'#s='+enc;
-  navigator.clipboard.writeText(url).then(()=>showStat('share-stat','קישור הועתק ✓','ok')).catch(()=>{
-    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showStat('share-stat','קישור הועתק ✓','ok');
-  });
-  setTimeout(()=>showStat('share-stat','',''),4000);
+async function shareSigLink(){
+  const longUrl=location.href.split('#')[0]+'#s='+encodeState();
+  showStat('share-stat','מקצר קישור...','');
+  const url=await _shortenURL(longUrl);
+  const done=()=>{showStat('share-stat','✓ קישור קצר הועתק','ok');setTimeout(()=>showStat('share-stat','',''),4000);};
+  try{await navigator.clipboard.writeText(url);done();}
+  catch(e){const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}
 }
 function _showSendModal(){
   if($('_send-modal'))return;
