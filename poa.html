@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ייפוי כוח">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#1a3a52">
+<meta name="theme-color" content="#7c3aed">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,32 +19,32 @@
 <script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';}</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#1a3a52;--ink-deep:#0d2738;--gold:#c89968;--gold-soft:#e0c79a;--cream:#faf6ef;--cream-deep:#e8ded3;--surface:#fdfbf7;--border:#d4c9b8}
-body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--cream);color:var(--ink);direction:rtl;line-height:1.6}
-.topbar{background:linear-gradient(135deg,var(--ink) 0%,var(--ink-deep) 100%);color:#fdfbf7;padding:15px 24px;font-size:19px;font-weight:bold;letter-spacing:0.4px;
-  text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25);border-bottom:3px solid var(--gold);font-family:'David Libre',Arial,sans-serif}
+:root{--ink:#6d28d9;--ink-deep:#5b21b6;--gold:#ec4899;--gold-soft:#fbcfe8;--cream:#faf5ff;--cream-deep:#f3e8ff;--surface:#ffffff;--border:#e9d5ff;--grad:linear-gradient(135deg,#7c3aed 0%,#ec4899 100%)}
+body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--cream);color:#3b0764;direction:rtl;line-height:1.6}
+.topbar{background:var(--grad);color:#fff;padding:16px 24px;font-size:19px;font-weight:bold;letter-spacing:0.4px;
+  text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 3px 12px rgba(124,58,237,.35);font-family:'David Libre',Arial,sans-serif}
 .wrap{display:flex;gap:20px;padding:18px 20px;max-width:680px;margin:0 auto;align-items:flex-start}
-.fp{width:100%;background:var(--surface);border-radius:10px;border:1px solid var(--border);
-  box-shadow:0 4px 18px rgba(26,58,82,.08);padding-bottom:14px;overflow:hidden}
+.fp{width:100%;background:var(--surface);border-radius:14px;border:1px solid var(--border);
+  box-shadow:0 6px 24px rgba(124,58,237,.10);padding-bottom:14px;overflow:hidden}
 .sh{background:var(--cream-deep);color:var(--ink);padding:9px 14px;font-size:14px;font-weight:bold;border-right:4px solid var(--gold);font-family:'David Libre',Arial,sans-serif}
 .fg{padding:0 14px}
 .fg label{display:block;font-size:13px;color:var(--ink);margin:8px 0 3px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
-.fg input[type=text],.fg input[type=password],.fg textarea{width:100%;padding:9px 12px;border:1px solid var(--border);
-  border-radius:5px;font-size:14px;direction:rtl;font-family:'David Libre',Arial,sans-serif;color:#1e293b;background:#fff;line-height:1.5}
+.fg input[type=text],.fg input[type=password],.fg textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:14px;direction:rtl;font-family:'David Libre',Arial,sans-serif;color:#3b0764;background:#fff;line-height:1.5}
 .fg textarea{resize:vertical;min-height:58px;line-height:1.5}
-.fg input:focus,.fg textarea:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px rgba(200,153,104,.22)}
+.fg input:focus,.fg textarea:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px rgba(236,72,153,.18)}
 .qbtn{display:inline-block;margin:2px 2px;padding:7px 12px;background:var(--cream-deep);
-  color:var(--ink);border:1px solid var(--border);border-radius:6px;font-size:13px;
+  color:var(--ink);border:1.5px solid var(--border);border-radius:8px;font-size:13px;
   cursor:pointer;-webkit-appearance:none;appearance:none;font-family:'David Libre',Arial,sans-serif;transition:all .15s}
-.qbtn:hover,.qbtn:active{background:var(--gold-soft);border-color:var(--gold)}
+.qbtn:hover,.qbtn:active{background:var(--gold-soft);border-color:var(--gold);color:#9d174d}
 .btn-g,.btn-r{display:block;width:calc(100% - 28px);margin:8px 14px 3px;
-  border:none;border-radius:7px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:14px;transition:all .15s}
-.btn-g{background:#27ae60;padding:12px}
-.btn-g:hover{background:#219150}
-.btn-r{background:var(--ink);padding:14px;border:1px solid var(--gold);color:#fdfbf7}
-.btn-r:hover{background:var(--ink-deep);box-shadow:0 4px 14px rgba(200,153,104,.25)}
-.stat{font-size:12.5px;color:#7a6a55;text-align:center;min-height:14px;margin:2px 14px;font-family:'David Libre',Arial,sans-serif}
-.stat.ok{color:#1a6b3a}.stat.err{color:#c0392b}
+  border:none;border-radius:10px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:14px;transition:all .15s}
+.btn-g{background:#7c3aed;padding:12px;box-shadow:0 3px 10px rgba(124,58,237,.25)}
+.btn-g:hover{background:#6d28d9;transform:translateY(-1px)}
+.btn-r{background:var(--grad);padding:14px;box-shadow:0 4px 14px rgba(236,72,153,.30)}
+.btn-r:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.stat{font-size:12.5px;color:#9333ea;text-align:center;min-height:14px;margin:2px 14px;font-family:'David Libre',Arial,sans-serif}
+.stat.ok{color:#059669}.stat.err{color:#e11d48}
 .file-badge{display:inline-flex;align-items:center;background:var(--cream-deep);color:var(--ink);border:1px solid var(--border);border-radius:10px;padding:5px 6px 5px 11px;margin:4px 0;font-size:12.5px}
 .file-badge button{margin-right:8px;min-width:26px;min-height:26px;border:none;background:transparent;color:#8a7a64;border-radius:50%;font-size:14px;font-weight:bold;cursor:pointer}
 .file-badge button:hover{background:#fdecec;color:#c0392b}
@@ -89,7 +89,7 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--
     <textarea id="extract-input" rows="3" placeholder="הדבק טקסט המכיל שם ומספר ת.ז. (9 ספרות)..."></textarea>
     <div style="display:flex;gap:6px;margin:5px 0 2px">
       <button type="button" class="btn-g" style="flex:1;margin:0" onclick="extractFromText()">🔍 חלץ פרטים</button>
-      <button type="button" class="btn-g" style="flex:1;margin:0;background:var(--gold);color:var(--ink)" onclick="$('extract-file').click()">📎 העלה קובץ</button>
+      <button type="button" class="btn-g" style="flex:1;margin:0;background:var(--gold);color:#fff" onclick="$('extract-file').click()">📎 העלה קובץ</button>
     </div>
     <input type="file" id="extract-file" accept=".txt,.rtf,.text,.pdf,image/*" style="display:none" onchange="extractFromFile(this)">
     <div id="poa-file-badge" style="display:none"></div>
@@ -101,7 +101,7 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--
     <input type="password" id="poa_gemini_key" placeholder="AIzaSy..." style="direction:ltr;font-family:monospace">
     <div style="display:flex;gap:6px;margin:6px 0 2px">
       <button type="button" class="btn-g" style="flex:1;margin:0" onclick="_saveGeminiKey()">💾 שמור מפתח</button>
-      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="btn-g" style="flex:1;margin:0;background:var(--gold);color:var(--ink);text-decoration:none;text-align:center;line-height:2.1">🔑 קבל מפתח חינמי</a>
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="btn-g" style="flex:1;margin:0;background:var(--gold);color:#fff;text-decoration:none;text-align:center;line-height:2.1">🔑 קבל מפתח חינמי</a>
     </div>
     <div class="stat" id="gemini-key-stat"></div>
   </div>
@@ -128,13 +128,13 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--
 
 <div id="sig-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:14px;padding:20px;width:90%;max-width:420px;margin:0 auto;box-sizing:border-box;direction:rtl;font-family:'David Libre',Arial,sans-serif">
-    <div style="font-weight:bold;font-size:15px;color:#1a3a52;margin-bottom:10px" id="sig-title">חתימת הלקוח</div>
+    <div style="font-weight:bold;font-size:15px;color:#7c3aed;margin-bottom:10px" id="sig-title">חתימת הלקוח</div>
     <div style="font-size:11px;color:#888;margin-bottom:6px">צייר את חתימתך בתיבה:</div>
     <canvas id="sig-canvas" width="700" height="300" style="border:2px solid #d4c9b8;border-radius:8px;touch-action:none;cursor:crosshair;background:#fdfbf7;display:block;width:100%;height:180px"></canvas>
     <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
       <button onclick="clearSigCanvas()" style="background:#aaa;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">נקה</button>
       <button onclick="saveSig()" style="background:#1a6b3a;color:#fff;border:none;border-radius:6px;padding:8px 18px;cursor:pointer;font-size:13px;font-weight:bold">שמור ✓</button>
-      <button onclick="$('sig-upload-input').click()" style="background:#1a3a52;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">📁 העלה תמונה</button>
+      <button onclick="$('sig-upload-input').click()" style="background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">📁 העלה תמונה</button>
       <input type="file" id="sig-upload-input" accept="image/*" style="display:none" onchange="uploadSigImage(this)">
       <button onclick="closeSigModal()" style="background:#e55;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">ביטול</button>
     </div>
@@ -544,7 +544,7 @@ async function _renderPreview(){
       'style="width:100%;height:100%;border:none;background:#fff" title="מסמך ייפוי כוח"></iframe>'+
       '<button type="button" onclick="window.open(window._previewURL,\'_blank\')" '+
       'style="position:fixed;bottom:140px;left:50%;transform:translateX(-50%);z-index:1400;'+
-      'background:#fff;color:#1a3a52;border:1px solid #c89968;border-radius:8px;padding:9px 18px;'+
+      'background:#fff;color:#7c3aed;border:1px solid #ec4899;border-radius:8px;padding:9px 18px;'+
       'font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.25)">📄 פתח את המסמך במסך מלא</button>';
     hideToast();
   }catch(e){
@@ -627,9 +627,9 @@ function _isInAppBrowser(){
 function _showWebViewBanner(){
   if($('_wv-banner'))return;
   const b=document.createElement('div');b.id='_wv-banner';
-  b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2500;background:#1a3a52;color:#fdfbf7;padding:10px 14px;font-size:12px;font-family:\'David Libre\',Arial,sans-serif;direction:rtl;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3);line-height:1.5;border-bottom:2px solid #c89968';
+  b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2500;background:#7c3aed;color:#fdfbf7;padding:10px 14px;font-size:12px;font-family:\'David Libre\',Arial,sans-serif;direction:rtl;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3);line-height:1.5;border-bottom:2px solid #ec4899';
   b.innerHTML='⚠ לשליחת הקובץ החתום — פתח דף זה ב<strong>דפדפן Chrome</strong>:<br>לחץ על ⋮ (שלוש נקודות) למעלה ובחר "פתח ב-Chrome"'
-    +'<button type="button" id="_wv-copy" style="display:block;margin:7px auto 0;background:#c89968;color:#1a3a52;border:none;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit">📋 העתק קישור</button>'
+    +'<button type="button" id="_wv-copy" style="display:block;margin:7px auto 0;background:#ec4899;color:#7c3aed;border:none;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit">📋 העתק קישור</button>'
     +'<button type="button" id="_wv-close" style="position:absolute;top:6px;left:8px;background:transparent;color:#fdfbf7;border:none;font-size:16px;cursor:pointer">✕</button>';
   document.body.appendChild(b);
   $('_wv-copy').onclick=()=>{const u=location.href;navigator.clipboard&&navigator.clipboard.writeText(u).catch(()=>{});const t=$('_wv-copy');t.textContent='✓ הועתק — הדבק ב-Chrome';};
@@ -647,7 +647,7 @@ function _enterClientMode(){
   }
   if(!$('_float-sign')){
     const fb=document.createElement('button');fb.id='_float-sign';
-    fb.style.cssText='position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#1a3a52;color:#fff;border:1px solid #c89968;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:\'David Libre\',Arial,sans-serif;white-space:nowrap';
+    fb.style.cssText='position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#7c3aed;color:#fff;border:1px solid #ec4899;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:\'David Libre\',Arial,sans-serif;white-space:nowrap';
     fb.textContent='✍ חתימת הלקוח';fb.onclick=()=>openSig('p');
     document.body.appendChild(fb);
   }
@@ -696,7 +696,7 @@ function _showSendModal(){
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:3000;display:flex;align-items:center;justify-content:center';
   m.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 20px;width:90%;max-width:360px;direction:rtl;font-family:\'David Libre\',Arial,sans-serif;text-align:center">'
     +'<div style="font-size:38px;margin-bottom:8px">✅</div>'
-    +'<div style="font-weight:bold;font-size:16px;color:#1a3f7a;margin-bottom:12px">הקובץ החתום מוכן!</div>'
+    +'<div style="font-weight:bold;font-size:16px;color:#7c3aed;margin-bottom:12px">הקובץ החתום מוכן!</div>'
     +'<div style="font-size:13px;color:#444;line-height:1.85;margin-bottom:18px;text-align:right">'
     +'1. הקובץ <strong>ירד כבר</strong> למכשירך<br>'
     +'2. לחץ "פתח וואטסאפ" — הצ׳אט של עוה"ד ייפתח<br>'
