@@ -10,44 +10,47 @@
 <meta name="apple-mobile-web-app-title" content="ייפוי כוח">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#2d1b69">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 <script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';}</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
-.topbar{background:#2d1b69;color:#fff;padding:12px 24px;font-size:17px;font-weight:bold;
-  text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:#e2e5e9;direction:rtl;line-height:1.55}
+.topbar{background:#2d1b69;color:#fff;padding:12px 24px;font-size:14px;font-weight:bold;
+  text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.3);font-family:'David Libre',Arial,sans-serif}
 .wrap{display:flex;gap:20px;padding:18px 20px;max-width:680px;margin:0 auto;align-items:flex-start}
 .fp{width:100%;background:#fff;border-radius:8px;
   box-shadow:0 2px 10px rgba(0,0,0,.12);padding-bottom:14px}
-.sh{background:#ede8f6;color:#2d1b69;padding:6px 14px;font-size:11.5px;font-weight:bold}
+.sh{background:#ede8f6;color:#2d1b69;padding:7px 14px;font-size:12px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
 .fg{padding:0 14px}
-.fg label{display:block;font-size:11px;color:#444;margin:7px 0 2px;font-weight:bold}
-.fg input[type=text],.fg textarea{width:100%;padding:5px 8px;border:1px solid #ccc;
-  border-radius:4px;font-size:12px;direction:rtl;font-family:Arial,sans-serif;color:#111;background:#fff}
+.fg label{display:block;font-size:12px;color:#444;margin:7px 0 2px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
+.fg input[type=text],.fg textarea{width:100%;padding:6px 10px;border:1px solid #ccc;
+  border-radius:4px;font-size:12px;direction:rtl;font-family:'David Libre',Arial,sans-serif;color:#111;background:#fff;line-height:1.5}
 .fg textarea{resize:vertical;min-height:58px;line-height:1.5}
-.fg input:focus,.fg textarea:focus{border-color:#2d1b69;outline:none}
-.qbtn{display:inline-block;margin:2px 2px;padding:4px 8px;background:#ede8f6;
-  color:#2d1b69;border:1px solid #c0a8e8;border-radius:4px;font-size:10.5px;
-  cursor:pointer;font-family:Arial,sans-serif}
+.fg input:focus,.fg textarea:focus{border-color:#2d1b69;outline:none;box-shadow:0 0 0 2px rgba(45,27,105,.12)}
+.qbtn{display:inline-block;margin:2px 2px;padding:5px 9px;background:#ede8f6;
+  color:#2d1b69;border:1px solid #c0a8e8;border-radius:4px;font-size:12px;
+  cursor:pointer;font-family:'David Libre',Arial,sans-serif}
 .qbtn:hover{background:#d4c5f0}
 .btn-g,.btn-r{display:block;width:calc(100% - 28px);margin:8px 14px 3px;
-  border:none;border-radius:6px;cursor:pointer;font-family:Arial,sans-serif;font-weight:bold;color:#fff}
-.btn-g{background:#27ae60;padding:9px;font-size:13px}
+  border:none;border-radius:6px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:12px}
+.btn-g{background:#27ae60;padding:11px}
 .btn-g:hover{background:#219150}
-.btn-r{background:#2d1b69;padding:12px;font-size:14px}
+.btn-r{background:#2d1b69;padding:13px}
 .btn-r:hover{background:#1a0f40}
-.stat{font-size:11px;color:#666;text-align:center;min-height:14px;margin:2px 14px}
+.stat{font-size:12px;color:#666;text-align:center;min-height:14px;margin:2px 14px;font-family:'David Libre',Arial,sans-serif}
 .stat.ok{color:#27ae60}.stat.err{color:#c0392b}
 @media screen and (max-width:768px){
   body{background:#e2e5e9}
   .topbar{font-size:14px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top))}
   .wrap{padding:10px;gap:10px}
-  .fg input[type=text],.fg textarea{padding:10px;font-size:15px;min-height:44px}
-  .btn-g{padding:13px;font-size:15px}
-  .btn-r{padding:14px;font-size:16px}
+  .fg input[type=text],.fg textarea{padding:11px;font-size:12px;min-height:44px}
+  .btn-g{padding:13px;font-size:12px;min-height:44px}
+  .btn-r{padding:14px;font-size:12px;min-height:44px}
 }
 </style>
 </head>
@@ -107,7 +110,7 @@ body{font-family:Arial,sans-serif;background:#e2e5e9;direction:rtl}
 </div>
 
 <div id="sig-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:14px;padding:20px;width:90%;max-width:420px;margin:0 auto;box-sizing:border-box;direction:rtl;font-family:Arial,sans-serif">
+  <div style="background:#fff;border-radius:14px;padding:20px;width:90%;max-width:420px;margin:0 auto;box-sizing:border-box;direction:rtl;font-family:'David Libre',Arial,sans-serif">
     <div style="font-weight:bold;font-size:15px;color:#2d1b69;margin-bottom:10px" id="sig-title">חתימת הלקוח</div>
     <div style="font-size:11px;color:#888;margin-bottom:6px">צייר את חתימתך בתיבה:</div>
     <canvas id="sig-canvas" width="700" height="300" style="border:2px solid #c0a8e8;border-radius:8px;touch-action:none;cursor:crosshair;background:#f8faff;display:block;width:100%;height:180px"></canvas>
@@ -251,7 +254,7 @@ function showToast(msg,cls){
   let t=$('_toast');
   if(!t){
     t=document.createElement('div');t.id='_toast';
-    t.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:2500;font-family:Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;max-width:90vw;text-align:center';
+    t.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:2500;font-family:'David Libre',Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;max-width:90vw;text-align:center';
     document.body.appendChild(t);
   }
   t.textContent=msg;
@@ -436,13 +439,13 @@ function _enterClientMode(){
   }
   if(!$('_float-sign')){
     const fb=document.createElement('button');fb.id='_float-sign';
-    fb.style.cssText='position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#2d1b69;color:#fff;border:none;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:Arial,sans-serif;white-space:nowrap';
+    fb.style.cssText='position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#2d1b69;color:#fff;border:none;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:'David Libre',Arial,sans-serif;white-space:nowrap';
     fb.textContent='✍ חתימת הלקוח';fb.onclick=()=>openSig('p');
     document.body.appendChild(fb);
   }
   if(!$('_float-send')){
     const fb=document.createElement('button');fb.id='_float-send';
-    fb.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a6b3a;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 18px rgba(0,0,0,.35);font-family:Arial,sans-serif;direction:rtl;white-space:nowrap';
+    fb.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a6b3a;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 18px rgba(0,0,0,.35);font-family:'David Libre',Arial,sans-serif;direction:rtl;white-space:nowrap';
     fb.textContent='✅ שלח PDF לעורך הדין';fb.onclick=confirmAndSend;
     document.body.appendChild(fb);
   }
@@ -466,10 +469,13 @@ function shareSigLink(){
 }
 function _showSendModal(){
   if($('_send-modal'))return;
-  const waUrl='https://wa.me/972522499887?text='+encodeURIComponent('שלום עו"ד ערן, חתמתי על ייפוי כוח. מצרף קובץ PDF חתום.');
+  // Open WhatsApp chat WITHOUT prefilled text — wa.me?text= can't actually attach files,
+  // and the old text "מצרף קובץ PDF חתום" misled clients into hitting SEND without
+  // manually attaching the downloaded PDF. Empty chat forces them to attach the file.
+  const waUrl='https://wa.me/972522499887';
   const m=document.createElement('div');m.id='_send-modal';
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:3000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 20px;width:90%;max-width:360px;direction:rtl;font-family:Arial,sans-serif;text-align:center">'
+  m.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 20px;width:90%;max-width:360px;direction:rtl;font-family:'David Libre',Arial,sans-serif;text-align:center">'
     +'<div style="font-size:38px;margin-bottom:8px">✅</div>'
     +'<div style="font-weight:bold;font-size:16px;color:#1a3f7a;margin-bottom:12px">הקובץ החתום מוכן!</div>'
     +'<div style="font-size:13px;color:#444;line-height:1.85;margin-bottom:18px;text-align:right">'
