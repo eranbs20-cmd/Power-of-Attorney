@@ -37,6 +37,12 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--
   color:var(--ink);border:1.5px solid var(--border);border-radius:8px;font-size:13px;
   cursor:pointer;-webkit-appearance:none;appearance:none;font-family:'David Libre',Arial,sans-serif;transition:all .15s}
 .qbtn:hover,.qbtn:active{background:var(--gold-soft);border-color:var(--gold);color:#9d174d}
+.qbtn.sv1{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.qbtn.sv2{background:#ec4899;color:#fff;border-color:#ec4899}
+.qbtn.sv3{background:#f59e0b;color:#fff;border-color:#f59e0b}
+.qbtn.sv4{background:#06b6d4;color:#fff;border-color:#06b6d4}
+.qbtn.sv5{background:#10b981;color:#fff;border-color:#10b981}
+.qbtn[class*=sv]:hover,.qbtn[class*=sv]:active{filter:brightness(1.1);color:#fff}
 .btn-g,.btn-r{display:block;width:calc(100% - 28px);margin:8px 14px 3px;
   border:none;border-radius:10px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:14px;transition:all .15s}
 .btn-g{background:#7c3aed;padding:12px;box-shadow:0 3px 10px rgba(124,58,237,.25)}
@@ -74,11 +80,11 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:13px;background:var(--
     <label>מהות השירות (אחרי "ל")</label>
     <input type="text" id="p_service" placeholder="לדוגמה: ליישוב סכסוך" oninput="sync()">
     <div style="margin:4px 0 6px">
-      <button type="button" class="qbtn" onclick="addService('ליישוב סכסוך')">ליישוב סכסוך</button>
-      <button type="button" class="qbtn" onclick="addService('להגשת תביעה למזונות')">למזונות</button>
-      <button type="button" class="qbtn" onclick="addService('לטיפול בענייני גירושין')">לגירושין</button>
-      <button type="button" class="qbtn" onclick="addService('לטיפול בכל ענייני הרכוש והשהות')">לרכוש ושהות</button>
-      <button type="button" class="qbtn" onclick="addService('לטיפול בכל הענייניים בתחום המשפחה לרבות מזונות, שהות, רכוש וגירושין')">הכל</button>
+      <button type="button" class="qbtn sv1" onclick="addService('ליישוב סכסוך')">ליישוב סכסוך</button>
+      <button type="button" class="qbtn sv2" onclick="addService('להגשת תביעה למזונות')">למזונות</button>
+      <button type="button" class="qbtn sv3" onclick="addService('לטיפול בענייני גירושין')">לגירושין</button>
+      <button type="button" class="qbtn sv4" onclick="addService('לטיפול בכל ענייני הרכוש והשהות')">לרכוש ושהות</button>
+      <button type="button" class="qbtn sv5" onclick="addService('לטיפול בכל הענייניים בתחום המשפחה לרבות מזונות, שהות, רכוש וגירושין')">הכל</button>
     </div>
     <label>תאריך</label>
     <input type="text" id="p_date" placeholder="dd/mm/yyyy" oninput="sync()">
