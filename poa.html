@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ייפוי כוח">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#2d1b69">
+<meta name="theme-color" content="#1a3a52">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,36 +19,36 @@
 <script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';}</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:#e2e5e9;direction:rtl;line-height:1.55}
-.topbar{background:#2d1b69;color:#fff;padding:12px 24px;font-size:14px;font-weight:bold;
-  text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.3);font-family:'David Libre',Arial,sans-serif}
+:root{--ink:#1a3a52;--ink-deep:#0d2738;--gold:#c89968;--gold-soft:#e0c79a;--cream:#faf6ef;--cream-deep:#e8ded3;--surface:#fdfbf7;--border:#d4c9b8}
+body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:var(--cream);color:var(--ink);direction:rtl;line-height:1.55}
+.topbar{background:linear-gradient(135deg,var(--ink) 0%,var(--ink-deep) 100%);color:#fdfbf7;padding:15px 24px;font-size:19px;font-weight:bold;letter-spacing:0.4px;
+  text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25);border-bottom:3px solid var(--gold);font-family:'David Libre',Arial,sans-serif}
 .wrap{display:flex;gap:20px;padding:18px 20px;max-width:680px;margin:0 auto;align-items:flex-start}
-.fp{width:100%;background:#fff;border-radius:8px;
-  box-shadow:0 2px 10px rgba(0,0,0,.12);padding-bottom:14px}
-.sh{background:#ede8f6;color:#2d1b69;padding:7px 14px;font-size:12px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
+.fp{width:100%;background:var(--surface);border-radius:10px;border:1px solid var(--border);
+  box-shadow:0 4px 18px rgba(26,58,82,.08);padding-bottom:14px;overflow:hidden}
+.sh{background:var(--cream-deep);color:var(--ink);padding:8px 14px;font-size:12.5px;font-weight:bold;border-right:4px solid var(--gold);font-family:'David Libre',Arial,sans-serif}
 .fg{padding:0 14px}
-.fg label{display:block;font-size:12px;color:#444;margin:7px 0 2px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
-.fg input[type=text],.fg textarea{width:100%;padding:6px 10px;border:1px solid #ccc;
-  border-radius:4px;font-size:12px;direction:rtl;font-family:'David Libre',Arial,sans-serif;color:#111;background:#fff;line-height:1.5}
+.fg label{display:block;font-size:12px;color:var(--ink);margin:7px 0 2px;font-weight:bold;font-family:'David Libre',Arial,sans-serif}
+.fg input[type=text],.fg input[type=password],.fg textarea{width:100%;padding:7px 11px;border:1px solid var(--border);
+  border-radius:5px;font-size:12px;direction:rtl;font-family:'David Libre',Arial,sans-serif;color:#1e293b;background:#fff;line-height:1.5}
 .fg textarea{resize:vertical;min-height:58px;line-height:1.5}
-.fg input:focus,.fg textarea:focus{border-color:#2d1b69;outline:none;box-shadow:0 0 0 2px rgba(45,27,105,.12)}
-.qbtn{display:inline-block;margin:2px 2px;padding:5px 9px;background:#ede8f6;
-  color:#2d1b69;border:1px solid #c0a8e8;border-radius:4px;font-size:12px;
-  cursor:pointer;font-family:'David Libre',Arial,sans-serif}
-.qbtn:hover{background:#d4c5f0}
+.fg input:focus,.fg textarea:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px rgba(200,153,104,.22)}
+.qbtn{display:inline-block;margin:2px 2px;padding:6px 11px;background:var(--cream-deep);
+  color:var(--ink);border:1px solid var(--border);border-radius:6px;font-size:12px;
+  cursor:pointer;-webkit-appearance:none;appearance:none;font-family:'David Libre',Arial,sans-serif;transition:all .15s}
+.qbtn:hover,.qbtn:active{background:var(--gold-soft);border-color:var(--gold)}
 .btn-g,.btn-r{display:block;width:calc(100% - 28px);margin:8px 14px 3px;
-  border:none;border-radius:6px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:12px}
+  border:none;border-radius:7px;cursor:pointer;font-family:'David Libre',Arial,sans-serif;font-weight:bold;color:#fff;font-size:12px;transition:all .15s}
 .btn-g{background:#27ae60;padding:11px}
 .btn-g:hover{background:#219150}
-.btn-r{background:#2d1b69;padding:13px}
-.btn-r:hover{background:#1a0f40}
-.stat{font-size:12px;color:#666;text-align:center;min-height:14px;margin:2px 14px;font-family:'David Libre',Arial,sans-serif}
-.stat.ok{color:#27ae60}.stat.err{color:#c0392b}
+.btn-r{background:var(--ink);padding:13px;border:1px solid var(--gold);color:#fdfbf7}
+.btn-r:hover{background:var(--ink-deep);box-shadow:0 4px 14px rgba(200,153,104,.25)}
+.stat{font-size:12px;color:#7a6a55;text-align:center;min-height:14px;margin:2px 14px;font-family:'David Libre',Arial,sans-serif}
+.stat.ok{color:#1a6b3a}.stat.err{color:#c0392b}
 @media screen and (max-width:768px){
-  body{background:#e2e5e9}
-  .topbar{font-size:14px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top))}
+  .topbar{font-size:16px;padding:12px 14px;padding-top:max(12px,env(safe-area-inset-top))}
   .wrap{padding:10px;gap:10px}
-  .fg input[type=text],.fg textarea{padding:11px;font-size:12px;min-height:44px}
+  .fg input[type=text],.fg input[type=password],.fg textarea{padding:11px;font-size:12px;min-height:44px}
   .btn-g{padding:13px;font-size:12px;min-height:44px}
   .btn-r{padding:14px;font-size:12px;min-height:44px}
 }
@@ -68,11 +68,11 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:#e2e5e
     <label>מהות השירות (אחרי "ל")</label>
     <input type="text" id="p_service" placeholder="לדוגמה: ליישוב סכסוך" oninput="sync()">
     <div style="margin:4px 0 6px">
-      <span class="qbtn" onclick="addService('ליישוב סכסוך')">ליישוב סכסוך</span>
-      <span class="qbtn" onclick="addService('להגשת תביעה למזונות')">למזונות</span>
-      <span class="qbtn" onclick="addService('לטיפול בענייני גירושין')">לגירושין</span>
-      <span class="qbtn" onclick="addService('לטיפול בכל ענייני הרכוש והשהות')">לרכוש ושהות</span>
-      <span class="qbtn" onclick="addService('לטיפול בכל הענייניים בתחום המשפחה לרבות מזונות, שהות, רכוש וגירושין')">הכל</span>
+      <button type="button" class="qbtn" onclick="addService('ליישוב סכסוך')">ליישוב סכסוך</button>
+      <button type="button" class="qbtn" onclick="addService('להגשת תביעה למזונות')">למזונות</button>
+      <button type="button" class="qbtn" onclick="addService('לטיפול בענייני גירושין')">לגירושין</button>
+      <button type="button" class="qbtn" onclick="addService('לטיפול בכל ענייני הרכוש והשהות')">לרכוש ושהות</button>
+      <button type="button" class="qbtn" onclick="addService('לטיפול בכל הענייניים בתחום המשפחה לרבות מזונות, שהות, רכוש וגירושין')">הכל</button>
     </div>
     <label>תאריך</label>
     <input type="text" id="p_date" placeholder="dd/mm/yyyy" oninput="sync()">
@@ -82,11 +82,17 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:#e2e5e
     <label>הדבק טקסט — יחלץ שם ות.ז. אוטומטית</label>
     <textarea id="extract-input" rows="3" placeholder="הדבק טקסט המכיל שם ומספר ת.ז. (9 ספרות)..." style="font-size:11px"></textarea>
     <div style="display:flex;gap:6px;margin:5px 0 2px">
-      <button class="btn-g" style="flex:1;font-size:12px;margin:0" onclick="extractFromText()">🔍 חלץ</button>
-      <button class="btn-g" style="flex:1;font-size:12px;margin:0;background:#2d1b69" onclick="$('extract-file').click()">📄 קובץ</button>
+      <button type="button" class="btn-g" style="flex:1;font-size:12px;margin:0" onclick="extractFromText()">🔍 חלץ</button>
+      <button type="button" class="btn-g" style="flex:1;font-size:12px;margin:0;background:var(--gold);color:var(--ink)" onclick="$('extract-file').click()">📄 קובץ</button>
     </div>
     <input type="file" id="extract-file" accept=".txt,.rtf,.text" style="display:none" onchange="extractFromFile(this)">
     <div class="stat" id="extract-stat"></div>
+    <details style="margin:6px 0 2px">
+      <summary style="font-size:11px;color:#8a7a64;cursor:pointer">⚙ חילוץ חכם (Gemini) — אופציונלי</summary>
+      <div style="font-size:10.5px;color:#8a7a64;line-height:1.5;margin:5px 0 4px">חילוץ מדויק יותר עם בינה מלאכותית. הזן מפתח Gemini חינמי (נשמר במכשירך בלבד):</div>
+      <input type="password" id="poa_gemini_key" placeholder="AIzaSy..." style="direction:ltr;font-family:monospace;font-size:11px" oninput="localStorage.setItem('poa_gemini_key',this.value.trim())">
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="display:inline-block;margin-top:4px;font-size:10.5px;color:var(--ink);text-decoration:underline">→ קבל מפתח Gemini חינמי</a>
+    </details>
   </div>
   <div id="lawyer-tools">
     <div class="sh" style="margin-top:8px">שליחה ב-WhatsApp</div>
@@ -111,13 +117,13 @@ body{font-family:'David Libre',Arial,sans-serif;font-size:12px;background:#e2e5e
 
 <div id="sig-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:14px;padding:20px;width:90%;max-width:420px;margin:0 auto;box-sizing:border-box;direction:rtl;font-family:'David Libre',Arial,sans-serif">
-    <div style="font-weight:bold;font-size:15px;color:#2d1b69;margin-bottom:10px" id="sig-title">חתימת הלקוח</div>
+    <div style="font-weight:bold;font-size:15px;color:#1a3a52;margin-bottom:10px" id="sig-title">חתימת הלקוח</div>
     <div style="font-size:11px;color:#888;margin-bottom:6px">צייר את חתימתך בתיבה:</div>
-    <canvas id="sig-canvas" width="700" height="300" style="border:2px solid #c0a8e8;border-radius:8px;touch-action:none;cursor:crosshair;background:#f8faff;display:block;width:100%;height:180px"></canvas>
+    <canvas id="sig-canvas" width="700" height="300" style="border:2px solid #d4c9b8;border-radius:8px;touch-action:none;cursor:crosshair;background:#fdfbf7;display:block;width:100%;height:180px"></canvas>
     <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
       <button onclick="clearSigCanvas()" style="background:#aaa;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">נקה</button>
       <button onclick="saveSig()" style="background:#1a6b3a;color:#fff;border:none;border-radius:6px;padding:8px 18px;cursor:pointer;font-size:13px;font-weight:bold">שמור ✓</button>
-      <button onclick="$('sig-upload-input').click()" style="background:#2d1b69;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">📁 העלה תמונה</button>
+      <button onclick="$('sig-upload-input').click()" style="background:#1a3a52;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">📁 העלה תמונה</button>
       <input type="file" id="sig-upload-input" accept="image/*" style="display:none" onchange="uploadSigImage(this)">
       <button onclick="closeSigModal()" style="background:#e55;color:#fff;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:13px">ביטול</button>
     </div>
@@ -150,16 +156,90 @@ function formatID(el){
   }else{showStat('id-stat','','');}
 }
 
-function extractFromText(){
-  const text=v('extract-input');
+// === Gemini AI extraction (optional) ===
+// Model fallback chain: try newest first, fall back if it returns 404/503.
+const GEMINI_MODELS=['gemini-3.5-flash','gemini-2.5-flash'];
+async function _fetchWithTimeout(url,opts,timeoutMs){
+  const ctrl=new AbortController();
+  const tid=setTimeout(()=>ctrl.abort(),timeoutMs);
+  try{return await fetch(url,{...opts,signal:ctrl.signal});}
+  finally{clearTimeout(tid);}
+}
+function _parseJsonLoose(raw){
+  let t=(raw||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
+  const a=t.indexOf('{'),b=t.lastIndexOf('}');
+  if(a>=0&&b>a)t=t.slice(a,b+1);
+  return JSON.parse(t);
+}
+function _buildPoaPrompt(text){
+  const doc=text.length>8000?text.slice(0,8000):text;
+  return `חלץ מטקסט ייפוי כוח את הפרטים ל-JSON. שדות: name (שם מלא), id (ת.ז. 9 ספרות), service (מהות השירות המשפטי, אחרי המילה "ל"), date (dd/mm/yyyy).
+החזר JSON תקין בלבד. דלג על שדה שאינו במסמך. name = שם פרטי+משפחה בלבד, ללא ספרות/"ת.ז."/"מספר". id = 9 ספרות בלבד.
+דוגמה: "דוד כהן ת.ז. 123456789 ליישוב סכסוך" → {"name":"דוד כהן","id":"123456789","service":"ליישוב סכסוך"}
+טקסט:
+${doc}`;
+}
+async function extractWithGemini(text){
+  const key=(localStorage.getItem('poa_gemini_key')||'').trim();
+  if(!key)return null;
+  const prompt=_buildPoaPrompt(text);
+  let lastErr;
+  for(const model of GEMINI_MODELS){
+    try{
+      const r=await _fetchWithTimeout(
+        'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(key),
+        {method:'POST',headers:{'Content-Type':'application/json'},
+         body:JSON.stringify({contents:[{parts:[{text:prompt}]}],
+           generationConfig:{temperature:0.1,maxOutputTokens:1024,responseMimeType:'application/json'}})},
+        20000);
+      if(r.status===404||r.status===503){lastErr=new Error(model+' '+r.status);console.warn('[Gemini] '+model+' unavailable ('+r.status+'), trying next');continue;}
+      if(!r.ok){throw new Error('Gemini '+r.status);}
+      const data=await r.json();
+      const raw=(data&&data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts&&data.candidates[0].content.parts[0].text)||'';
+      console.log('[Gemini] extracted via '+model);
+      return _parseJsonLoose(raw);
+    }catch(e){lastErr=e;if(e.name==='AbortError')throw e;}
+  }
+  throw lastErr||new Error('all Gemini models failed');
+}
+
+// Local regex extraction (fallback / no-key path)
+function _extractLocal(text){
   const idMatch=text.match(/\d{9}/);
-  if(!idMatch){showStat('extract-stat','לא נמצא מספר ת.ז. (9 ספרות) בטקסט','err');return;}
+  if(!idMatch)return null;
   const rawID=idMatch[0];
-  $('p_id').value=rawID;
   const before=text.slice(0,text.indexOf(rawID)).replace(/[,.:;\s]+$/,'').replace(/ת\.?\s*ז\.?\s*$/,'').trim();
   const parts=before.split(/[\s,.:;]+/).filter(Boolean);
-  if(parts.length>0)$('p_name').value=parts.slice(-3).join(' ');
-  const ok=validateIsraeliID(rawID);
+  return {id:rawID,name:parts.length>0?parts.slice(-3).join(' '):''};
+}
+
+async function extractFromText(){
+  const text=v('extract-input');
+  if(!text.trim()){showStat('extract-stat','אין טקסט לחילוץ','err');return;}
+  const hasKey=!!(localStorage.getItem('poa_gemini_key')||'').trim();
+  // Try Gemini first if a key is configured
+  if(hasKey){
+    showStat('extract-stat','מחלץ עם בינה מלאכותית...','');
+    try{
+      const g=await extractWithGemini(text);
+      if(g&&(g.name||g.id||g.service)){
+        if(g.name)$('p_name').value=String(g.name).trim();
+        if(g.id){const d=String(g.id).replace(/\D/g,'').slice(0,9);if(d)$('p_id').value=d;}
+        if(g.service)$('p_service').value=String(g.service).trim();
+        if(g.date&&$('p_date'))$('p_date').value=String(g.date).trim();
+        if($('p_id').value.length===9){const ok=validateIsraeliID($('p_id').value);showStat('id-stat',ok?'✓ ת.ז. תקינה':'⚠ ספרת ביקורת שגויה',ok?'ok':'err');}
+        showStat('extract-stat','✓ הפרטים חולצו (Gemini)','ok');
+        setTimeout(()=>showStat('extract-stat','',''),4000);
+        return;
+      }
+    }catch(e){console.warn('Gemini extract failed, falling back to regex:',e.message);}
+  }
+  // Local regex fallback
+  const loc=_extractLocal(text);
+  if(!loc){showStat('extract-stat','לא נמצא מספר ת.ז. (9 ספרות) בטקסט','err');return;}
+  $('p_id').value=loc.id;
+  if(loc.name)$('p_name').value=loc.name;
+  const ok=validateIsraeliID(loc.id);
   showStat('id-stat',ok?'✓ ת.ז. תקינה':'⚠ ספרת ביקורת שגויה',ok?'ok':'err');
   showStat('extract-stat','✓ שם ות.ז. חולצו בהצלחה','ok');
   setTimeout(()=>showStat('extract-stat','',''),4000);
@@ -177,6 +257,7 @@ function extractFromFile(input){
   const today=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
   window.addEventListener('DOMContentLoaded',()=>{
     const el=$('p_date');if(el&&!el.value)el.value=today;
+    const gk=$('poa_gemini_key');if(gk)gk.value=localStorage.getItem('poa_gemini_key')||'';
     _checkHash();
   });
 })();
@@ -254,7 +335,7 @@ function showToast(msg,cls){
   let t=$('_toast');
   if(!t){
     t=document.createElement('div');t.id='_toast';
-    t.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:2500;font-family:'David Libre',Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;max-width:90vw;text-align:center';
+    t.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:2500;font-family:\'David Libre\',Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3);direction:rtl;max-width:90vw;text-align:center';
     document.body.appendChild(t);
   }
   t.textContent=msg;
@@ -395,10 +476,10 @@ async function generateAndSendPDF(isShare=false){
     }
 
     const burl=URL.createObjectURL(pdfBlob);
-    const a=document.createElement('a');a.href=burl;a.download=fileName;
+    const a=document.createElement('a');a.href=burl;a.download=fileName;a.target='_blank';
     document.body.appendChild(a);a.click();document.body.removeChild(a);
     setTimeout(()=>URL.revokeObjectURL(burl),8000);
-    if(isClient)showToast('הקובץ נשמר ✓','ok');
+    if(isClient)showToast('הקובץ ירד — צרף אותו ידנית ב-WhatsApp','ok');
     else{showStat(statId,'הקובץ נשמר ✓','ok');setTimeout(()=>showStat(statId,'',''),5000);}
     if(isShare)_showSendModal();
   }catch(e){
@@ -428,9 +509,31 @@ function decodeState(enc){
     _enterClientMode();
   }catch(e){console.error('decodeState:',e);}
 }
+// Detect in-app browsers (WhatsApp/FB/Instagram WebView) where file-share and
+// downloads are blocked — these break the "send signed PDF" flow on Android.
+function _isInAppBrowser(){
+  const ua=navigator.userAgent||'';
+  if(/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger/i.test(ua))return true;
+  // Android WebView: has "; wv" token, or WhatsApp's in-app browser
+  if(/Android/.test(ua)&&/\bwv\b/.test(ua))return true;
+  if(/WhatsApp/i.test(ua))return true;
+  return false;
+}
+function _showWebViewBanner(){
+  if($('_wv-banner'))return;
+  const b=document.createElement('div');b.id='_wv-banner';
+  b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2500;background:#1a3a52;color:#fdfbf7;padding:10px 14px;font-size:12px;font-family:\'David Libre\',Arial,sans-serif;direction:rtl;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.3);line-height:1.5;border-bottom:2px solid #c89968';
+  b.innerHTML='⚠ לשליחת הקובץ החתום — פתח דף זה ב<strong>דפדפן Chrome</strong>:<br>לחץ על ⋮ (שלוש נקודות) למעלה ובחר "פתח ב-Chrome"'
+    +'<button type="button" id="_wv-copy" style="display:block;margin:7px auto 0;background:#c89968;color:#1a3a52;border:none;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit">📋 העתק קישור</button>'
+    +'<button type="button" id="_wv-close" style="position:absolute;top:6px;left:8px;background:transparent;color:#fdfbf7;border:none;font-size:16px;cursor:pointer">✕</button>';
+  document.body.appendChild(b);
+  $('_wv-copy').onclick=()=>{const u=location.href;navigator.clipboard&&navigator.clipboard.writeText(u).catch(()=>{});const t=$('_wv-copy');t.textContent='✓ הועתק — הדבק ב-Chrome';};
+  $('_wv-close').onclick=()=>b.remove();
+}
 function _enterClientMode(){
   const attyPanel=document.querySelector('.fp');if(attyPanel)attyPanel.style.display='none';
   const lt=$('lawyer-tools');if(lt)lt.style.display='none';
+  if(_isInAppBrowser())_showWebViewBanner();
   if(!$('client-preview')){
     const c=document.createElement('div');
     c.id='client-preview';
@@ -439,13 +542,13 @@ function _enterClientMode(){
   }
   if(!$('_float-sign')){
     const fb=document.createElement('button');fb.id='_float-sign';
-    fb.style.cssText='position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#2d1b69;color:#fff;border:none;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:'David Libre',Arial,sans-serif;white-space:nowrap';
+    fb.style.cssText='position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#1a3a52;color:#fff;border:1px solid #c89968;border-radius:10px;padding:12px 22px;font-size:14px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:\'David Libre\',Arial,sans-serif;white-space:nowrap';
     fb.textContent='✍ חתימת הלקוח';fb.onclick=()=>openSig('p');
     document.body.appendChild(fb);
   }
   if(!$('_float-send')){
     const fb=document.createElement('button');fb.id='_float-send';
-    fb.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a6b3a;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 18px rgba(0,0,0,.35);font-family:'David Libre',Arial,sans-serif;direction:rtl;white-space:nowrap';
+    fb.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1a6b3a;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:15px;font-weight:bold;cursor:pointer;z-index:1500;box-shadow:0 4px 18px rgba(0,0,0,.35);font-family:\'David Libre\',Arial,sans-serif;direction:rtl;white-space:nowrap';
     fb.textContent='✅ שלח PDF לעורך הדין';fb.onclick=confirmAndSend;
     document.body.appendChild(fb);
   }
@@ -475,7 +578,7 @@ function _showSendModal(){
   const waUrl='https://wa.me/972522499887';
   const m=document.createElement('div');m.id='_send-modal';
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:3000;display:flex;align-items:center;justify-content:center';
-  m.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 20px;width:90%;max-width:360px;direction:rtl;font-family:'David Libre',Arial,sans-serif;text-align:center">'
+  m.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 20px;width:90%;max-width:360px;direction:rtl;font-family:\'David Libre\',Arial,sans-serif;text-align:center">'
     +'<div style="font-size:38px;margin-bottom:8px">✅</div>'
     +'<div style="font-weight:bold;font-size:16px;color:#1a3f7a;margin-bottom:12px">הקובץ החתום מוכן!</div>'
     +'<div style="font-size:13px;color:#444;line-height:1.85;margin-bottom:18px;text-align:right">'
