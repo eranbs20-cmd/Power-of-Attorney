@@ -677,39 +677,34 @@ function _enterClientMode(){
   }
   _renderPreview();
 }
-// ===== Short, encrypted signing link =====
-// The client data is AES-GCM encrypted in the browser. Only the ciphertext goes to the URL
-// shortener (is.gd); the 16-char key stays in the #fragment, which browsers never send to servers.
-// Final link looks like: https://is.gd/AbC123#k3Y9...  (~40 chars)
-const _B64U={enc:b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),
+// ===== Short signing link (compact, no third party) =====
+// Format: <app>/#p<base64url>  — bytes: [ver=1][ID uint32][service code][name][0x00][free service text]
+// Hebrew letters packed to 1 byte each. Date is not sent: the client's app fills today's date.
+const _SVC=['', 'ליישוב סכסוך','להגשת תביעה למזונות','לטיפול בענייני גירושין','לטיפול בכל ענייני הרכוש והשהות','לייצוג בהליך פלילי','לטיפול בכל הענייניים בתחום המשפחה לרבות מזונות, שהות, רכוש וגירושין'];
+const _B64U={enc:b=>btoa(String.fromCharCode(...b)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),
   dec:t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return Uint8Array.from(atob(t),c=>c.charCodeAt(0));}};
-async function _aesKey(k){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(k));return crypto.subtle.importKey('raw',h,'AES-GCM',false,['encrypt','decrypt']);}
-function _newKeyStr(){const a=new Uint8Array(12);crypto.getRandomValues(a);return _B64U.enc(a);}
-function _stateObj(){const s={};const f={p_name:'n',p_id:'i',p_service:'s',p_date:'d'};Object.entries(f).forEach(([id,k])=>{const val=v(id);if(val)s[k]=val;});return s;}
-async function _encryptState(obj,keyStr){
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},await _aesKey(keyStr),new TextEncoder().encode(JSON.stringify(obj)));
-  const out=new Uint8Array(12+ct.byteLength);out.set(iv);out.set(new Uint8Array(ct),12);return _B64U.enc(out);
+function _packText(str,out){for(const ch of str){const c=ch.codePointAt(0);
+  if(c>=0x5D0&&c<=0x5EA)out.push(0x80+(c-0x5D0));else if(c>0&&c<0x80)out.push(c);else{out.push(0xFF,(c>>8)&255,c&255);}}}
+function _unpackText(b,i,end){let s='';while(i<end){const c=b[i++];
+  if(c===0xFF){s+=String.fromCharCode((b[i]<<8)|b[i+1]);i+=2;}else if(c>=0x80)s+=String.fromCharCode(0x5D0+c-0x80);else s+=String.fromCharCode(c);}return s;}
+function _packState(){
+  const id=parseInt((v('p_id')||'0').replace(/\D/g,''),10)||0;
+  const svc=(v('p_service')||'').trim(); const code=_SVC.indexOf(svc);
+  const out=[1,(id>>>24)&255,(id>>>16)&255,(id>>>8)&255,id&255,code>0?code:0];
+  _packText((v('p_name')||'').trim(),out);
+  if(!(code>0)&&svc){out.push(0);_packText(svc,out);}
+  return _B64U.enc(out);
 }
-async function _decryptState(d,keyStr){
-  const raw=_B64U.dec(d);
-  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:raw.slice(0,12)},await _aesKey(keyStr),raw.slice(12));
-  return JSON.parse(new TextDecoder().decode(pt));
+function _unpackState(t){
+  const b=_B64U.dec(t); if(b[0]!==1)throw new Error('bad version');
+  const id=((b[1]<<24)>>>0)+(b[2]<<16)+(b[3]<<8)+b[4]; const code=b[5];
+  let z=b.indexOf(0,6); if(z<0)z=b.length;
+  const o={n:_unpackText(b,6,z),i:String(id).padStart(9,'0')};
+  o.s=code>0?_SVC[code]:(z<b.length?_unpackText(b,z+1,b.length):'');
+  return o;
 }
-async function _shortenURL(longUrl){
-  try{
-    const r=await _fetchWithTimeout('https://is.gd/create.php?format=simple&logstats=0&url='+encodeURIComponent(longUrl),{},8000);
-    if(r.ok){const t=(await r.text()).trim();if(/^https:\/\/is\.gd\/\w+$/.test(t))return t;}
-  }catch(e){console.warn('shorten failed:',e.message);}
-  return longUrl;
-}
-async function _buildSignLink(){
-  const key=_newKeyStr();
-  const d=await _encryptState(_stateObj(),key);
-  const base=location.origin+location.pathname;
-  const short=await _shortenURL(base+'?d='+d);   // only ciphertext leaves the browser
-  return short+'#'+key;
-}
+function _appBase(){return location.origin+location.pathname.replace(/poa\.html$/,'');}
+async function _buildSignLink(){return _appBase()+'#p'+_packState();}
 async function shareViaWhatsApp(phoneStr){
   const phone=(phoneStr||'').replace(/\D/g,'');
   showStat('share-stat','מכין קישור מאובטח...','');
@@ -750,12 +745,12 @@ function _showSendModal(){
   $('_send-close-btn').onclick=()=>m.remove();
 }
 function _fillState(o){const map={n:'p_name',i:'p_id',s:'p_service',d:'p_date'};Object.entries(map).forEach(([k,id])=>{if(k in o&&$(id))$(id).value=o[k];});_enterClientMode();}
-async function _checkHash(){
-  const h=location.hash, q=new URLSearchParams(location.search);
-  if(q.get('d')&&h.length>1){
+function _checkHash(){
+  const h=location.hash;
+  if(h.startsWith('#p')){
     window._origHref=location.href;
-    try{_fillState(await _decryptState(q.get('d'),h.slice(1)));}
-    catch(e){console.error('decrypt',e);showToast('הקישור פגום או לא שלם — בקש קישור חדש מעורך הדין','err');}
+    try{_fillState(_unpackState(h.slice(2)));}
+    catch(e){console.error('link',e);showToast('הקישור פגום או לא שלם — בקש קישור חדש מעורך הדין','err');}
     try{history.replaceState(null,'',location.pathname);}catch(e){}
     return;
   }
