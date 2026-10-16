@@ -1,10 +1,7 @@
-const CACHE = 'poa-v24';
-const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png','./Heebo-Bold.ttf'];
+const CACHE = 'poa-v25-secure';
+const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png','./Heebo-Bold.ttf',
+  './lib/pdf-lib.min.js','./lib/fontkit.umd.min.js','./lib/pdf.min.js','./lib/pdf.worker.min.js'];
 const CDN = [
-  'https://unpkg.com/pdf-lib/dist/pdf-lib.min.js',
-  'https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js',
-  'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
-  'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js',
   'https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap',
 ];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>{c.addAll(CORE);CDN.forEach(u=>c.add(u).catch(()=>{}));}));self.skipWaiting();});

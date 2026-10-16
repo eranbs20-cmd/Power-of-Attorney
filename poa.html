@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+<meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ייפוי כוח — עו"ד ערן בן שושן</title>
@@ -13,10 +14,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-<script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-<script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';}</script>
+<script src="./lib/pdf-lib.min.js"></script>
+<script src="./lib/fontkit.umd.min.js"></script>
+<script src="./lib/pdf.min.js"></script>
+<script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];pdfjsLib.GlobalWorkerOptions.workerSrc='./lib/pdf.worker.min.js';}</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--ink:#6d28d9;--ink-deep:#5b21b6;--gold:#ec4899;--gold-soft:#fbcfe8;--cream:#faf5ff;--cream-deep:#f3e8ff;--surface:#ffffff;--border:#e9d5ff;--grad:linear-gradient(135deg,#7c3aed 0%,#ec4899 100%)}
@@ -638,7 +639,7 @@ function _showWebViewBanner(){
     +'<button type="button" id="_wv-copy" style="display:block;margin:7px auto 0;background:#ec4899;color:#7c3aed;border:none;border-radius:6px;padding:6px 16px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit">📋 העתק קישור</button>'
     +'<button type="button" id="_wv-close" style="position:absolute;top:6px;left:8px;background:transparent;color:#fdfbf7;border:none;font-size:16px;cursor:pointer">✕</button>';
   document.body.appendChild(b);
-  $('_wv-copy').onclick=()=>{const u=location.href;navigator.clipboard&&navigator.clipboard.writeText(u).catch(()=>{});const t=$('_wv-copy');t.textContent='✓ הועתק — הדבק ב-Chrome';};
+  $('_wv-copy').onclick=()=>{const u=window._origHref||location.href;navigator.clipboard&&navigator.clipboard.writeText(u).catch(()=>{});const t=$('_wv-copy');t.textContent='✓ הועתק — הדבק ב-Chrome';};
   $('_wv-close').onclick=()=>b.remove();
 }
 function _enterClientMode(){
@@ -665,19 +666,12 @@ function _enterClientMode(){
   }
   _renderPreview();
 }
-// Shorten the (long base64) signing link via is.gd — CORS-friendly, free, no key.
-// Always falls back to the long URL so it never blocks sharing.
-async function _shortenURL(longUrl){
-  try{
-    const r=await _fetchWithTimeout('https://is.gd/create.php?format=simple&logstats=0&url='+encodeURIComponent(longUrl),{},8000);
-    if(r.ok){const s=(await r.text()).trim();if(/^https?:\/\//.test(s))return s;}
-  }catch(e){console.warn('shorten failed:',e.message);}
-  return longUrl;
-}
+// Security: no external URL shortener — the link carries client name/ID and must not be sent to third parties.
+async function _shortenURL(longUrl){return longUrl;}
 async function shareViaWhatsApp(phoneStr){
   const phone=(phoneStr||'').replace(/\D/g,'');
   const longUrl=location.href.split('#')[0]+'#s='+encodeState();
-  showStat('share-stat','מקצר קישור...','');
+  
   const url=await _shortenURL(longUrl);
   showStat('share-stat','','');
   const msg='שלום,\nנשלח אליך ייפוי כוח לחתימה דיגיטלית.\nלחץ על הקישור הבא וחתום:\n'+url;
@@ -686,9 +680,9 @@ async function shareViaWhatsApp(phoneStr){
 }
 async function shareSigLink(){
   const longUrl=location.href.split('#')[0]+'#s='+encodeState();
-  showStat('share-stat','מקצר קישור...','');
+  
   const url=await _shortenURL(longUrl);
-  const done=()=>{showStat('share-stat','✓ קישור קצר הועתק','ok');setTimeout(()=>showStat('share-stat','',''),4000);};
+  const done=()=>{showStat('share-stat','✓ קישור הועתק','ok');setTimeout(()=>showStat('share-stat','',''),4000);};
   try{await navigator.clipboard.writeText(url);done();}
   catch(e){const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}
 }
@@ -717,7 +711,7 @@ function _showSendModal(){
 }
 function _checkHash(){
   const h=location.hash;
-  if(h.startsWith('#s='))decodeState(h.slice(3));
+  if(h.startsWith('#s=')){window._origHref=location.href;decodeState(h.slice(3));try{history.replaceState(null,'',location.pathname);}catch(e){}}
 }
 </script>
 </body>
