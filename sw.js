@@ -1,5 +1,5 @@
-const CACHE = 'poa-v25-secure';
-const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png','./Heebo-Bold.ttf',
+const CACHE = 'poa-v26';
+const CORE = ['./poa.html','./base.pdf','./manifest.json','./icon-192.png','./icon-512.png','./Heebo-Bold.ttf','./stamp.png',
   './lib/pdf-lib.min.js','./lib/fontkit.umd.min.js','./lib/pdf.min.js','./lib/pdf.worker.min.js'];
 const CDN = [
   'https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap',

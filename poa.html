@@ -531,6 +531,17 @@ async function _buildPDFBlob(includeSig){
     const w=emb.width*scale,h=emb.height*scale;
     page.drawImage(emb,{x:458.75-w/2,y:118,width:w,height:h});
   }
+  // Lawyer stamp is NOT inside base.pdf; it is added only to the final copy, after the client has signed.
+  if(includeSig&&_sigP){
+    try{
+      const sr=await fetch('./stamp.png');
+      if(sr.ok){
+        const st=await pdfDoc.embedPng(await sr.arrayBuffer());
+        const sw=95,sh=sw*st.height/st.width;
+        page.drawImage(st,{x:171-sw/2,y:120,width:sw,height:sh});
+      }
+    }catch(e){console.warn('stamp failed',e);}
+  }
   const bytes=await pdfDoc.save();
   return new Blob([bytes],{type:'application/pdf'});
 }
