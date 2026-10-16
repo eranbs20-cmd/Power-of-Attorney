@@ -677,22 +677,51 @@ function _enterClientMode(){
   }
   _renderPreview();
 }
-// Security: no external URL shortener — the link carries client name/ID and must not be sent to third parties.
-async function _shortenURL(longUrl){return longUrl;}
+// ===== Short, encrypted signing link =====
+// The client data is AES-GCM encrypted in the browser. Only the ciphertext goes to the URL
+// shortener (is.gd); the 16-char key stays in the #fragment, which browsers never send to servers.
+// Final link looks like: https://is.gd/AbC123#k3Y9...  (~40 chars)
+const _B64U={enc:b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),
+  dec:t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return Uint8Array.from(atob(t),c=>c.charCodeAt(0));}};
+async function _aesKey(k){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(k));return crypto.subtle.importKey('raw',h,'AES-GCM',false,['encrypt','decrypt']);}
+function _newKeyStr(){const a=new Uint8Array(12);crypto.getRandomValues(a);return _B64U.enc(a);}
+function _stateObj(){const s={};const f={p_name:'n',p_id:'i',p_service:'s',p_date:'d'};Object.entries(f).forEach(([id,k])=>{const val=v(id);if(val)s[k]=val;});return s;}
+async function _encryptState(obj,keyStr){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},await _aesKey(keyStr),new TextEncoder().encode(JSON.stringify(obj)));
+  const out=new Uint8Array(12+ct.byteLength);out.set(iv);out.set(new Uint8Array(ct),12);return _B64U.enc(out);
+}
+async function _decryptState(d,keyStr){
+  const raw=_B64U.dec(d);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:raw.slice(0,12)},await _aesKey(keyStr),raw.slice(12));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function _shortenURL(longUrl){
+  try{
+    const r=await _fetchWithTimeout('https://is.gd/create.php?format=simple&logstats=0&url='+encodeURIComponent(longUrl),{},8000);
+    if(r.ok){const t=(await r.text()).trim();if(/^https:\/\/is\.gd\/\w+$/.test(t))return t;}
+  }catch(e){console.warn('shorten failed:',e.message);}
+  return longUrl;
+}
+async function _buildSignLink(){
+  const key=_newKeyStr();
+  const d=await _encryptState(_stateObj(),key);
+  const base=location.origin+location.pathname;
+  const short=await _shortenURL(base+'?d='+d);   // only ciphertext leaves the browser
+  return short+'#'+key;
+}
 async function shareViaWhatsApp(phoneStr){
   const phone=(phoneStr||'').replace(/\D/g,'');
-  const longUrl=location.href.split('#')[0]+'#s='+encodeState();
-  
-  const url=await _shortenURL(longUrl);
+  showStat('share-stat','מכין קישור מאובטח...','');
+  const url=await _buildSignLink();
   showStat('share-stat','','');
   const msg='שלום,\nנשלח אליך ייפוי כוח לחתימה דיגיטלית.\nלחץ על הקישור הבא וחתום:\n'+url;
   const waUrl=phone?'https://wa.me/972'+phone.replace(/^0/,'')+'?text='+encodeURIComponent(msg):'https://api.whatsapp.com/send?text='+encodeURIComponent(msg);
   window.open(waUrl,'_blank');
 }
 async function shareSigLink(){
-  const longUrl=location.href.split('#')[0]+'#s='+encodeState();
-  
-  const url=await _shortenURL(longUrl);
+  showStat('share-stat','מכין קישור מאובטח...','');
+  const url=await _buildSignLink();
   const done=()=>{showStat('share-stat','✓ קישור הועתק','ok');setTimeout(()=>showStat('share-stat','',''),4000);};
   try{await navigator.clipboard.writeText(url);done();}
   catch(e){const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}
@@ -720,8 +749,16 @@ function _showSendModal(){
   $('_send-wa-btn').onclick=()=>{window.open(waUrl,'_blank');m.remove();};
   $('_send-close-btn').onclick=()=>m.remove();
 }
-function _checkHash(){
-  const h=location.hash;
+function _fillState(o){const map={n:'p_name',i:'p_id',s:'p_service',d:'p_date'};Object.entries(map).forEach(([k,id])=>{if(k in o&&$(id))$(id).value=o[k];});_enterClientMode();}
+async function _checkHash(){
+  const h=location.hash, q=new URLSearchParams(location.search);
+  if(q.get('d')&&h.length>1){
+    window._origHref=location.href;
+    try{_fillState(await _decryptState(q.get('d'),h.slice(1)));}
+    catch(e){console.error('decrypt',e);showToast('הקישור פגום או לא שלם — בקש קישור חדש מעורך הדין','err');}
+    try{history.replaceState(null,'',location.pathname);}catch(e){}
+    return;
+  }
   if(h.startsWith('#s=')){window._origHref=location.href;decodeState(h.slice(3));try{history.replaceState(null,'',location.pathname);}catch(e){}}
 }
 </script>
