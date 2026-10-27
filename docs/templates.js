@@ -94,6 +94,21 @@
       sigs: [{ cx: 458.75, y: 723.68, w: 88, h: 45 }],
       stamps: [{ cx: 171, y: 721.68, w: 95 }],
     },
+    // ---- declaration + affidavit page of form 21 (genetic test / paternity). Blank page; values come from the link.
+    7: {
+      key: 'tazhir21', file: 'docs/tazhir21.pdf', title: 'הצהרה ותצהיר לבקשה לקביעת אבהות',
+      fields: [
+        { k: 'name', x1: 541.1, y: 150.6, s: 12, al: 'r', f: 'r' },
+        { k: 'name2', x1: 449.0, y: 292.5, s: 12, al: 'r', f: 'r' },
+        { k: 'id', x1: 333.3, y: 292.5, s: 12, al: 'r', f: 'r' },
+        { k: 'date', auto: 'date', x1: 461.6, y: 420.0, s: 12, al: 'r', f: 'r' },
+        { k: 'l_date', auto: 'date', x1: 328.1, y: 501.2, s: 12, al: 'r', f: 'r' },
+        { k: 'name3', x1: 532.5, y: 528.8, s: 12, al: 'r', f: 'r' },
+        { k: 'id3', x1: 236.2, y: 528.8, s: 12, al: 'r', f: 'r' },
+      ],
+      sigs: [{ cx: 150, y: 199, w: 95, h: 38 }, { cx: 262, y: 401, w: 80, h: 27 }],
+      stamps: [{ cx: 149, y: 612.6, w: 87 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
