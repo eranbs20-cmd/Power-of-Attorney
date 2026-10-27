@@ -143,7 +143,8 @@ $('btn-send').onclick = async () => {
   if (!SIG) { toast('יש לחתום תחילה', 'err'); return; }
   try {
     const blob = await render();
-    const name = 'מסמכים חתומים - ' + clientName() + '.pdf';
+    const label = DOCS.length === 1 ? SIGN_TEMPLATES[DOCS[0].code].title.replace(/[()]/g, '').trim() : 'מסמכים';
+    const name = label + ' חתום - ' + clientName() + '.pdf';
     const file = new File([blob], name, { type: 'application/pdf' });
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
       try { await navigator.share({ title: 'מסמכים חתומים', text: 'שלום, חתמתי על המסמכים.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
@@ -167,7 +168,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   try { DOCS = SIGN_CORE.unpack(h.slice(2)); }
   catch (e) { $('intro').textContent = 'הקישור פגום או לא שלם — בקשו מעורך הדין קישור חדש.'; return; }
   try { history.replaceState(null, '', location.pathname); } catch (e) {}
-  $('intro').textContent = 'שלום ' + clientName() + ', אלה המסמכים לחתימה. עברו עליהם, לחצו "חתימה", ואז "שלח לעורך הדין".';
+  $('intro').textContent = 'שלום ' + clientName() + ', ' + (DOCS.length === 1 ? 'זה המסמך לחתימה. עברו עליו' : 'אלה המסמכים לחתימה. עברו עליהם') + ', לחצו "חתימה", ואז "שלח לעורך הדין".';
   $('docs').innerHTML = ''; DOCS.forEach(d => { const li = document.createElement('li'); li.textContent = SIGN_TEMPLATES[d.code].title; $('docs').appendChild(li); });
   try { await render(); } catch (e) { toast('שגיאה בטעינת המסמכים: ' + e.message, 'err'); }
 })();
