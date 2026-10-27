@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>חתימה על הסכם</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap">
+<style>
+  :root{--ink:#2b2340;--accent:#1a3fa8;--ok:#1a6b3a;--paper:#fdfbf7;--line:#d4c9b8}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'David Libre',Arial,sans-serif;background:#525659;color:var(--ink);direction:rtl}
+  header{background:var(--paper);padding:12px 16px 10px;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:10}
+  header h1{margin:0;font-size:18px;color:var(--accent)}
+  header p{margin:4px 0 0;font-size:14px;line-height:1.5;color:#444}
+  #pages{padding:12px 8px 190px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  #pages canvas{width:100%;max-width:820px;height:auto;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.35);display:block}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(253,251,247,.98);
+       border-top:1px solid var(--line);z-index:20}
+  .bar label{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.45;max-width:640px;margin:0 auto 9px;cursor:pointer}
+  .bar input{width:22px;height:22px;flex:none;margin:0;accent-color:var(--accent)}
+  .btns{display:flex;gap:10px;justify-content:center;max-width:640px;margin:0 auto}
+  .btn{border:none;border-radius:10px;padding:13px 14px;font-size:15px;font-weight:bold;cursor:pointer;font-family:inherit;flex:1}
+  .btn.sign{background:var(--accent);color:#fff}
+  .btn.send{background:var(--ok);color:#fff}
+  .btn.copy{background:#fff;color:var(--ok);border:1.5px solid var(--ok)}
+  .btn:disabled{opacity:.45;cursor:default}
+  .hide{display:none!important}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:14px;padding:18px;width:92%;max-width:520px;text-align:center}
+  .card h2{margin:0 0 6px;font-size:17px;color:var(--accent)}
+  .card p{margin:0 0 10px;font-size:14px;color:#555;line-height:1.6}
+  #sig-canvas{border:2px solid var(--line);border-radius:8px;touch-action:none;background:var(--paper);display:block;width:100%;height:190px}
+  .row{display:flex;gap:8px;margin-top:10px}
+  .row button{flex:1;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
+  #toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 90px);left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:13px;text-align:center;line-height:1.5}
+  #wv button{margin-top:6px;background:#fff;color:var(--accent);border:none;border-radius:6px;padding:5px 14px;font-weight:bold;font-family:inherit}
+  .done{background:#e7f3ec;color:var(--ok);border-radius:8px;padding:8px 10px;font-size:14px;text-align:center;max-width:640px;margin:0 auto 9px;font-weight:bold}
+</style>
+</head>
+<body>
+<div id="wv">⚠ כדי לשמור ולשלוח את הקובץ החתום, פתחו את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"<br>
+  <button type="button" id="wv-copy">📋 העתק קישור</button></div>
+<header>
+  <h1 id="title">מסמך לחתימה</h1>
+  <p id="intro">טוען את המסמך…</p>
+</header>
+<div id="pages"></div>
+<div class="bar">
+  <div id="done" class="done hide">✓ המסמך נחתם. שלחו אותו לעורך הדין ושמרו עותק לעצמכם.</div>
+  <label id="agree-row"><input type="checkbox" id="agree"><span id="agree-text">קראתי את המסמך במלואו ואני מסכים לתנאיו.</span></label>
+  <div class="btns">
+    <button type="button" class="btn sign" id="btn-sign" disabled>✍ חתימה</button>
+    <button type="button" class="btn send hide" id="btn-send">📤 שלח לעורך הדין</button>
+    <button type="button" class="btn copy hide" id="btn-copy">⬇ עותק לעצמי</button>
+  </div>
+</div>
+
+<div class="modal" id="sig-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <h2>חתימה</h2>
+    <p id="sig-help">חתמו באצבע במסגרת. החתימה תופיע בכל המקומות המיועדים לחתימתכם.</p>
+    <canvas id="sig-canvas" width="700" height="300"></canvas>
+    <div class="row">
+      <button type="button" id="sig-save" style="background:#1a3fa8;color:#fff">אישור וחתימה</button>
+      <button type="button" id="sig-clear" style="background:#f0f0f0;color:#444">נקה</button>
+      <button type="button" id="sig-close" style="background:#f0f0f0;color:#444">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="send-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:36px">✅</div>
+    <h2>הקובץ החתום ירד למכשיר</h2>
+    <p style="text-align:right">1. לחצו "פתח וואטסאפ" — הצ'אט עם עו"ד ערן בן שושן ייפתח.<br>2. לחצו 📎 ← <b>מסמך</b> ← בחרו את הקובץ שירד, ושלחו.</p>
+    <button type="button" id="send-wa" style="background:#25d366;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📲 פתח וואטסאפ</button>
+    <button type="button" id="send-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="lib/pdf.min.js"></script>
+<script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];}pdfjsLib.GlobalWorkerOptions.workerSrc='./lib/pdf.worker.min.js';</script>
+<script src="lib/pdf-lib.min.js"></script>
+<script src="lib/fontkit.umd.min.js"></script>
+<script src="docs/h-core.js?v=1"></script>
+<script>
+const $ = id => document.getElementById(id);
+let META = null, ORIG = null, SIGNED = null, origHref = location.href;
+function toast(msg, cls) {
+  const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block';
+  if (cls) setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'ok' ? 3000 : 8000);
+}
+const b64u = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
+const hex = buf => Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
+async function bytes(p) { const r = await fetch(p); if (!r.ok) throw new Error('missing ' + p); return new Uint8Array(await r.arrayBuffer()); }
+
+async function renderPdf(data, scrollToPage) {
+  const pdf = await pdfjsLib.getDocument({ data: data.slice(0) }).promise, box = $('pages');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2), cssW = Math.min(box.clientWidth - 16, 820);
+  const frag = document.createDocumentFragment(), canvases = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i), v0 = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: cssW / v0.width * dpr });
+    const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    frag.appendChild(c); canvases.push(c);
+  }
+  box.innerHTML = ''; box.appendChild(frag);
+  if (scrollToPage) canvases[scrollToPage - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+// signature pad
+(function () {
+  const c = $('sig-canvas'); let drawing = false, lx = 0, ly = 0;
+  const pos = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) * c.width / r.width, (e.clientY - r.top) * c.height / r.height]; };
+  c.addEventListener('pointerdown', e => { drawing = true; [lx, ly] = pos(e); c.setPointerCapture(e.pointerId); e.preventDefault(); });
+  c.addEventListener('pointermove', e => {
+    if (!drawing) return; const [x, y] = pos(e), ctx = c.getContext('2d');
+    ctx.strokeStyle = '#1a3fa8'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke(); lx = x; ly = y;
+  });
+  c.addEventListener('pointerup', () => drawing = false); c.addEventListener('pointercancel', () => drawing = false);
+})();
+function trimmedPng(canvas) {
+  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, x1 = 0, y0 = h, y1 = 0, n = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 10) { n++; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (n < 150 || x1 - x0 < 40) return null;
+  const p = 4, t = document.createElement('canvas'); t.width = x1 - x0 + p * 2; t.height = y1 - y0 + p * 2;
+  t.getContext('2d').drawImage(canvas, x0 - p, y0 - p, t.width, t.height, 0, 0, t.width, t.height);
+  return Uint8Array.from(atob(t.toDataURL('image/png').split(',')[1]), ch => ch.charCodeAt(0));
+}
+const fileName = () => META.title + ' - ' + META.client + ' - חתום.pdf';
+function download(blob, name) {
+  const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000);
+}
+$('agree').onchange = () => { $('btn-sign').disabled = !$('agree').checked; };
+$('btn-sign').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); $('sig-modal').style.display = 'flex'; };
+$('sig-clear').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); };
+$('sig-close').onclick = () => { $('sig-modal').style.display = 'none'; };
+$('sig-save').onclick = async () => {
+  const sig = trimmedPng($('sig-canvas'));
+  if (!sig) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
+  $('sig-modal').style.display = 'none'; toast('מטביע את החתימה…');
+  try {
+    const out = await H_CORE.buildSigned(PDFLib, fontkit, {
+      meta: META, pdf: ORIG, sig, stampPng: await bytes('stamp.png'),
+      heebo: await bytes('Heebo-Bold.ttf'), latin: await bytes('docs/LiberationSans-Regular.ttf'),
+      when: new Date(), device: navigator.userAgent,
+    });
+    SIGNED = new Blob([out], { type: 'application/pdf' });
+    await renderPdf(out, META.marks[0].p + 1);
+    $('agree-row').classList.add('hide'); $('btn-sign').classList.add('hide');
+    $('btn-send').classList.remove('hide'); $('btn-copy').classList.remove('hide'); $('done').classList.remove('hide');
+    $('intro').textContent = 'המסמך נחתם. בדקו את החתימה, ואז לחצו "שלח לעורך הדין". מומלץ לשמור גם עותק לעצמכם.';
+    toast('✓ המסמך נחתם', 'ok');
+  } catch (e) { toast('שגיאה בחתימה: ' + e.message, 'err'); }
+};
+$('btn-send').onclick = async () => {
+  if (!SIGNED) return;
+  const file = new File([SIGNED], fileName(), { type: 'application/pdf' });
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ title: META.title + ' חתום', text: 'שלום עו"ד בן שושן, מצורף ' + META.title + ' חתום.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
+    catch (se) { if (se.name === 'AbortError') return; }
+  }
+  download(SIGNED, fileName()); $('send-modal').style.display = 'flex';
+};
+$('btn-copy').onclick = () => { if (SIGNED) { download(SIGNED, fileName()); toast('העותק נשמר במכשיר ✓', 'ok'); } };
+$('send-wa').onclick = () => { window.open('https://wa.me/' + META.wa, '_blank'); $('send-modal').style.display = 'none'; };
+$('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+$('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } catch (e) {} $('wv-copy').textContent = '✓ הועתק — הדביקו בדפדפן'; };
+(function inApp() {
+  const ua = navigator.userAgent || '';
+  if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block';
+})();
+(async function init() {
+  const k = location.hash.slice(1);
+  if (!/^[A-Za-z0-9_-]{22}$/.test(k)) { $('intro').textContent = 'הקישור חסר או פגום. בקשו מעורך הדין קישור חדש.'; return; }
+  try {
+    const id = hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(k))).slice(0, 12);
+    const enc = await bytes('docs/enc/' + id + '.bin');
+    const key = await crypto.subtle.importKey('raw', b64u(k), 'AES-GCM', false, ['decrypt']);
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: enc.slice(0, 12) }, key, enc.slice(12));
+    META = JSON.parse(new TextDecoder().decode(plain));
+    ORIG = b64u(META.pdf.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')); delete META.pdf;
+  } catch (e) { $('intro').textContent = 'לא ניתן לפתוח את המסמך. ייתכן שהקישור פגום או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
+  document.title = META.title + ' - חתימה'; $('title').textContent = META.title;
+  $('intro').textContent = 'שלום ' + META.client + ', עברו על המסמך עד סופו, סמנו שקראתם ואתם מסכימים, ולחצו "חתימה".';
+  $('agree-text').textContent = 'קראתי את ' + META.title + ' ואת נספחיו במלואם, ואני מסכים לתנאיהם.';
+  try { await renderPdf(ORIG); } catch (e) { toast('שגיאה בהצגת המסמך: ' + e.message, 'err'); }
+})();
+</script>
+</body>
+</html>
