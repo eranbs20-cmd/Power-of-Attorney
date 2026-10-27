@@ -109,6 +109,20 @@
       sigs: [{ cx: 150, y: 199, w: 95, h: 38 }, { cx: 262, y: 401, w: 80, h: 27 }],
       stamps: [{ cx: 149, y: 612.6, w: 87 }],
     },
+    // ---- a complete, client-specific filing. The PDF is NOT in the repo: it is stored encrypted next to the request
+    // (docs/l/<sha256('d:'+token)[:8]>.bin, same key) and loaded as 'enc:doc'. `confirm` must be ticked before signing.
+    8: {
+      key: 'full21', file: 'enc:doc', encFile: true, title: 'בקשה לבדיקה גנטית ולפסק דין הצהרתי לאבהות, כולל נספחים',
+      confirm: 'קראתי את כל המסמך, על כל עמודיו ונספחיו, ואני מאשרת שתוכנו נכון.',
+      fields: [
+        { k: 'date', auto: 'date', p: 6, x1: 461.6, y: 420.0, s: 12, al: 'r', f: 'r' },
+        { k: 'l_date', auto: 'date', p: 6, x1: 328.1, y: 501.2, s: 12, al: 'r', f: 'r' },
+        { k: 'c_line', fixed: 'המצהירה אישרה בחתימתה כי קראה את כל המסמך, על כל עמודיו ונספחיו, וכי תוכנו נכון.', signed: true,
+          p: 6, x1: 559, y: 700, s: 10.5, al: 'r', f: 'r' },
+      ],
+      sigs: [{ p: 6, cx: 150, y: 199, w: 95, h: 38 }, { p: 6, cx: 262, y: 401, w: 80, h: 27 }],
+      stamps: [{ p: 6, cx: 149, y: 612.6, w: 87 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;

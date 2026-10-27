@@ -44,6 +44,7 @@
   <h1>מסמכים לחתימה</h1>
   <p id="intro">טוען את המסמכים…</p>
   <ol id="docs"></ol>
+  <label id="confirm-wrap" style="display:none;margin:8px 0 0;padding:8px 10px;background:#fff7e6;border:1px solid #e0b252;border-radius:8px;font-size:14px;font-weight:bold;line-height:1.5;cursor:pointer"><input type="checkbox" id="confirm-read" style="width:18px;height:18px;vertical-align:middle;margin-left:6px"><span id="confirm-text"></span></label>
 </header>
 <iframe id="preview" title="המסמכים לחתימה"></iframe>
 <button type="button" class="full" id="open-full">📄 פתח את המסמכים במסך מלא</button>
@@ -80,12 +81,12 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=8"></script>
-<script src="docs/sign-core.js?v=8"></script>
+<script src="docs/templates.js?v=9"></script>
+<script src="docs/sign-core.js?v=9"></script>
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
-let DOCS = null, SIG = null, IDPHOTO = null, STAMP = null, NEED_ID = false, previewURL = null, origHref = location.href;
+let CONFIRM = null, DOCS = null, SIG = null, IDPHOTO = null, STAMP = null, NEED_ID = false, previewURL = null, origHref = location.href;
 const cache = {};
 async function getBytes(p) {
   if (cache[p]) return cache[p];
@@ -149,7 +150,8 @@ function trimmedPng(canvas) {
   const b64 = t.toDataURL('image/png').split(',')[1];
   return Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
 }
-$('btn-sign').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); $('sig-modal').style.display = 'flex'; };
+$('btn-sign').onclick = () => {
+  if (CONFIRM && !$('confirm-read').checked) { toast('יש לקרוא את כל המסמך ולסמן את תיבת האישור לפני החתימה', 'err'); $('confirm-wrap').scrollIntoView({behavior:'smooth'}); return; } const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); $('sig-modal').style.display = 'flex'; };
 $('sig-clear').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); };
 $('sig-close').onclick = () => { $('sig-modal').style.display = 'none'; };
 $('sig-save').onclick = async () => {
@@ -218,6 +220,13 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
       const k = await crypto.subtle.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
       const plain = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(0, 12) }, k, b.slice(12)));
       DOCS = SIGN_CORE.unpack(SIGN_CORE.B64U.enc(plain));
+      if (DOCS.some(d => SIGN_TEMPLATES[d.code].encFile)) {
+        const dname = [...(await sha('d:' + t)).slice(0, 8)].map(x => x.toString(16).padStart(2, '0')).join('');
+        const r2 = await fetch('docs/l/' + dname + '.bin', { cache: 'no-store' });
+        if (!r2.ok) throw new Error('gone');
+        const b2 = new Uint8Array(await r2.arrayBuffer());
+        cache['enc:doc'] = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b2.slice(0, 12) }, k, b2.slice(12)));
+      }
     } else if (h.startsWith('#d')) {
       DOCS = SIGN_CORE.unpack(h.slice(2));
     } else { $('intro').textContent = 'הקישור חסר. בקשו מעורך הדין קישור חדש.'; return; }
@@ -231,6 +240,9 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   DOCS.forEach(d => { const t = SIGN_TEMPLATES[d.code], li = document.createElement('li');
     li.textContent = t.appendix ? ('נספח ' + L[n++] + "' – " + t.title) : t.title; $('docs').appendChild(li); });
   if (NEED_ID) $('btn-id').style.display = '';
+  CONFIRM = DOCS.map(d => SIGN_TEMPLATES[d.code].confirm).find(Boolean) || null;
+  if (CONFIRM) { $('confirm-text').textContent = CONFIRM; $('confirm-wrap').style.display = 'block';
+    $('intro').textContent = 'שלום ' + clientName() + ', זה המסמך המלא. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בהצהרה ובתצהיר.'; }
   try { await render(); } catch (e) { toast('שגיאה בטעינת המסמכים: ' + e.message, 'err'); }
 })();
 </script>
