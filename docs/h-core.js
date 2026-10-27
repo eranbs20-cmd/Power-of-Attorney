@@ -44,21 +44,31 @@
       fitText('קרבה: ' + G.rel, R.name[0], R.name[1], R.y0 + 4, 7, 6);
       center(pg, G.id, (R.id[0] + R.id[1]) / 2, mid - 3, 9.5, fb, blue);
       fitText(G.addr, R.addr[0], R.addr[1], mid - 3, 9, 6.5);
+      const Dc = meta.disc, dp = Dc ? pages[Dc.p] : null;
+      const onLine = (f, txt, size) => { const [x0, x1, yy] = f; const r = rtl(txt); let s = size;
+        while (s > 7 && fb.widthOfTextAtSize(r, s) > x1 - x0 - 4) s -= 0.25; center(dp, txt, (x0 + x1) / 2, yy + 4, s, fb, blue); };
+      if (dp) { onLine(Dc.name, G.name, 11); onLine(Dc.id, G.id, 11); }
       if (!sig) return await doc.save(); // preview: details only, before signing
       const [w, h] = fit(sig, R.sig[1] - R.sig[0] - 8, R.y1 - R.y0 - 10);
       pg.drawImage(sig, { x: (R.sig[0] + R.sig[1]) / 2 - w / 2, y: R.y0 + 8, width: w, height: h });
       center(pg, t.date + ' ' + t.time, (R.sig[0] + R.sig[1]) / 2, R.y0 + 2, 5.5, fb, blue);
+      if (dp) {
+        onLine(Dc.date, t.date + ' ' + t.time, 11);
+        const [x0, x1, yy] = Dc.sig, [sw2, sh2] = fit(sig, x1 - x0 - 6, 34);
+        dp.drawImage(sig, { x: (x0 + x1) / 2 - sw2 / 2, y: yy + 2, width: sw2, height: sh2 });
+      }
     }
     for (const m of (meta.marks || [])) {
       const pg = pages[m.p], img = m.kind === 'lawyer' ? st : sig, [w, h] = fit(img, m.w, m.h);
       pg.drawImage(img, { x: m.cx - w / 2, y: m.y, width: w, height: h });
       center(pg, 'נחתם ' + t.date + ' בשעה ' + t.time, m.cx, m.dy, 7.5, fb, blue);
     }
-    // ID-card images (guarantor), one page each
-    for (const im of (a.idImgs || [])) {
-      const img = im[0] === 0x89 ? await doc.embedPng(im) : await doc.embedJpg(im);
+    // identification images (guarantor): ID card, selfie with ID — one page each
+    const docPages = pages.length, imgs = a.imgs || (a.idImgs || []).map(b => ({ label: 'צילום תעודת זהות', bytes: b }));
+    for (const im of imgs) {
+      const b = im.bytes, img = b[0] === 0x89 ? await doc.embedPng(b) : await doc.embedJpg(b);
       const ip = doc.addPage([612, 792]);
-      right(ip, 'צילום תעודת זהות' + (G ? ' של הערב ' + G.name + ', ת.ז. ' + G.id : ''), 540, 720, 15, fb, blue);
+      right(ip, im.label + (G ? ' - ' + G.name + ', ת.ז. ' + G.id : ''), 540, 720, 15, fb, blue);
       const [w, h] = fit(img, 468, 600); ip.drawImage(img, { x: 306 - w / 2, y: 700 - 20 - h, width: w, height: h });
     }
     pages = doc.getPages();
@@ -71,17 +81,25 @@
     const pg = doc.addPage([612, 792]); let y = 720; const X = 540;
     right(pg, 'אישור חתימה אלקטרונית', X, y, 17, fb, blue); y -= 10;
     pg.drawLine({ start: { x: 72, y }, end: { x: X, y }, thickness: 1, color: blue }); y -= 30;
-    const row = (label, val) => { right(pg, label + ': ' + val, X, y, 11.5, fb, ink); y -= 24; };
+    const wrapR = (txt, size, maxw) => { const out = []; let cur = '';
+      for (const w of txt.split(' ')) { const tt = cur ? cur + ' ' + w : w; if (cur && fb.widthOfTextAtSize(rtl(tt), size) > maxw) { out.push(cur); cur = w; } else cur = tt; }
+      if (cur) out.push(cur); return out; };
+    const row = (label, val, size = 11, gap = 19) => { const ls = wrapR(label + ': ' + val, size, X - 72);
+      ls.forEach((l, i) => { right(pg, l, X, y, size, fb, ink); y -= i < ls.length - 1 ? size + 4 : gap; }); };
     if (G) {
-      row('המסמך', 'ערבות לשטר חוב של ' + meta.client + ' על סך ' + meta.amount + ' (נספח א\' להסכם שכר טרחה)');
-      row('הערב', G.name + ', ת.ז. ' + G.id);
-      row('קרבה לחייב', G.rel);
-      row('כתובת הערב', G.addr);
+      row('המסמך', 'ערבות לשטר חוב של ' + meta.client + ' עד לסך ' + meta.amount + ' (נספח א\' להסכם שכר טרחה)');
+      row('הוצגו לערב לפני החתימה', 'דף גילוי לערב, הסכם שכר הטרחה המלא ושטר החוב (' + docPages + ' עמודים)' + (a.scrolledAt ? '; הערב גלל עד סוף המסמך בשעה ' + stamp(a.scrolledAt).full : ''));
+      row('הערב', G.name + ', ת.ז. ' + G.id + ', קרבה לחייב: ' + G.rel);
+      row('כתובת הערב (למשלוח הודעות)', G.addr);
       row('מועד החתימה', t.full + ' (שעון ישראל)');
-      row('החתימה הוטבעה', 'טבלת הערבים, שורה 1');
-      row('צילום תעודת זהות', (a.idImgs || []).length ? 'צורף (' + a.idImgs.length + ' ' + (a.idImgs.length === 1 ? 'תמונה' : 'תמונות') + ')' : 'לא צורף');
+      row('החתימה הוטבעה', 'דף הגילוי (עמוד ' + (meta.disc.p + 1) + ') וטבלת הערבים בשטר (עמוד ' + (meta.row.p + 1) + ', שורה 1)');
+      row('אמצעי זיהוי שצורפו', imgs.length ? imgs.map(i => i.label).join(', ') : 'לא צורפו');
+      right(pg, 'אישורי הערב (כל אישור סומן בנפרד):', X, y, 11, fb, ink); y -= 17;
+      (a.acks || []).forEach((k, n) => { const ls = wrapR('(' + (n + 1) + ') ' + k.text + ' (סומן בתאריך ' + stamp(k.at).full + ')', 9.5, X - 90);
+        ls.forEach((l, i) => { right(pg, l, X - (i ? 18 : 8), y, 9.5, fb, ink); y -= i < ls.length - 1 ? 13 : 16; }); });
+      y -= 6;
     } else {
-      row('המסמך', meta.title + ' (' + (pages.length - (a.idImgs || []).length) + ' עמודים, כולל נספח א\' - שטר חוב)');
+      row('המסמך', meta.title + ' (' + docPages + ' עמודים, כולל נספח א\' - שטר חוב)');
       row('החותם', meta.client + ', ת.ז. ' + meta.cid);
       row('מועד החתימה', t.full + ' (שעון ישראל)');
       row('החתימה הוטבעה', meta.marks.filter(m => m.kind === 'client').map(m => 'עמוד ' + (m.p + 1)).join(', '));
