@@ -17,9 +17,11 @@
   #preview{width:100%;height:calc(100vh - 230px);min-height:360px;border:none;background:#fff;display:block}
   .bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(253,251,247,.97);
        border-top:1px solid var(--line);display:flex;gap:10px;justify-content:center;z-index:20}
-  .btn{border:none;border-radius:10px;padding:13px 16px;font-size:15px;font-weight:bold;cursor:pointer;font-family:inherit;flex:1;max-width:240px}
+  .btn{border:none;border-radius:10px;padding:12px 8px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;flex:1;max-width:240px}
   .btn.sign{background:var(--accent);color:#fff}
   .btn.send{background:var(--ok);color:#fff}
+  .btn.id{background:#fff;color:var(--accent);border:2px solid var(--accent)}
+  .btn.id.done{border-color:var(--ok);color:var(--ok)}
   .btn.send:disabled{background:#9bb5a4}
   .full{display:block;margin:8px auto 90px;background:#fff;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:9px 18px;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit}
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:50}
@@ -44,6 +46,8 @@
 <iframe id="preview" title="המסמכים לחתימה"></iframe>
 <button type="button" class="full" id="open-full">📄 פתח את המסמכים במסך מלא</button>
 <div class="bar">
+  <button type="button" class="btn id" id="btn-id" style="display:none">📷 צילום ת.ז</button>
+  <input type="file" id="id-input" accept="image/*" style="display:none">
   <button type="button" class="btn sign" id="btn-sign">✍ חתימה</button>
   <button type="button" class="btn send" id="btn-send" disabled>✅ שלח לעורך הדין</button>
 </div>
@@ -74,12 +78,12 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=2"></script>
-<script src="docs/sign-core.js?v=2"></script>
+<script src="docs/templates.js?v=3"></script>
+<script src="docs/sign-core.js?v=3"></script>
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
-let DOCS = null, SIG = null, previewURL = null, origHref = location.href;
+let DOCS = null, SIG = null, IDPHOTO = null, NEED_ID = false, previewURL = null, origHref = location.href;
 const cache = {};
 async function getBytes(p) {
   if (cache[p]) return cache[p];
@@ -98,7 +102,7 @@ function clientName() {
 }
 async function render() {
   toast('מכין את המסמכים…');
-  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, SIG, today());
+  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, SIG, today(), { idPhoto: IDPHOTO });
   const blob = new Blob([bytes], { type: 'application/pdf' });
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = URL.createObjectURL(blob);
@@ -135,15 +139,33 @@ $('sig-save').onclick = async () => {
   const png = trimmedPng($('sig-canvas'));
   if (!png) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
   SIG = png; $('sig-modal').style.display = 'none';
-  try { await render(); $('btn-send').disabled = false; $('btn-sign').textContent = '✍ חתימה מחדש'; toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
+  try { await render(); updateSend(); $('btn-sign').textContent = '✍ חתימה מחדש'; toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
   catch (e) { toast('שגיאה: ' + e.message, 'err'); }
 };
 $('open-full').onclick = () => { if (previewURL) window.open(previewURL, '_blank'); };
+function updateSend() { $('btn-send').disabled = !(SIG && (!NEED_ID || IDPHOTO)); }
+$('btn-id').onclick = () => $('id-input').click();
+$('id-input').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const bmp = await createImageBitmap(f);
+    const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const b64 = c.toDataURL('image/jpeg', 0.85).split(',')[1];
+    IDPHOTO = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+    $('btn-id').textContent = '✓ ת.ז צורפה'; $('btn-id').classList.add('done');
+    await render(); updateSend(); toast('✓ צילום תעודת הזהות צורף', 'ok');
+  } catch (err) { toast('לא הצלחתי לקרוא את התמונה — נסו לצלם שוב', 'err'); }
+  e.target.value = '';
+};
 $('btn-send').onclick = async () => {
   if (!SIG) { toast('יש לחתום תחילה', 'err'); return; }
+  if (NEED_ID && !IDPHOTO) { toast('יש לצרף צילום תעודת זהות כולל ספח', 'err'); return; }
   try {
     const blob = await render();
-    const label = DOCS.length === 1 ? SIGN_TEMPLATES[DOCS[0].code].title.replace(/[()]/g, '').trim() : 'מסמכים';
+    const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
+    const label = main.length === 1 ? SIGN_TEMPLATES[main[0].code].title.replace(/[()]/g, '').trim() : 'מסמכים';
     const name = label + ' חתום - ' + clientName() + '.pdf';
     const file = new File([blob], name, { type: 'application/pdf' });
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -168,8 +190,14 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   try { DOCS = SIGN_CORE.unpack(h.slice(2)); }
   catch (e) { $('intro').textContent = 'הקישור פגום או לא שלם — בקשו מעורך הדין קישור חדש.'; return; }
   try { history.replaceState(null, '', location.pathname); } catch (e) {}
-  $('intro').textContent = 'שלום ' + clientName() + ', ' + (DOCS.length === 1 ? 'זה המסמך לחתימה. עברו עליו' : 'אלה המסמכים לחתימה. עברו עליהם') + ', לחצו "חתימה", ואז "שלח לעורך הדין".';
-  $('docs').innerHTML = ''; DOCS.forEach(d => { const li = document.createElement('li'); li.textContent = SIGN_TEMPLATES[d.code].title; $('docs').appendChild(li); });
+  NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
+  const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
+  $('intro').textContent = 'שלום ' + clientName() + ', ' + (main.length === 1 ? 'זה המסמך לחתימה. עברו עליו' : 'אלה המסמכים לחתימה. עברו עליהם') +
+    (NEED_ID ? ', צלמו את תעודת הזהות (כולל הספח) בכפתור "צילום ת.ז"' : '') + ', לחצו "חתימה", ואז "שלח לעורך הדין".';
+  $('docs').innerHTML = ''; let n = 0; const L = 'אבגדהוזחטי';
+  DOCS.forEach(d => { const t = SIGN_TEMPLATES[d.code], li = document.createElement('li');
+    li.textContent = t.appendix ? ('נספח ' + L[n++] + "' – " + t.title) : t.title; $('docs').appendChild(li); });
+  if (NEED_ID) $('btn-id').style.display = '';
   try { await render(); } catch (e) { toast('שגיאה בטעינת המסמכים: ' + e.message, 'err'); }
 })();
 </script>
