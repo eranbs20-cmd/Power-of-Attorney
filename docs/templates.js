@@ -115,6 +115,7 @@
       key: 'full21', file: 'enc:doc', encFile: true, title: 'בקשה לבדיקה גנטית ולפסק דין הצהרתי לאבהות, כולל נספחים',
       confirm: 'קראתי את כל המסמך, על כל עמודיו ונספחיו, ואני מאשרת שתוכנו נכון.',
       fields: [
+        { k: 'name', hidden: true }, // greeting and file name only; the name is already printed in the document
         { k: 'date', auto: 'date', p: 6, x1: 461.6, y: 420.0, s: 12, al: 'r', f: 'r' },
         { k: 'l_date', auto: 'date', p: 6, x1: 328.1, y: 501.2, s: 12, al: 'r', f: 'r' },
         { k: 'c_line', fixed: 'המצהירה אישרה בחתימתה כי קראה את כל המסמך, על כל עמודיו ונספחיו, וכי תוכנו נכון.', signed: true,
