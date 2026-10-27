@@ -276,6 +276,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   const ua = navigator.userAgent || '';
   if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block';
 })();
+window.addEventListener('hashchange', () => location.reload());
 (async function init() {
   const k = location.hash.slice(1);
   if (!/^[A-Za-z0-9_-]{22}$/.test(k)) { $('intro').textContent = 'הקישור חסר או פגום. בקשו מעורך הדין קישור חדש.'; return; }
