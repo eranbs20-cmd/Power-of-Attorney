@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>חתימה על מסמכים</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap">
+<style>
+  :root{--ink:#2b2340;--accent:#7c3aed;--ok:#1a6b3a;--paper:#fdfbf7;--line:#d4c9b8}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'David Libre',Arial,sans-serif;background:#525659;color:var(--ink);direction:rtl}
+  header{background:var(--paper);padding:12px 16px calc(10px);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:10}
+  header h1{margin:0;font-size:17px;color:var(--accent)}
+  header p{margin:4px 0 0;font-size:13px;line-height:1.5;color:#444}
+  #docs{margin:6px 0 0;padding:0 18px;font-size:13px}
+  #preview{width:100%;height:calc(100vh - 230px);min-height:360px;border:none;background:#fff;display:block}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(253,251,247,.97);
+       border-top:1px solid var(--line);display:flex;gap:10px;justify-content:center;z-index:20}
+  .btn{border:none;border-radius:10px;padding:13px 16px;font-size:15px;font-weight:bold;cursor:pointer;font-family:inherit;flex:1;max-width:240px}
+  .btn.sign{background:var(--accent);color:#fff}
+  .btn.send{background:var(--ok);color:#fff}
+  .btn.send:disabled{background:#9bb5a4}
+  .full{display:block;margin:8px auto 90px;background:#fff;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:9px 18px;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:14px;padding:18px;width:92%;max-width:520px;text-align:center}
+  .card h2{margin:0 0 6px;font-size:16px;color:var(--accent)}
+  .card p{margin:0 0 10px;font-size:13px;color:#555;line-height:1.6}
+  #sig-canvas{border:2px solid var(--line);border-radius:8px;touch-action:none;background:var(--paper);display:block;width:100%;height:190px}
+  .row{display:flex;gap:8px;margin-top:10px}
+  .row button{flex:1;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
+  #toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 80px);left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:12px;text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="wv">⚠ כדי לשלוח את הקובץ החתום — פתחו את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"<br>
+  <button type="button" id="wv-copy" style="margin-top:6px;background:#fff;color:#7c3aed;border:none;border-radius:6px;padding:5px 14px;font-weight:bold;font-family:inherit">📋 העתק קישור</button></div>
+<header>
+  <h1>מסמכים לחתימה</h1>
+  <p id="intro">טוען את המסמכים…</p>
+  <ol id="docs"></ol>
+</header>
+<iframe id="preview" title="המסמכים לחתימה"></iframe>
+<button type="button" class="full" id="open-full">📄 פתח את המסמכים במסך מלא</button>
+<div class="bar">
+  <button type="button" class="btn sign" id="btn-sign">✍ חתימה</button>
+  <button type="button" class="btn send" id="btn-send" disabled>✅ שלח לעורך הדין</button>
+</div>
+
+<div class="modal" id="sig-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <h2>חתימה</h2>
+    <p>חתמו באצבע במסגרת. החתימה תופיע בכל המקומות המסומנים "חתימת המבקש" בכל המסמכים.</p>
+    <canvas id="sig-canvas" width="700" height="300"></canvas>
+    <div class="row">
+      <button type="button" id="sig-save" style="background:#7c3aed;color:#fff">שמור חתימה</button>
+      <button type="button" id="sig-clear" style="background:#f0f0f0;color:#444">נקה</button>
+      <button type="button" id="sig-close" style="background:#f0f0f0;color:#444">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="send-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:36px">✅</div>
+    <h2>הקובץ החתום מוכן</h2>
+    <p style="text-align:right">1. הקובץ <b>ירד</b> למכשיר.<br>2. לחצו "פתח וואטסאפ" — הצ'אט עם עו"ד ערן בן שושן ייפתח.<br>3. לחצו 📎 ← <b>מסמך</b> ← בחרו את הקובץ שירד, ושלחו.</p>
+    <button type="button" id="send-wa" style="background:#25d366;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📲 פתח וואטסאפ</button>
+    <button type="button" id="send-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="lib/pdf-lib.min.js"></script>
+<script src="lib/fontkit.umd.min.js"></script>
+<script src="docs/templates.js?v=1"></script>
+<script src="docs/sign-core.js?v=1"></script>
+<script>
+const LAWYER_WA = '972522499887';
+const $ = id => document.getElementById(id);
+let DOCS = null, SIG = null, previewURL = null, origHref = location.href;
+const cache = {};
+async function getBytes(p) {
+  if (cache[p]) return cache[p];
+  const r = await fetch(p + (p.startsWith('docs/') ? '?v=1' : ''));
+  if (!r.ok) throw new Error('לא נמצא: ' + p);
+  return (cache[p] = new Uint8Array(await r.arrayBuffer()));
+}
+function today() { const d = new Date(); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); }
+function toast(msg, cls) {
+  const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block';
+  if (cls) setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'ok' ? 3000 : 7000);
+}
+function clientName() {
+  for (const d of DOCS) { const v = d.values; if (v.a_first) return (v.a_first + ' ' + (v.a_last || '')).trim(); if (v.name) return v.name.replace(/,$/, ''); }
+  return 'לקוח';
+}
+async function render() {
+  toast('מכין את המסמכים…');
+  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, SIG, today());
+  const blob = new Blob([bytes], { type: 'application/pdf' });
+  if (previewURL) URL.revokeObjectURL(previewURL);
+  previewURL = URL.createObjectURL(blob);
+  $('preview').src = previewURL + '#toolbar=0&navpanes=0';
+  $('toast').style.display = 'none';
+  return blob;
+}
+// signature pad
+(function () {
+  const c = $('sig-canvas'); let drawing = false, lx = 0, ly = 0;
+  const pos = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) * c.width / r.width, (e.clientY - r.top) * c.height / r.height]; };
+  c.addEventListener('pointerdown', e => { drawing = true; [lx, ly] = pos(e); c.setPointerCapture(e.pointerId); e.preventDefault(); });
+  c.addEventListener('pointermove', e => {
+    if (!drawing) return; const [x, y] = pos(e); const ctx = c.getContext('2d');
+    ctx.strokeStyle = '#1a3fa8'; ctx.lineWidth = 3.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke(); lx = x; ly = y;
+  });
+  c.addEventListener('pointerup', () => drawing = false); c.addEventListener('pointercancel', () => drawing = false);
+})();
+function trimmedPng(canvas) {
+  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, x1 = 0, y0 = h, y1 = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 10) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 < x0) return null;
+  const p = 3, t = document.createElement('canvas'); t.width = x1 - x0 + p * 2; t.height = y1 - y0 + p * 2;
+  t.getContext('2d').drawImage(canvas, x0 - p, y0 - p, t.width, t.height, 0, 0, t.width, t.height);
+  const b64 = t.toDataURL('image/png').split(',')[1];
+  return Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+}
+$('btn-sign').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); $('sig-modal').style.display = 'flex'; };
+$('sig-clear').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); };
+$('sig-close').onclick = () => { $('sig-modal').style.display = 'none'; };
+$('sig-save').onclick = async () => {
+  const png = trimmedPng($('sig-canvas'));
+  if (!png) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
+  SIG = png; $('sig-modal').style.display = 'none';
+  try { await render(); $('btn-send').disabled = false; $('btn-sign').textContent = '✍ חתימה מחדש'; toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
+  catch (e) { toast('שגיאה: ' + e.message, 'err'); }
+};
+$('open-full').onclick = () => { if (previewURL) window.open(previewURL, '_blank'); };
+$('btn-send').onclick = async () => {
+  if (!SIG) { toast('יש לחתום תחילה', 'err'); return; }
+  try {
+    const blob = await render();
+    const name = 'מסמכים חתומים - ' + clientName() + '.pdf';
+    const file = new File([blob], name, { type: 'application/pdf' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ title: 'מסמכים חתומים', text: 'שלום, חתמתי על המסמכים.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
+      catch (se) { if (se.name === 'AbortError') return; }
+    }
+    const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 8000);
+    $('send-modal').style.display = 'flex';
+  } catch (e) { toast('שגיאה: ' + e.message, 'err'); }
+};
+$('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
+$('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+$('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } catch (e) {} $('wv-copy').textContent = '✓ הועתק — הדביקו בדפדפן'; };
+(function inApp() {
+  const ua = navigator.userAgent || '';
+  if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block';
+})();
+(async function init() {
+  const h = location.hash;
+  if (!h.startsWith('#d')) { $('intro').textContent = 'הקישור חסר. בקשו מעורך הדין קישור חדש.'; return; }
+  try { DOCS = SIGN_CORE.unpack(h.slice(2)); }
+  catch (e) { $('intro').textContent = 'הקישור פגום או לא שלם — בקשו מעורך הדין קישור חדש.'; return; }
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  $('intro').textContent = 'שלום ' + clientName() + ', אלה המסמכים לחתימה. עברו עליהם, לחצו "חתימה", ואז "שלח לעורך הדין".';
+  $('docs').innerHTML = ''; DOCS.forEach(d => { const li = document.createElement('li'); li.textContent = SIGN_TEMPLATES[d.code].title; $('docs').appendChild(li); });
+  try { await render(); } catch (e) { toast('שגיאה בטעינת המסמכים: ' + e.message, 'err'); }
+})();
+</script>
+</body>
+</html>
