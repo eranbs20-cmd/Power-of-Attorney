@@ -82,6 +82,18 @@
       key: 'tz', file: null, title: 'צילום תעודת זהות', appendix: 'צילום תעודת זהות של המבקשת, כולל ספח',
       idPhoto: true, fields: [], sigs: [],
     },
+    // ---- power of attorney (same layout as poa.html / base.pdf). Signature + lawyer stamp only on the signed copy.
+    6: {
+      key: 'poa', file: 'docs/poa.pdf', title: 'ייפוי כוח',
+      fields: [
+        { k: 'name', x0: 334, x1: 454, y: 101.68, s: 11, al: 'r' },
+        { k: 'id', x0: 261, x1: 309, y: 101.68, s: 11, al: 'r' },
+        { k: 'service', x0: 145, x1: 310, y: 114.68, s: 11, al: 'r' },
+        { k: 'date', auto: 'date', x0: 316, x1: 364, y: 670.68, s: 11, al: 'r' },
+      ],
+      sigs: [{ cx: 458.75, y: 723.68, w: 88, h: 45 }],
+      stamps: [{ cx: 171, y: 721.68, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
