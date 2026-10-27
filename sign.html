@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; img-src 'self' blob: data:; frame-src blob:; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <title>חתימה על מסמכים</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap">
 <style>
@@ -78,12 +80,12 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=3"></script>
-<script src="docs/sign-core.js?v=3"></script>
+<script src="docs/templates.js?v=4"></script>
+<script src="docs/sign-core.js?v=4"></script>
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
-let DOCS = null, SIG = null, IDPHOTO = null, NEED_ID = false, previewURL = null, origHref = location.href;
+let DOCS = null, SIG = null, IDPHOTO = null, STAMP = null, NEED_ID = false, previewURL = null, origHref = location.href;
 const cache = {};
 async function getBytes(p) {
   if (cache[p]) return cache[p];
@@ -100,9 +102,24 @@ function clientName() {
   for (const d of DOCS) { const v = d.values; if (v.a_first) return (v.a_first + ' ' + (v.a_last || '')).trim(); if (v.name) return v.name.replace(/,$/, ''); }
   return 'לקוח';
 }
+// The lawyer stamp is not public: links carry a key that unlocks docs/enc/st.bin (AES-GCM, decrypted in the browser).
+async function loadStamp() {
+  if (STAMP) return STAMP;
+  if (DOCS.key) {
+    const r = await fetch('docs/enc/st.bin?v=1'); if (!r.ok) throw new Error('stamp');
+    const b = new Uint8Array(await r.arrayBuffer());
+    const k = await crypto.subtle.importKey('raw', DOCS.key, 'AES-GCM', false, ['decrypt']);
+    STAMP = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(0, 12) }, k, b.slice(12)));
+  } else {
+    STAMP = await getBytes('stamp.png'); // links sent before the stamp was encrypted
+  }
+  return STAMP;
+}
 async function render() {
   toast('מכין את המסמכים…');
-  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, SIG, today(), { idPhoto: IDPHOTO });
+  const needStamp = SIG && DOCS.some(d => (SIGN_TEMPLATES[d.code].stamps || []).length);
+  const stamp = needStamp ? await loadStamp() : null;
+  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, SIG, today(), { idPhoto: IDPHOTO, stamp });
   const blob = new Blob([bytes], { type: 'application/pdf' });
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = URL.createObjectURL(blob);
