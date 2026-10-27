@@ -25,7 +25,7 @@
     const out = [2];
     for (const d of docs) {
       out.push(d.code);
-      const keys = T[d.code].fields.filter(f => !f.auto).map(f => f.k);
+      const keys = T[d.code].fields.filter(f => !f.auto && !f.fixed).map(f => f.k);
       keys.forEach((k, i) => { if (i) out.push(0x1F); packText(String(d.values[k] || ''), out); });
       out.push(0x1E);
     }
@@ -39,7 +39,7 @@
       let end = b.indexOf(0x1E, i); if (end < 0) end = b.length;
       const parts = []; let s = i;
       for (let j = i; j <= end; j++) if (j === end || b[j] === 0x1F) { parts.push(unpackText(b, s, j)); s = j + 1; }
-      const keys = T[code].fields.filter(f => !f.auto).map(f => f.k);
+      const keys = T[code].fields.filter(f => !f.auto && !f.fixed).map(f => f.k);
       const values = {}; keys.forEach((k, n) => values[k] = parts[n] || '');
       docs.push({ code, values }); i = end + 1;
     }
@@ -68,8 +68,11 @@
       pages.forEach(p => out.addPage(p));
       const page = pages[0]; const H = page.getHeight();
       for (const f of t.fields) {
-        const raw = f.auto === 'date' ? dateStr : d.values[f.k];
+        if (f.signed && !sigImg) continue;
+        const raw = f.fixed || (f.auto === 'date' ? dateStr : d.values[f.k]);
         if (!raw) continue;
+        const pg = pages[f.p || 0];
+        if (f.white) pg.drawRectangle({ x: f.white[0], y: H - f.white[3], width: f.white[2] - f.white[0], height: f.white[3] - f.white[1], color: PDFLib.rgb(1, 1, 1) });
         const font = f.f === 'r' ? fr : fb, color = f.f === 'r' ? black : blue;
         const txt = rtl(raw);
         let size = f.s || 10;
@@ -77,12 +80,19 @@
         let w = font.widthOfTextAtSize(txt, size);
         while (w > maxW && size > 6) { size -= 0.25; w = font.widthOfTextAtSize(txt, size); }
         const x = f.al === 'r' ? f.x1 - w : f.x0 + (f.x1 - f.x0 - w) / 2;
-        page.drawText(txt, { x, y: H - f.y, size, font, color });
+        pg.drawText(txt, { x, y: H - f.y, size, font, color });
       }
       for (const s of t.strikes || []) page.drawLine({ start: { x: s.x0, y: H - s.y }, end: { x: s.x1, y: H - s.y }, thickness: 1, color: blue });
       for (const c of t.checks || []) {
         page.drawLine({ start: { x: c.x, y: H - c.y - 4 }, end: { x: c.x + 3, y: H - c.y - 7.5 }, thickness: 1.4, color: blue });
         page.drawLine({ start: { x: c.x + 3, y: H - c.y - 7.5 }, end: { x: c.x + 8, y: H - c.y }, thickness: 1.4, color: blue });
+      }
+      if (sigImg && t.stamps && t.stamps.length) {
+        const st = await out.embedPng(new Uint8Array(await getBytes('stamp.png')));
+        for (const s of t.stamps) {
+          const w = s.w, h = w * st.height / st.width;
+          pages[s.p || 0].drawImage(st, { x: s.cx - w / 2, y: H - s.y, width: w, height: h });
+        }
       }
       if (sigImg) for (const s of t.sigs) {
         const k = Math.min(s.w / sigImg.width, s.h / sigImg.height);
