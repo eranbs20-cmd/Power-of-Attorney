@@ -21,8 +21,9 @@
       else if (c >= 0x80) s += String.fromCharCode(0x5D0 + c - 0x80); else s += String.fromCharCode(c); }
     return s; }
   // docs: [{code, values:{key:value}}]
-  function pack(docs) {
-    const out = [2];
+  // key (16 bytes, optional): unlocks docs/enc/st.bin (the lawyer stamp). With a key the link is v3: [3][key x16][docs...]
+  function pack(docs, key) {
+    const out = key ? [3, ...key] : [2];
     for (const d of docs) {
       out.push(d.code);
       const keys = T[d.code].fields.filter(f => !f.auto && !f.fixed).map(f => f.k);
@@ -32,8 +33,9 @@
     return B64U.enc(out);
   }
   function unpack(t) {
-    const b = B64U.dec(t); if (b[0] !== 2) throw new Error('bad version');
+    const b = B64U.dec(t); if (b[0] !== 2 && b[0] !== 3) throw new Error('bad version');
     const docs = []; let i = 1;
+    if (b[0] === 3) { docs.key = b.slice(1, 17); i = 17; }
     while (i < b.length) {
       const code = b[i++]; if (!T[code]) throw new Error('unknown document ' + code);
       let end = b.indexOf(0x1E, i); if (end < 0) end = b.length;
@@ -116,7 +118,8 @@
         page.drawLine({ start: { x: c.x + 3, y: H - c.y - 7.5 }, end: { x: c.x + 8, y: H - c.y }, thickness: 1.4, color: blue });
       }
       if (sigImg && t.stamps && t.stamps.length) {
-        const st = await out.embedPng(new Uint8Array(await getBytes('stamp.png')));
+        if (!extra.stamp) throw new Error('stamp unavailable');
+        const st = await out.embedPng(new Uint8Array(extra.stamp));
         for (const s of t.stamps) {
           const w = s.w, h = w * st.height / st.width;
           pages[s.p || 0].drawImage(st, { x: s.cx - w / 2, y: H - s.y, width: w, height: h });
