@@ -98,7 +98,7 @@
       pages.forEach(p => out.addPage(p));
       const page = pages[0]; const H = page.getHeight();
       for (const f of t.fields) {
-        if (f.signed && !sigImg) continue;
+        if (f.hidden || (f.signed && !sigImg)) continue;
         const raw = f.fixed || (f.auto === 'date' ? dateStr : d.values[f.k]);
         if (!raw) continue;
         const pg = pages[f.p || 0];
