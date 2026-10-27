@@ -3,6 +3,8 @@
 // Coordinates are PDF points measured from the TOP of the page (y = baseline).
 // al: 'c' centre in [x0,x1], 'r' right-aligned at x1. f: 'b' Heebo-Bold blue, 'r' Liberation regular black.
 // auto:'date' fields are filled with the signing date on the client's device and are not sent in the link.
+// fixed: constant text (not sent in the link). signed:true draws the field only on the signed copy.
+// p: page index (default 0). white: [x0,y0,x1,y1] blanks out a printed placeholder before writing.
 (function (root) {
   const T = {
     1: {
@@ -39,8 +41,14 @@
         { k: 'name2', x1: 568, y: 426.5, s: 10.6, al: 'r', f: 'r' },
         { k: 'id2', x0: 275, x1: 339, y: 426, s: 10.6, f: 'r' },
         { k: 'date', auto: 'date', x0: 364, x1: 537, y: 692, s: 11 },
+        // lawyer's confirmation, filled only once the client has signed
+        { k: 'l_name', fixed: 'ערן בן שושן', signed: true, x0: 300, x1: 498, y: 411, s: 11 },
+        { k: 'l_date1', auto: 'date', signed: true, x0: 106, x1: 196, y: 412, s: 10.5, white: [106, 400, 196, 416] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 364, x1: 537, y: 66, s: 11 },
       ],
       sigs: [{ cx: 161, y: 355, w: 110, h: 42 }, { cx: 161, y: 692, w: 110, h: 42 }],
+      // lawyer stamp (stamp.png), only on the signed copy: "חתימת עורך דין" and the waiver confirmation on page 2
+      stamps: [{ cx: 161, y: 504, w: 95 }, { p: 1, cx: 161, y: 67, w: 95 }],
     },
   };
   root.SIGN_TEMPLATES = T;
