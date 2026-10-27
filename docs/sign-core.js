@@ -128,7 +128,7 @@
       if (sigImg) for (const s of t.sigs) {
         const k = Math.min(s.w / sigImg.width, s.h / sigImg.height);
         const w = sigImg.width * k, h = sigImg.height * k;
-        page.drawImage(sigImg, { x: s.cx - w / 2, y: H - s.y, width: w, height: h });
+        pages[s.p || 0].drawImage(sigImg, { x: s.cx - w / 2, y: H - s.y, width: w, height: h });
       }
     }
     return await out.save();
