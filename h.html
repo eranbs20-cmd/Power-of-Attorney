@@ -37,6 +37,19 @@
   #toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 90px);left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
   #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:13px;text-align:center;line-height:1.5}
   #wv button{margin-top:6px;background:#fff;color:var(--accent);border:none;border-radius:6px;padding:5px 14px;font-weight:bold;font-family:inherit}
+  #gform{background:var(--paper);max-width:640px;margin:12px auto 0;border-radius:12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+  #gform h2{margin:0 0 4px;font-size:17px;color:var(--accent)}
+  #gform .sub{margin:0 0 12px;font-size:14px;color:#555;line-height:1.55}
+  .f{margin-bottom:11px}
+  .f label{display:block;font-size:14px;font-weight:bold;margin-bottom:4px}
+  .f input{width:100%;font-size:16px;padding:10px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;background:#fff}
+  .f input.bad{border-color:#c0392b}
+  .f .hint{font-size:12.5px;color:#777;margin-top:3px}
+  #id-thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  #id-thumbs img{height:70px;border-radius:6px;border:1px solid var(--line)}
+  #g-ok{width:100%;margin-top:4px}
+  #gsum{display:none;background:var(--paper);max-width:640px;margin:12px auto 0;border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.6;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+  #gsum button{background:none;border:none;color:var(--accent);font-weight:bold;font-family:inherit;font-size:14px;cursor:pointer;padding:0}
   .done{background:#e7f3ec;color:var(--ok);border-radius:8px;padding:8px 10px;font-size:14px;text-align:center;max-width:640px;margin:0 auto 9px;font-weight:bold}
 </style>
 </head>
@@ -47,6 +60,19 @@
   <h1 id="title">מסמך לחתימה</h1>
   <p id="intro">טוען את המסמך…</p>
 </header>
+<section id="gform" class="hide">
+  <h2>פרטי הערב</h2>
+  <p class="sub" id="g-sub"></p>
+  <div class="f"><label for="g-name">שם מלא</label><input id="g-name" autocomplete="name"></div>
+  <div class="f"><label for="g-id">מספר תעודת זהות</label><input id="g-id" inputmode="numeric" maxlength="9" autocomplete="off"><div class="hint">9 ספרות, כולל ספרת ביקורת</div></div>
+  <div class="f"><label for="g-rel" id="g-rel-l">קרבה</label><input id="g-rel" list="rels" autocomplete="off">
+    <datalist id="rels"><option value="אב"><option value="אם"><option value="אח"><option value="אחות"><option value="בן"><option value="בת"><option value="בן זוג"><option value="בת זוג"><option value="דוד"><option value="דודה"><option value="בן דוד"><option value="חבר"></datalist></div>
+  <div class="f"><label for="g-addr">כתובת מגורים</label><input id="g-addr" autocomplete="street-address"><div class="hint">רחוב, מספר בית ועיר</div></div>
+  <div class="f"><label for="g-file">צילום תעודת זהות</label><input id="g-file" type="file" accept="image/*" multiple>
+    <div class="hint">צלמו את תעודת הזהות (ואם יש, גם את הספח). אפשר לבחור עד 3 תמונות.</div><div id="id-thumbs"></div></div>
+  <button type="button" class="btn sign" id="g-ok">אישור פרטים</button>
+</section>
+<div id="gsum"></div>
 <div id="pages"></div>
 <div class="bar">
   <div id="done" class="done hide">✓ המסמך נחתם. שלחו אותו לעורך הדין ושמרו עותק לעצמכם.</div>
@@ -86,10 +112,23 @@
 <script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];}pdfjsLib.GlobalWorkerOptions.workerSrc='./lib/pdf.worker.min.js';</script>
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/h-core.js?v=1"></script>
+<script src="docs/h-core.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
-let META = null, ORIG = null, SIGNED = null, origHref = location.href;
+let META = null, ORIG = null, SIGNED = null, origHref = location.href, G = null, IDIMGS = [];
+const GUAR = () => META && META.mode === 'guarantor';
+function validId(v) { if (!/^\d{9}$/.test(v)) return false; let s = 0; for (let i = 0; i < 9; i++) { let x = +v[i] * (i % 2 ? 2 : 1); s += x > 9 ? x - 9 : x; } return s % 10 === 0; }
+async function toJpeg(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('לא ניתן לקרוא את התמונה ' + file.name)); i.src = url; });
+    const k = Math.min(1, 1800 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+    c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+    return { bytes: Uint8Array.from(atob(c.toDataURL('image/jpeg', 0.85).split(',')[1]), ch => ch.charCodeAt(0)), src: c.toDataURL('image/jpeg', 0.5) };
+  } finally { URL.revokeObjectURL(url); }
+}
+async function assets() { return { heebo: await bytes('Heebo-Bold.ttf'), latin: await bytes('docs/LiberationSans-Regular.ttf'), stampPng: await bytes('stamp.png') }; }
 function toast(msg, cls) {
   const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block';
   if (cls) setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'ok' ? 3000 : 8000);
@@ -132,7 +171,36 @@ function trimmedPng(canvas) {
   t.getContext('2d').drawImage(canvas, x0 - p, y0 - p, t.width, t.height, 0, 0, t.width, t.height);
   return Uint8Array.from(atob(t.toDataURL('image/png').split(',')[1]), ch => ch.charCodeAt(0));
 }
-const fileName = () => META.title + ' - ' + META.client + ' - חתום.pdf';
+const fileName = () => META.title + ' - ' + (GUAR() ? G.name : META.client) + ' - חתום.pdf';
+$('g-file').onchange = async () => {
+  const fs = Array.from($('g-file').files || []).slice(0, 3); IDIMGS = []; $('id-thumbs').innerHTML = '';
+  try { for (const f of fs) { const j = await toJpeg(f); IDIMGS.push(j.bytes); const im = document.createElement('img'); im.src = j.src; im.alt = 'צילום תעודת זהות'; $('id-thumbs').appendChild(im); } }
+  catch (e) { IDIMGS = []; $('id-thumbs').innerHTML = ''; toast(e.message + '. נסו לצלם שוב.', 'err'); }
+};
+$('g-ok').onclick = async () => {
+  const v = { name: $('g-name').value.trim().replace(/\s+/g, ' '), id: $('g-id').value.replace(/\D/g, ''), rel: $('g-rel').value.trim(), addr: $('g-addr').value.trim().replace(/\s+/g, ' ') };
+  const bad = [];
+  ['g-name', 'g-id', 'g-rel', 'g-addr'].forEach(i => $(i).classList.remove('bad'));
+  if (v.name.split(' ').length < 2) { bad.push('שם מלא (שם פרטי ומשפחה)'); $('g-name').classList.add('bad'); }
+  if (!validId(v.id)) { bad.push('מספר תעודת זהות תקין'); $('g-id').classList.add('bad'); }
+  if (!v.rel) { bad.push('קרבה'); $('g-rel').classList.add('bad'); }
+  if (v.addr.length < 5) { bad.push('כתובת'); $('g-addr').classList.add('bad'); }
+  if (!IDIMGS.length) bad.push('צילום תעודת זהות');
+  if (bad.length) { toast('חסר: ' + bad.join(', '), 'err'); return; }
+  G = v; toast('ממלא את הפרטים במסמך…');
+  try {
+    const prev = await H_CORE.buildSigned(PDFLib, fontkit, Object.assign({ meta: META, pdf: ORIG, sig: null, g: G, when: new Date() }, await assets()));
+    await renderPdf(prev);
+  } catch (e) { toast('שגיאה: ' + e.message, 'err'); return; }
+  $('gform').classList.add('hide');
+  $('gsum').innerHTML = ''; const d = document.createElement('div');
+  d.textContent = 'ערב: ' + G.name + ' · ת.ז. ' + G.id + ' · ' + G.rel + ' · ' + G.addr + ' · צילום ת.ז.: ' + IDIMGS.length + ' ';
+  const b = document.createElement('button'); b.textContent = 'עריכה'; b.onclick = () => { $('gsum').style.display = 'none'; $('gform').classList.remove('hide'); $('agree-row').classList.add('hide'); $('btn-sign').classList.add('hide'); $('agree').checked = false; $('btn-sign').disabled = true; };
+  d.appendChild(b); $('gsum').appendChild(d); $('gsum').style.display = 'block';
+  $('agree-row').classList.remove('hide'); $('btn-sign').classList.remove('hide');
+  $('intro').textContent = 'הפרטים מולאו בטבלת הערבים. קראו את שטר החוב ואת נוסח הערבות, סמנו שאתם מסכימים, ולחצו "חתימה".';
+  toast('✓ הפרטים מולאו במסמך', 'ok');
+};
 function download(blob, name) {
   const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000);
@@ -146,13 +214,12 @@ $('sig-save').onclick = async () => {
   if (!sig) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
   $('sig-modal').style.display = 'none'; toast('מטביע את החתימה…');
   try {
-    const out = await H_CORE.buildSigned(PDFLib, fontkit, {
-      meta: META, pdf: ORIG, sig, stampPng: await bytes('stamp.png'),
-      heebo: await bytes('Heebo-Bold.ttf'), latin: await bytes('docs/LiberationSans-Regular.ttf'),
-      when: new Date(), device: navigator.userAgent,
-    });
+    const out = await H_CORE.buildSigned(PDFLib, fontkit, Object.assign({
+      meta: META, pdf: ORIG, sig, g: G, idImgs: GUAR() ? IDIMGS : [], when: new Date(), device: navigator.userAgent,
+    }, await assets()));
     SIGNED = new Blob([out], { type: 'application/pdf' });
-    await renderPdf(out, META.marks[0].p + 1);
+    await renderPdf(out, GUAR() ? 1 : META.marks[0].p + 1);
+    $('gsum').style.display = 'none';
     $('agree-row').classList.add('hide'); $('btn-sign').classList.add('hide');
     $('btn-send').classList.remove('hide'); $('btn-copy').classList.remove('hide'); $('done').classList.remove('hide');
     $('intro').textContent = 'המסמך נחתם. בדקו את החתימה, ואז לחצו "שלח לעורך הדין". מומלץ לשמור גם עותק לעצמכם.';
@@ -163,7 +230,7 @@ $('btn-send').onclick = async () => {
   if (!SIGNED) return;
   const file = new File([SIGNED], fileName(), { type: 'application/pdf' });
   if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-    try { await navigator.share({ title: META.title + ' חתום', text: 'שלום עו"ד בן שושן, מצורף ' + META.title + ' חתום.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
+    try { await navigator.share({ title: META.title + ' חתום', text: 'שלום עו"ד בן שושן, מצורף ' + META.title + ' חתום' + (GUAR() ? ' (ערב לניסים לזר: ' + G.name + ')' : '') + '.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
     catch (se) { if (se.name === 'AbortError') return; }
   }
   download(SIGNED, fileName()); $('send-modal').style.display = 'flex';
@@ -188,8 +255,16 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
     ORIG = b64u(META.pdf.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')); delete META.pdf;
   } catch (e) { $('intro').textContent = 'לא ניתן לפתוח את המסמך. ייתכן שהקישור פגום או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
   document.title = META.title + ' - חתימה'; $('title').textContent = META.title;
-  $('intro').textContent = 'שלום ' + META.client + ', עברו על המסמך עד סופו, סמנו שקראתם ואתם מסכימים, ולחצו "חתימה".';
-  $('agree-text').textContent = 'קראתי את ' + META.title + ' ואת נספחיו במלואם, ואני מסכים לתנאיהם.';
+  if (GUAR()) {
+    $('intro').textContent = 'התבקשת לחתום כערב לשטר חוב של ' + META.client + ' על סך ' + META.amount + '. מלאו את פרטיכם, צרפו צילום תעודת זהות ולחצו "אישור פרטים".';
+    $('g-sub').textContent = 'הפרטים ימולאו בטבלת הערבים שבשטר החוב.';
+    $('g-rel-l').textContent = 'קרבה ל' + META.client;
+    $('agree-text').textContent = 'קראתי את שטר החוב ואת נוסח הערבות, ואני מסכים לערוב ביחד ולחוד לפירעון השטר במלואו.';
+    $('gform').classList.remove('hide'); $('agree-row').classList.add('hide'); $('btn-sign').classList.add('hide');
+  } else {
+    $('intro').textContent = 'שלום ' + META.client + ', עברו על המסמך עד סופו, סמנו שקראתם ואתם מסכימים, ולחצו "חתימה".';
+    $('agree-text').textContent = 'קראתי את ' + META.title + ' ואת נספחיו במלואם, ואני מסכים לתנאיהם.';
+  }
   try { await renderPdf(ORIG); } catch (e) { toast('שגיאה בהצגת המסמך: ' + e.message, 'err'); }
 })();
 </script>
