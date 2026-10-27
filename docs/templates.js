@@ -50,6 +50,38 @@
       // lawyer stamp (stamp.png), only on the signed copy: "חתימת עורך דין" and the waiver confirmation on page 2
       stamps: [{ cx: 161, y: 504, w: 95 }, { p: 1, cx: 161, y: 67, w: 95 }],
     },
+    // ---- appendices (no signature). `appendix` = description on the cover page; letters (א', ב'...) follow link order.
+    3: {
+      key: 'ptor', file: 'docs/ptor.pdf', title: 'הודעה על פטור מאגרה', appendix: 'הודעת הסיוע המשפטי על פטור מאגרה',
+      fields: [
+        { k: 'fileno', x0: 54, y: 105, s: 10, al: 'l', f: 'r' },
+        { k: 'hdate', x0: 54, y: 116.5, s: 10, al: 'l', f: 'r' },
+        { k: 'ldate', x0: 54, y: 128.5, s: 10, al: 'l', f: 'r' },
+        { k: 'name', x1: 372, y: 360.5, s: 10, al: 'r', f: 'r' },
+        { k: 'id', x1: 302.5, y: 360.5, s: 9.6, al: 'r', f: 'r' },
+      ],
+      sigs: [],
+    },
+    4: {
+      key: 'minui', file: 'docs/minui.pdf', title: 'כתב מינוי בגישה ישירה', appendix: 'כתב מינוי להענקת שירות משפטי בגישה ישירה',
+      fields: [
+        { k: 'fileno', x0: 54, y: 105, s: 10, al: 'l', f: 'r' },
+        { k: 'hdate', x0: 54, y: 116.5, s: 10, al: 'l', f: 'r' },
+        { k: 'ldate', x0: 54, y: 128.5, s: 10, al: 'l', f: 'r' },
+        { k: 'name', x1: 313, y: 316.5, s: 10, al: 'r', f: 'r' },
+        { k: 'id', x1: 293, y: 330.5, s: 10, al: 'r', f: 'r' },
+        { k: 'addr', x1: 371, y: 346.5, s: 10, al: 'r', f: 'r' },
+        { k: 'phone', x1: 311, y: 360.5, s: 10, al: 'r', f: 'r' },
+        { k: 'subject', x1: 536, y: 499.5, s: 10, al: 'r', f: 'r' },
+        { k: 'signer', x1: 217, y: 690.5, s: 10, al: 'r', f: 'r' },
+        { k: 'aid_lawyer', x1: 351, y: 725.5, s: 10, al: 'r', f: 'r' },
+      ],
+      sigs: [],
+    },
+    5: {
+      key: 'tz', file: null, title: 'צילום תעודת זהות', appendix: 'צילום תעודת זהות של המבקשת, כולל ספח',
+      idPhoto: true, fields: [], sigs: [],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;

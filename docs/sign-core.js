@@ -53,7 +53,12 @@
       .replace(/[()]/g, c => (c === '(' ? ')' : '(')); // brackets are not mirrored by the reversal
   }
   // getBytes(path) -> ArrayBuffer/Uint8Array ; sig: PNG/JPEG bytes or null ; dateStr: dd/mm/yyyy
-  async function build(PDFLib, fontkit, getBytes, docs, sig, dateStr) {
+  // extra.idPhoto: JPEG/PNG bytes of the client's ID (for templates with idPhoto)
+  const LETTERS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י'];
+  function needsIdPhoto(docs) { return docs.some(d => T[d.code].idPhoto); }
+  async function build(PDFLib, fontkit, getBytes, docs, sig, dateStr, extra) {
+    extra = extra || {};
+    let nApp = 0;
     const out = await PDFLib.PDFDocument.create();
     out.registerFontkit(fontkit);
     const fb = await out.embedFont(await getBytes('Heebo-Bold.ttf'));
@@ -63,6 +68,29 @@
     if (sig) { const u8 = new Uint8Array(sig); sigImg = (u8[0] === 0x89) ? await out.embedPng(u8) : await out.embedJpg(u8); }
     for (const d of docs) {
       const t = T[d.code];
+      const A4 = [595.28, 841.89];
+      if (t.appendix) { // cover page: "נספח X'" centred, bold, underlined, size 24, description below
+        const cv = out.addPage(A4);
+        const lab = rtl('נספח ' + LETTERS[nApp++] + "'"), lw = fb.widthOfTextAtSize(lab, 24);
+        cv.drawText(lab, { x: (A4[0] - lw) / 2, y: A4[1] / 2 + 20, size: 24, font: fb, color: black });
+        cv.drawLine({ start: { x: (A4[0] - lw) / 2, y: A4[1] / 2 + 15 }, end: { x: (A4[0] + lw) / 2, y: A4[1] / 2 + 15 }, thickness: 1.5, color: black });
+        const ds = rtl(t.appendix), dw = fr.widthOfTextAtSize(ds, 15);
+        cv.drawText(ds, { x: (A4[0] - dw) / 2, y: A4[1] / 2 - 22, size: 15, font: fr, color: black });
+      }
+      if (t.idPhoto) {
+        const pg = out.addPage(A4);
+        if (extra.idPhoto) {
+          const u8 = new Uint8Array(extra.idPhoto);
+          const im = (u8[0] === 0x89) ? await out.embedPng(u8) : await out.embedJpg(u8);
+          const k = Math.min((A4[0] - 60) / im.width, (A4[1] - 60) / im.height);
+          const w = im.width * k, h = im.height * k;
+          pg.drawImage(im, { x: (A4[0] - w) / 2, y: (A4[1] - h) / 2, width: w, height: h });
+        } else {
+          const ph = rtl('כאן יצורף צילום תעודת הזהות'), pw = fr.widthOfTextAtSize(ph, 16);
+          pg.drawText(ph, { x: (A4[0] - pw) / 2, y: A4[1] / 2, size: 16, font: fr, color: PDFLib.rgb(0.55, 0.55, 0.55) });
+        }
+        continue;
+      }
       const src = await PDFLib.PDFDocument.load(await getBytes(t.file));
       const pages = await out.copyPages(src, src.getPageIndices());
       pages.forEach(p => out.addPage(p));
@@ -76,10 +104,10 @@
         const font = f.f === 'r' ? fr : fb, color = f.f === 'r' ? black : blue;
         const txt = rtl(raw);
         let size = f.s || 10;
-        const maxW = f.al === 'r' ? 400 : (f.x1 - f.x0 - 4);
+        const maxW = (f.al === 'r' || f.al === 'l') ? 400 : (f.x1 - f.x0 - 4);
         let w = font.widthOfTextAtSize(txt, size);
         while (w > maxW && size > 6) { size -= 0.25; w = font.widthOfTextAtSize(txt, size); }
-        const x = f.al === 'r' ? f.x1 - w : f.x0 + (f.x1 - f.x0 - w) / 2;
+        const x = f.al === 'r' ? f.x1 - w : f.al === 'l' ? f.x0 : f.x0 + (f.x1 - f.x0 - w) / 2;
         pg.drawText(txt, { x, y: H - f.y, size, font, color });
       }
       for (const s of t.strikes || []) page.drawLine({ start: { x: s.x0, y: H - s.y }, end: { x: s.x1, y: H - s.y }, thickness: 1, color: blue });
@@ -102,7 +130,7 @@
     }
     return await out.save();
   }
-  const api = { pack, unpack, build, rtl, B64U };
+  const api = { pack, unpack, build, rtl, B64U, needsIdPhoto };
   root.SIGN_CORE = api;
   if (typeof module !== 'undefined') module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);
