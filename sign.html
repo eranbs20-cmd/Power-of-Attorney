@@ -80,8 +80,8 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=4"></script>
-<script src="docs/sign-core.js?v=4"></script>
+<script src="docs/templates.js?v=5"></script>
+<script src="docs/sign-core.js?v=5"></script>
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
@@ -203,9 +203,20 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
 })();
 (async function init() {
   const h = location.hash;
-  if (!h.startsWith('#d')) { $('intro').textContent = 'הקישור חסר. בקשו מעורך הדין קישור חדש.'; return; }
-  try { DOCS = SIGN_CORE.unpack(h.slice(2)); }
-  catch (e) { $('intro').textContent = 'הקישור פגום או לא שלם — בקשו מעורך הדין קישור חדש.'; return; }
+  try {
+    if (/^#k[a-z0-9]{6}[A-Za-z0-9_-]{22}$/.test(h)) {
+      // short link: #k<id><key> — the request is stored encrypted at docs/l/<id>.bin; the key exists only in the link
+      const id = h.slice(2, 8), key = SIGN_CORE.B64U.dec(h.slice(8));
+      const r = await fetch('docs/l/' + id + '.bin', { cache: 'no-store' });
+      if (!r.ok) throw new Error('gone');
+      const b = new Uint8Array(await r.arrayBuffer());
+      const k = await crypto.subtle.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
+      const plain = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(0, 12) }, k, b.slice(12)));
+      DOCS = SIGN_CORE.unpack(SIGN_CORE.B64U.enc(plain));
+    } else if (h.startsWith('#d')) {
+      DOCS = SIGN_CORE.unpack(h.slice(2));
+    } else { $('intro').textContent = 'הקישור חסר. בקשו מעורך הדין קישור חדש.'; return; }
+  } catch (e) { $('intro').textContent = 'הקישור פגום, לא שלם או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
   try { history.replaceState(null, '', location.pathname); } catch (e) {}
   NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
   const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
