@@ -124,6 +124,21 @@
       sigs: [{ p: 6, cx: 150, y: 199, w: 95, h: 38 }, { p: 6, cx: 262, y: 401, w: 80, h: 27 }],
       stamps: [{ p: 6, cx: 149, y: 612.6, w: 87 }],
     },
+    // ---- generic complete filing signed by a male declarant (same encrypted-file mechanism as 8).
+    // Coordinates below fit the Mordov update notice (affidavit on page index 3). For another filing add a new code.
+    9: {
+      key: 'fullM', file: 'enc:doc', encFile: true, title: 'הודעת עדכון ורשימת מחלוקות, כולל תצהיר',
+      confirm: 'קראתי את כל המסמך במלואו, על כל עמודיו, ואני מאשר שתוכן התצהיר נכון.',
+      intro: 'זה המסמך המלא שיוגש לבית המשפט. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בתצהיר.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'c_line', fixed: 'המצהיר אישר, לפני חתימתו, כי קרא את כל המסמך במלואו, על כל עמודיו, וכי תוכן תצהירו נכון.', signed: true,
+          p: 3, x1: 540, y: 610, s: 10.5, al: 'r', f: 'r' },
+        { k: 'c_label', fixed: 'תאריך החתימה הדיגיטלית:', signed: true, p: 3, x1: 540, y: 626, s: 10.5, al: 'r', f: 'r' },
+        { k: 'c_date', auto: 'date', signed: true, p: 3, x1: 413, y: 626, s: 10.5, al: 'r', f: 'r' },
+      ],
+      sigs: [{ p: 3, cx: 162, y: 327, w: 95, h: 38 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
