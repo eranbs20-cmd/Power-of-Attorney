@@ -81,8 +81,8 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=10"></script>
-<script src="docs/sign-core.js?v=10"></script>
+<script src="docs/templates.js?v=11"></script>
+<script src="docs/sign-core.js?v=11"></script>
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
@@ -241,7 +241,9 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
     li.textContent = t.appendix ? ('נספח ' + L[n++] + "' – " + t.title) : t.title; $('docs').appendChild(li); });
   if (NEED_ID) $('btn-id').style.display = '';
   CONFIRM = DOCS.map(d => SIGN_TEMPLATES[d.code].confirm).find(Boolean) || null;
+  const INTRO = DOCS.map(d => SIGN_TEMPLATES[d.code].intro).find(Boolean) || null;
   if (CONFIRM) { $('confirm-text').textContent = CONFIRM; $('confirm-wrap').style.display = 'block';
+    if (INTRO) $('intro').textContent = 'שלום ' + clientName() + ', ' + INTRO; else
     $('intro').textContent = 'שלום ' + clientName() + ', זה המסמך המלא. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בהצהרה ובתצהיר.'; }
   try { await render(); } catch (e) { toast('שגיאה בטעינת המסמכים: ' + e.message, 'err'); }
 })();
