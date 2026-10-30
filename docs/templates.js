@@ -139,6 +139,22 @@
       ],
       sigs: [{ p: 3, cx: 162, y: 345, w: 95, h: 38 }],
     },
+    // ---- complete filing signed by a female declarant: urgent-relief request (rabbinical court) with affidavit
+    // on page index 4 (Letter) and official form 6 on page index 9 (A4). Same encrypted-file mechanism as 8.
+    // Note: y is measured from the top of page 0 (Letter, 792pt) by sign-core, so the A4 signature uses 792-based y.
+    10: {
+      key: 'fullT', file: 'enc:doc', encFile: true, title: 'בקשה דחופה למתן סעד דחוף, כולל תצהיר וטופס 6',
+      confirm: 'קראתי את כל המסמך במלואו, על כל עמודיו, ואני מאשרת שתוכן התצהיר נכון.',
+      intro: 'זה המסמך המלא שיוגש לבית הדין. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, צלמי את תעודת הזהות כולל הספח בכפתור "צילום ת.ז", לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בתצהיר ובטופס 6.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'c_line', fixed: 'המצהירה אישרה, לפני חתימתה, כי קראה את כל המסמך במלואו, על כל עמודיו, וכי תוכן תצהירה נכון.', signed: true,
+          p: 4, x1: 540, y: 640, s: 10.5, al: 'r', f: 'r' },
+        { k: 'c_label', fixed: 'תאריך החתימה הדיגיטלית:', signed: true, p: 4, x1: 540, y: 656, s: 10.5, al: 'r', f: 'r' },
+        { k: 'c_date', auto: 'date', signed: true, p: 4, x1: 413, y: 656, s: 10.5, al: 'r', f: 'r' },
+      ],
+      sigs: [{ p: 4, cx: 162, y: 402, w: 95, h: 38 }, { p: 9, cx: 172, y: 300, w: 90, h: 34 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
