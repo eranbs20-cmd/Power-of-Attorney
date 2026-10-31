@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; base-uri 'none'; form-action 'none'">
+<title>הרצאת פרטים למזונות</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap">
+<style>
+  :root{--ink:#2b2340;--accent:#7c3aed;--ok:#1a6b3a;--warn:#b26a00;--paper:#fdfbf7;--line:#d4c9b8;--soft:#f7f5ff}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'David Libre',Arial,sans-serif;background:#f1eee8;color:var(--ink);direction:rtl;padding-bottom:120px}
+  header{background:var(--paper);padding:14px 16px;border-bottom:2px solid var(--accent)}
+  header h1{margin:0;font-size:19px;color:var(--accent)}
+  header p{margin:6px 0 0;font-size:14px;line-height:1.6;color:#444}
+  #progress{position:sticky;top:0;z-index:5;background:var(--accent);color:#fff;font-size:13px;font-weight:bold;padding:7px 16px;text-align:center}
+  details{margin:12px 10px 0;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  summary{list-style:none;cursor:pointer;padding:12px 14px;font-size:16px;font-weight:bold;color:var(--accent);display:flex;gap:8px;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .n{background:var(--accent);color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  summary .t{flex:1}
+  summary .st{font-size:12px;font-weight:bold;border-radius:20px;padding:3px 9px;background:#eee;color:#666;white-space:nowrap}
+  details.done summary .st{background:#e3f3e8;color:var(--ok)}
+  .body{padding:0 14px 12px}
+  .intro{font-size:13.5px;color:#555;line-height:1.55;margin:0 0 8px;background:var(--soft);border-radius:8px;padding:8px 10px}
+  .q{border-top:1px solid #eee;padding:10px 0}
+  .q:first-child{border-top:none}
+  .q > label,.q .lab{display:block;font-size:15px;font-weight:bold;line-height:1.35}
+  .q .help{display:block;font-weight:normal;font-size:12.5px;color:#666;margin-top:2px}
+  input[type=text],input[type=tel],input[type=number],textarea,select{width:100%;margin-top:6px;font-family:inherit;font-size:16px;border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff;color:var(--ink)}
+  textarea{min-height:64px;resize:vertical}
+  input:disabled,textarea:disabled{background:#f3f3f3;color:#999}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+  .chips button,.unk{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 12px;font-size:14px;font-family:inherit;cursor:pointer;color:var(--ink)}
+  .chips button.on,.unk.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .unk{font-size:12.5px;padding:4px 10px;margin-top:6px}
+  .rows .row{background:var(--soft);border-radius:8px;padding:8px;margin-top:8px;position:relative}
+  .rows .row .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .rows .row .grid .full{grid-column:1 / -1}
+  .rows .row label{font-size:12.5px;color:#555;display:block}
+  .rows .row input,.rows .row select{margin-top:2px;font-size:15px;padding:7px}
+  .rows .row .del{position:absolute;top:4px;left:6px;border:none;background:none;color:#a33;font-size:18px;cursor:pointer}
+  .addrow{margin-top:8px;border:1px dashed var(--accent);color:var(--accent);background:#fff;border-radius:8px;padding:8px 12px;font-family:inherit;font-size:14px;font-weight:bold;cursor:pointer;width:100%}
+  .docs{margin-top:10px;border:1px solid #e8e2f7;border-radius:10px;padding:8px 10px;background:#fcfbff}
+  .docs .dh{font-size:13px;font-weight:bold;color:var(--accent);margin-bottom:4px}
+  .doc{padding:6px 0;border-top:1px dashed #e6e0f4}
+  .doc:first-of-type{border-top:none}
+  .doc .top{display:flex;gap:8px;align-items:center}
+  .doc .nm{flex:1;font-size:14px;line-height:1.3}
+  .doc .nm small{display:block;color:#777;font-size:12px}
+  .doc .badge{font-size:11.5px;font-weight:bold;border-radius:20px;padding:3px 8px;white-space:nowrap;background:#eee;color:#666}
+  .doc.has .badge{background:#e3f3e8;color:var(--ok)} .doc.later .badge{background:#fff1dc;color:var(--warn)}
+  .doc .acts{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
+  .doc .acts button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 9px;font-size:13px;font-family:inherit;cursor:pointer;color:var(--ink)}
+  .doc .acts button.add{border-color:var(--accent);color:var(--accent);font-weight:bold}
+  .doc .acts button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .files{list-style:none;margin:5px 0 0;padding:0}
+  .files li{display:flex;align-items:center;gap:8px;font-size:12.5px;background:var(--soft);border-radius:6px;padding:4px 8px;margin-top:3px}
+  .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right}
+  .files li button{border:none;background:none;color:#a33;font-size:16px;cursor:pointer;padding:0 4px}
+  .sum{font-size:13px;color:var(--ok);font-weight:bold;margin-top:6px}
+  .next{margin-top:10px;width:100%;border:none;border-radius:8px;padding:10px;font-family:inherit;font-size:15px;font-weight:bold;background:var(--accent);color:#fff;cursor:pointer}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(253,251,247,.97);border-top:1px solid var(--line);z-index:20;text-align:center}
+  .bar button{width:100%;max-width:480px;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:bold;font-family:inherit;background:var(--ok);color:#fff;cursor:pointer}
+  .bar small{display:block;margin-top:5px;font-size:12px;color:#666}
+  #toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:14px;padding:18px;width:92%;max-width:520px;text-align:center}
+  .card h2{margin:0 0 6px;font-size:17px;color:var(--accent)}
+  .card p{margin:0 0 10px;font-size:14px;color:#444;line-height:1.6;text-align:right}
+  .card button{width:100%;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:bold;font-family:inherit;margin-top:8px;cursor:pointer}
+  #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:13px;text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="wv">⚠ כדי לצרף ולשלוח קבצים, פתחי את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"</div>
+<header>
+  <h1>הרצאת פרטים לתביעת מזונות · עו"ד ערן בן שושן</h1>
+  <p id="hello">שלום,</p>
+  <p>בית המשפט מחייב לצרף לתביעת המזונות טופס שנקרא <b>הרצאת פרטים</b>. התשובות שלך כאן ימלאו אותו. עני על מה שאת יודעת. על הצד השני מותר וגם תקין לסמן <b>לא יודעת</b>. בכל שלב אפשר לצרף מסמכים (📎). התשובות נשמרות בטלפון, כך שאפשר לסגור ולחזור. בסוף לחצי <b>שלח לעורך הדין</b>.</p>
+</header>
+<div id="progress"></div>
+<div id="form"></div>
+<div class="bar"><button type="button" id="send">📲 שלח לעורך הדין</button><small>אפשר לשלוח כמה פעמים. התשובות והקבצים לא נשמרים באתר, הם עוברים ישירות לוואטסאפ.</small></div>
+<input type="file" id="file" multiple accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx" style="display:none">
+<div class="modal" id="send-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:34px">✅</div>
+    <h2>הקבצים מוכנים</h2>
+    <p>הקבצים <b>ירדו</b> למכשיר. לחצי "פתח וואטסאפ", ובצ'אט עם עו"ד ערן בן שושן לחצי 📎 ← <b>מסמך</b>, בחרי את כל הקבצים שירדו ושלחי.</p>
+    <button type="button" id="send-wa" style="background:#25d366;color:#fff">📲 פתח וואטסאפ</button>
+    <button type="button" id="send-close" style="background:#f0f0f0;color:#555;font-weight:normal">סגור</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const LAWYER_WA = '972522499887';
+const $ = id => document.getElementById(id);
+// Generic questionnaire for Form 4 (טופס 4, הרצאת פרטים). No client data lives in this file.
+// Field types: t text, ta textarea, n number, ch chips (single choice), rows repeatable table.
+// unk:true adds a "לא יודעת" toggle. show: fn(answers) => bool.
+const YN = [['yes','כן'],['no','לא']];
+const YNU = [['yes','כן'],['no','לא'],['unk','לא יודעת']];
+const SECTIONS = [
+ { id:'me', title:'הפרטים שלך', intro:'כפי שמופיע בתעודת הזהות.', q:[
+   {k:'me.name', l:'שם מלא', t:'t'},
+   {k:'me.id', l:'מספר תעודת זהות', t:'t', inputmode:'numeric'},
+   {k:'me.birth', l:'תאריך לידה', t:'t', ph:'למשל 14.5.1990'},
+   {k:'me.address', l:'כתובת מגורים מלאה', t:'t', ph:'רחוב, מספר בית, דירה, עיר'},
+ ], docs:[['tz','תעודת זהות כולל הספח','צילום ברור של שני הצדדים ושל הספח']] },
+ { id:'other', title:'הצד השני (ההורה של הילדים)', intro:'מה שאת יודעת. אם משהו לא ידוע, סמני "לא יודעת".', q:[
+   {k:'other.name', l:'שם מלא', t:'t'},
+   {k:'other.id', l:'מספר תעודת זהות', t:'t', unk:true, inputmode:'numeric'},
+   {k:'other.birth', l:'תאריך לידה (גם בערך)', t:'t', unk:true},
+   {k:'other.address', l:'כתובת מגורים', t:'t', unk:true},
+   {k:'other.phone', l:'טלפון', t:'t', unk:true, inputmode:'tel'},
+ ]},
+ { id:'kids', title:'הילדים שעבורם מבקשים מזונות', intro:'רק הילדים המשותפים שלך ושל הצד השני.', q:[
+   {k:'kids', l:'ילדים', t:'rows', cols:[['name','שם מלא','full'],['id','ת.ז'],['birth','תאריך לידה']], min:1, add:'+ הוספת ילד/ה'},
+ ]},
+ { id:'family', title:'המצב בין ההורים ואצל מי הילדים', q:[
+   {k:'family.status', l:'מה הקשר ביניכם?', t:'ch', o:[['married','נשואים'],['separated','נשואים אבל פרודים'],['divorced','גרושים'],['never','לא היינו נשואים']]},
+   {k:'family.married_on', l:'תאריך הנישואין', t:'t', show:a=>['married','separated','divorced'].includes(g(a,'family.status'))},
+   {k:'family.since', l:'מתי נפרדתם? (תאריך, או חודש ושנה)', t:'t', show:a=>g(a,'family.status')&&g(a,'family.status')!=='married'},
+   {k:'family.custody', l:'אצל מי הילדים גרים?', t:'ch', o:[['me','אצלי'],['other','אצל הצד השני'],['shared','משמורת משותפת']]},
+   {k:'family.custody_since', l:'מאיזה תאריך?', t:'t'},
+   {k:'family.visits_then', l:'כמה זמן הילדים היו אצל הצד השני בעבר?', t:'t', ph:'למשל: כל סוף שבוע שני ופעם באמצע השבוע'},
+   {k:'family.visits_now', l:'וכמה זמן הם אצלו היום?', t:'t', ph:'למשל: לא לוקח בכלל, רק בחגים'},
+ ]},
+ { id:'prior', title:'הליכים קודמים והסכמים', q:[
+   {k:'prior.exists', l:'היו ביניכם בעבר הליכים בבית משפט או בבית דין, או הסכם על מזונות?', t:'ch', o:YN},
+   {k:'prior.what', l:'מה היה? (הסכם, פסק דין, תיק, איפה ומתי)', t:'ta', show:a=>g(a,'prior.exists')==='yes', ph:'למשל: הסכם שאושר בבית המשפט לענייני משפחה בבאר שבע ב-2018, מספר תיק אם ידוע'},
+   {k:'prior.decided', l:'מה נקבע? (סכום המזונות, מחציות, זמני שהות)', t:'ta', show:a=>g(a,'prior.exists')==='yes'},
+ ], docs:[['agreement','ההסכם, פסק הדין או ההחלטה','כל העמודים, כולל עמוד החתימות ואישור בית המשפט']] },
+ { id:'last', title:'תשלום המזונות', q:[
+   {k:'last.amount', l:'כמה הצד השני שילם בפעם האחרונה, לחודש? (₪)', t:'t', ph:'גם בקירוב'},
+   {k:'last.when', l:'מתי זה היה?', t:'t', ph:'למשל: יוני 2026'},
+   {k:'last.note', l:'משהו נוסף על התשלומים?', t:'ta', ph:'למשל: שילם כל חודש עד לפני 4 חודשים, אף פעם לא שילם מחציות'},
+ ], docs:[['bank_pay','תדפיס בנק שמראה את התשלום האחרון שקיבלת','']] },
+ { id:'income', title:'ההכנסות שלך בשנה האחרונה', intro:'כל מקור הכנסה בשורה: עבודה, הבטחת הכנסה, קצבת ילדים, נכות, מזונות, סיוע בשכר דירה. אם הסכום קבוע כל חודש, מספיקה שורה אחת.', q:[
+   {k:'income.work', l:'את עובדת?', t:'ch', o:[['yes','כן, שכירה'],['self','עצמאית'],['no','לא עובדת']]},
+   {k:'income.employer', l:'איפה את עובדת?', t:'t', show:a=>['yes','self'].includes(g(a,'income.work'))},
+   {k:'income.rows', l:'מקורות הכנסה', t:'rows', cols:[['source','מקור ההכנסה','full'],['months','אילו חודשים'],['gross','ברוטו לחודש ₪'],['net','נטו לחודש ₪']], min:1, add:'+ עוד מקור הכנסה'},
+ ], docs:[['pay','תלושי שכר של 12 החודשים האחרונים','אם את עובדת'],['bl','אישורים מביטוח לאומי','הבטחת הכנסה, קצבת ילדים, נכות, אבטלה']] },
+ { id:'his', title:'ההכנסות של הצד השני', intro:'מה שידוע לך. "לא יודעת" היא תשובה תקינה, ואז בית המשפט יחייב אותו למסור את הפרטים בעצמו.', q:[
+   {k:'his.known', l:'את יודעת במה הוא עובד?', t:'ch', o:YN},
+   {k:'his.job', l:'במה הוא עובד ואיפה?', t:'t', show:a=>g(a,'his.known')==='yes'},
+   {k:'his.amount', l:'כמה הוא מרוויח בערך בחודש? (₪)', t:'t', unk:true, show:a=>g(a,'his.known')==='yes'},
+   {k:'his.note', l:'עוד מה שידוע לך (עבודה נוספת, כסף בשחור, קצבאות)', t:'ta'},
+ ], docs:[['his_pay','מסמכים על ההכנסות שלו, אם יש לך','תלוש, צילום מסך, כל דבר']] },
+ { id:'assets', title:'רכוש', intro:'דירה, קרקע, עסק, חסכונות, קרנות, מניות.', q:[
+   {k:'assets.me', l:'רכוש שלך', t:'ta', none:'אין לי רכוש'},
+   {k:'assets.him', l:'רכוש של הצד השני', t:'ta', unk:true},
+   {k:'car.me', l:'רכב שלך (סוג ושנה)', t:'t', none:'אין לי רכב'},
+   {k:'car.him', l:'רכב של הצד השני', t:'t', unk:true, none:'אין לו רכב'},
+ ]},
+ { id:'debts', title:'חובות והלוואות', q:[
+   {k:'debts.me', l:'החובות שלך', t:'rows', cols:[['creditor','למי (בנק, הוצאה לפועל, אשראי)','full'],['monthly','תשלום חודשי ₪'],['total','סך החוב ₪']], none:'אין לי חובות', add:'+ עוד חוב'},
+   {k:'debts.him', l:'החובות של הצד השני', t:'ta', unk:true},
+ ], docs:[['debts_doc','אישורים על החובות','דוח יתרה, מכתב מהבנק, תיק הוצאה לפועל']] },
+ { id:'home', title:'דירת המגורים', q:[
+   {k:'home.type', l:'הדירה שאת גרה בה:', t:'ch', o:[['rent','שכורה'],['own','בבעלותי'],['public','דיור ציבורי'],['family','אצל משפחה']]},
+   {k:'home.rent', l:'שכר דירה לחודש (₪)', t:'t', show:a=>['rent','public'].includes(g(a,'home.type'))},
+   {k:'home.aid', l:'סיוע בשכר דירה לחודש, אם יש (₪)', t:'t', show:a=>['rent','public'].includes(g(a,'home.type'))},
+   {k:'home.mortgage', l:'משכנתא לחודש, אם יש (₪)', t:'t', show:a=>g(a,'home.type')==='own'},
+   {k:'home.rooms', l:'כמה חדרים?', t:'t', inputmode:'decimal'},
+   {k:'home.persons', l:'כמה אנשים גרים בדירה (כולל אותך)?', t:'t', inputmode:'numeric'},
+   {k:'home.him_address', l:'איפה הצד השני גר? (אם שונה ממה שכתבת קודם)', t:'t', unk:true},
+   {k:'home.him_rooms', l:'כמה חדרים בדירה שלו?', t:'t', unk:true},
+   {k:'home.him_persons', l:'כמה אנשים גרים איתו?', t:'t', unk:true},
+ ], docs:[['lease','חוזה השכירות','אם הדירה שכורה'],['aid','אישור על סיוע בשכר דירה','אם יש']] },
+ { id:'bank', title:'חשבונות בנק', intro:'כל חשבון שלך, לבד או משותף. צריך לצרף תדפיסים של החודשיים האחרונים.', q:[
+   {k:'banks', l:'חשבונות', t:'rows', cols:[['bank','בנק','full'],['branch','סניף'],['account','מספר חשבון']], min:1, add:'+ עוד חשבון'},
+ ], docs:[['bank_st','תדפיסי חשבון של החודשיים האחרונים','לכל חשבון']] },
+ { id:'exp', title:'ההוצאות החודשיות על הילדים והבית', intro:'סכום משוער לחודש, לכל הילדים יחד. אם לא בטוחה, הערכה מספיקה. עורך הדין יחשב מזה את הסכום שנבקש.', q:[
+   {k:'exp.food', l:'אוכל וטיפוח', t:'n'},
+   {k:'exp.clothes', l:'ביגוד והנעלה', t:'n'},
+   {k:'exp.school', l:'גן, בית ספר, ציוד וטיולים', t:'n'},
+   {k:'exp.after', l:'צהרון, חוגים, מטפלת', t:'n'},
+   {k:'exp.health', l:'בריאות (תרופות, שיניים, משקפיים, טיפולים)', t:'n'},
+   {k:'exp.other_kids', l:'אחר על הילדים (טלפון, הסעות, דמי כיס)', t:'n'},
+   {k:'exp.arnona', l:'ארנונה', t:'n'},
+   {k:'exp.electric', l:'חשמל', t:'n'},
+   {k:'exp.water', l:'מים', t:'n'},
+   {k:'exp.gas', l:'גז', t:'n'},
+   {k:'exp.vaad', l:'ועד בית', t:'n'},
+   {k:'exp.net', l:'אינטרנט וטלוויזיה', t:'n'},
+   {k:'exp.special', l:'הוצאות מיוחדות (חוגים, טיפול, צורך מיוחד) שכדאי שעורך הדין ידע', t:'ta'},
+ ], docs:[['receipts','קבלות על הוצאות הילדים','גן, צהרון, חוגים, טיפולים, רפואה'],['bills','חשבונות הבית','ארנונה, חשמל, מים, גז']] },
+ { id:'cit', title:'אזרחות ודת', q:[
+   {k:'cit.me', l:'האזרחות והדת שלך', t:'t', ph:'למשל: ישראלית, יהודייה'},
+   {k:'cit.him', l:'האזרחות והדת של הצד השני', t:'t', unk:true},
+   {k:'cit.kids', l:'האזרחות והדת של הילדים', t:'t'},
+ ]},
+ { id:'others', title:'ילדים נוספים ובני זוג', q:[
+   {k:'hiskids.has', l:'יש לצד השני ילדים נוספים (לא ממך)?', t:'ch', o:YNU},
+   {k:'hiskids.rows', l:'הילדים הנוספים שלו', t:'rows', cols:[['name','שם','full'],['age','גיל'],['pays','משלם להם מזונות? כמה']], show:a=>g(a,'hiskids.has')==='yes', min:1, add:'+ עוד ילד'},
+   {k:'partner.has', l:'יש לצד השני בן או בת זוג חדשים?', t:'ch', o:YNU},
+   {k:'partner.note', l:'מה ידוע לך על בן/בת הזוג (עבודה, ילדים שגרים איתם)?', t:'ta', show:a=>g(a,'partner.has')==='yes'},
+   {k:'mykids.has', l:'יש לך ילדים נוספים מקשר אחר, שגרים איתך?', t:'ch', o:YN},
+   {k:'mykids.rows', l:'הילדים הנוספים שלך', t:'rows', cols:[['name','שם','full'],['age','גיל'],['pays','אביו משלם מזונות? כמה']], show:a=>g(a,'mykids.has')==='yes', min:1, add:'+ עוד ילד'},
+ ]},
+ { id:'end', title:'משהו נוסף?', q:[
+   {k:'notes', l:'כל דבר שחשוב שעורך הדין ידע', t:'ta'},
+ ], docs:[['other','כל מסמך אחר שנראה לך חשוב','']] },
+];
+// ---------- state ----------
+let A = {};            // answers by key
+const F = {};          // docs: key -> {files:[File], state:''}
+let current = null;
+let CLIENT = ''; try { CLIENT = decodeURIComponent(location.hash.slice(1)).replace(/[^֐-׿A-Za-z \-']/g, '').slice(0, 30).trim(); } catch (e) {}
+const SKEY = 't4:' + (CLIENT || 'x');
+function g(a, k) { return a[k]; }
+function save() { try { localStorage.setItem(SKEY, JSON.stringify({ A, D: Object.fromEntries(Object.entries(F).map(([k, v]) => [k, v.state])) })); } catch (e) {} }
+function load() { try { const s = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (s) { A = s.A || {}; for (const [k, st] of Object.entries(s.D || {})) F[k] = { files: [], state: st }; } } catch (e) {} }
+function toast(msg, cls) { const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block'; setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'err' ? 6000 : 2600); }
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function filled(q) {
+  if (q.show && !q.show(A)) return true;
+  if (A[q.k + '#']) return true;
+  const v = A[q.k];
+  if (q.t === 'rows') return Array.isArray(v) && v.some(r => Object.values(r).some(x => String(x || '').trim()));
+  if (q.t === 'n') return v !== undefined && v !== '';
+  return !!String(v || '').trim();
+}
+function secDone(s) { return s.q.every(filled); }
+let openId = null;
+function draw() {
+  const root = $('form'); const keepOpen = [...root.querySelectorAll('details[open]')].map(d => d.dataset.id);
+  root.innerHTML = ''; let done = 0;
+  SECTIONS.forEach((s, si) => {
+    const dn = secDone(s); if (dn) done++;
+    const d = el('details', dn ? 'done' : ''); d.dataset.id = s.id;
+    if (keepOpen.includes(s.id) || openId === s.id) d.open = true;
+    const sm = el('summary'); sm.appendChild(el('span', 'n', String(si + 1))); sm.appendChild(el('span', 't', s.title)); sm.appendChild(el('span', 'st', dn ? '✓ הושלם' : 'לא הושלם'));
+    d.appendChild(sm); const b = el('div', 'body');
+    if (s.intro) b.appendChild(el('p', 'intro', s.intro));
+    for (const q of s.q) { if (q.show && !q.show(A)) continue; b.appendChild(drawQ(q)); }
+    if (s.docs) b.appendChild(drawDocs(s.docs));
+    if (s.id === 'exp') { const sum = el('div', 'sum'); sum.id = 'expsum'; b.appendChild(sum); }
+    if (si < SECTIONS.length - 1) { const nx = el('button', 'next', 'המשך ←'); nx.type = 'button'; nx.onclick = () => { openId = SECTIONS[si + 1].id; d.open = false; draw(); const nd = document.querySelector('details[data-id="' + openId + '"]'); if (nd) { nd.open = true; nd.scrollIntoView({ behavior: 'smooth', block: 'start' }); } openId = null; }; b.appendChild(nx); }
+    d.appendChild(b); root.appendChild(d);
+  });
+  $('progress').textContent = 'הושלמו ' + done + ' מתוך ' + SECTIONS.length + ' חלקים';
+  expSum();
+}
+function status() {
+  let done = 0;
+  for (const s of SECTIONS) { const dn = secDone(s); if (dn) done++; const d = document.querySelector('details[data-id="' + s.id + '"]'); if (!d) continue; d.classList.toggle('done', dn); d.querySelector('.st').textContent = dn ? '✓ הושלם' : 'לא הושלם'; }
+  $('progress').textContent = 'הושלמו ' + done + ' מתוך ' + SECTIONS.length + ' חלקים';
+}
+function expSum() { const e = $('expsum'); if (!e) return; let t = 0; for (const k in A) if (k.startsWith('exp.') && !k.endsWith('#') && k !== 'exp.special') t += Number(A[k]) || 0; e.textContent = t ? 'סה"כ הוצאות חודשיות שהזנת: ' + t.toLocaleString('he-IL') + ' ₪' : ''; }
+function flagBtn(q, kind, txt) {
+  const on = A[q.k + '#'] === kind; const b = el('button', 'unk' + (on ? ' on' : ''), txt); b.type = 'button';
+  b.onclick = () => { if (on) delete A[q.k + '#']; else A[q.k + '#'] = kind; save(); draw(); }; return b;
+}
+function drawQ(q) {
+  const w = el('div', 'q'); const lab = el('label', null, q.l); if (q.help) lab.appendChild(el('span', 'help', q.help)); w.appendChild(lab);
+  const flagged = A[q.k + '#'];
+  if (q.t === 't' || q.t === 'n' || q.t === 'ta') {
+    const i = q.t === 'ta' ? el('textarea') : el('input'); if (q.t !== 'ta') { i.type = 'text'; if (q.t === 'n') i.inputMode = 'numeric'; else if (q.inputmode) i.inputMode = q.inputmode; }
+    if (q.t === 'n') i.placeholder = '₪ לחודש'; if (q.ph) i.placeholder = q.ph;
+    i.value = A[q.k] || ''; i.disabled = !!flagged;
+    i.oninput = () => { A[q.k] = i.value; save(); if (q.t === 'n') expSum(); };
+    i.onchange = () => status();
+    w.appendChild(i);
+  } else if (q.t === 'ch') {
+    const c = el('div', 'chips');
+    for (const [v, txt] of q.o) { const b = el('button', A[q.k] === v ? 'on' : '', txt); b.type = 'button'; b.onclick = () => { A[q.k] = A[q.k] === v ? '' : v; save(); draw(); }; c.appendChild(b); }
+    w.appendChild(c);
+  } else if (q.t === 'rows') {
+    if (!Array.isArray(A[q.k])) A[q.k] = []; const rows = A[q.k];
+    if (!flagged && rows.length < (q.min || 0)) rows.push({});
+    const box = el('div', 'rows');
+    if (!flagged) rows.forEach((r, ri) => {
+      const row = el('div', 'row'); const gr = el('div', 'grid');
+      for (const [ck, cl, full] of q.cols) { const lw = el('div', full ? 'full' : ''); const l = el('label', null, cl); const i = el('input'); i.type = 'text'; i.value = r[ck] || ''; i.oninput = () => { r[ck] = i.value; save(); }; i.onchange = () => status(); l.appendChild(i); lw.appendChild(l); gr.appendChild(lw); }
+      row.appendChild(gr);
+      if (rows.length > 1) { const x = el('button', 'del', '✕'); x.type = 'button'; x.setAttribute('aria-label', 'מחיקת שורה'); x.onclick = () => { rows.splice(ri, 1); save(); draw(); }; row.appendChild(x); }
+      box.appendChild(row);
+    });
+    w.appendChild(box);
+    if (!flagged) { const ad = el('button', 'addrow', q.add || '+ הוספה'); ad.type = 'button'; ad.onclick = () => { rows.push({}); save(); draw(); }; w.appendChild(ad); }
+  }
+  if (q.unk || q.none) { const fl = el('div'); if (q.none) fl.appendChild(flagBtn(q, 'none', q.none)); if (q.unk) { if (q.none) fl.appendChild(document.createTextNode(' ')); fl.appendChild(flagBtn(q, 'unk', 'לא יודעת')); } w.appendChild(fl); }
+  return w;
+}
+function drawDocs(docs) {
+  const box = el('div', 'docs'); box.appendChild(el('div', 'dh', '📎 מסמכים לצרף'));
+  for (const [k, name, why] of docs) {
+    const s = F[k] || (F[k] = { files: [], state: '' });
+    const it = el('div', 'doc' + (s.files.length ? ' has' : s.state ? ' ' + s.state : ''));
+    const top = el('div', 'top'); const nm = el('div', 'nm', name); if (why) nm.appendChild(el('small', null, why));
+    top.appendChild(nm); top.appendChild(el('span', 'badge', s.files.length ? '📎 ' + s.files.length : s.state === 'none' ? '🚫 אין לי' : s.state === 'later' ? '⏳ בהמשך' : 'עוד לא')); it.appendChild(top);
+    const acts = el('div', 'acts');
+    const add = el('button', 'add', '📎 צרף'); add.type = 'button'; add.onclick = () => { current = k; $('file').click(); }; acts.appendChild(add);
+    for (const [st, txt] of [['none', '🚫 אין לי'], ['later', '⏳ אשלח בהמשך']]) { const b = el('button', s.state === st ? 'on' : '', txt); b.type = 'button'; b.onclick = () => { s.state = s.state === st ? '' : st; save(); draw(); }; acts.appendChild(b); }
+    it.appendChild(acts);
+    if (s.files.length) { const ul = el('ul', 'files'); s.files.forEach((f, i) => { const li = el('li'); li.appendChild(el('span', null, f.name)); const x = el('button', null, '🗑'); x.type = 'button'; x.setAttribute('aria-label', 'מחק ' + f.name); x.onclick = () => { s.files.splice(i, 1); draw(); }; li.appendChild(x); ul.appendChild(li); }); it.appendChild(ul); }
+    box.appendChild(it);
+  }
+  return box;
+}
+async function shrink(f) {
+  if (!/^image\//.test(f.type) || f.size < 900000) return f;
+  try { const bmp = await createImageBitmap(f); const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+    return new File([blob], f.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) { return f; }
+}
+$('file').onchange = async e => {
+  const fs = [...e.target.files]; e.target.value = ''; if (!fs.length || !current) return;
+  const s = F[current]; for (const f of fs) s.files.push(await shrink(f)); s.state = ''; save();
+  draw(); toast('✓ צורפו ' + fs.length + ' קבצים', 'ok');
+};
+// ---------- output ----------
+function docName(k) { for (const s of SECTIONS) for (const d of (s.docs || [])) if (d[0] === k) return d[1]; return k; }
+function payload() {
+  const out = { form: 't4', v: 1, client: CLIENT, sent: new Date().toISOString(), answers: {}, flags: {}, docs: {} };
+  for (const s of SECTIONS) for (const q of s.q) {
+    if (q.show && !q.show(A)) continue;
+    if (A[q.k + '#']) out.flags[q.k] = A[q.k + '#'];
+    let v = A[q.k]; if (q.t === 'rows' && Array.isArray(v)) v = v.filter(r => Object.values(r).some(x => String(x || '').trim()));
+    if (v !== undefined && v !== '' && !(Array.isArray(v) && !v.length)) out.answers[q.k] = v;
+  }
+  for (const [k, s] of Object.entries(F)) out.docs[k] = { name: docName(k), files: s.files.map(f => f.name), state: s.files.length ? 'has' : s.state || 'open' };
+  return out;
+}
+function readable(p) {
+  const L = ['הרצאת פרטים, תשובות' + (CLIENT ? ' של ' + CLIENT : ''), 'נשלח: ' + new Date().toLocaleString('he-IL'), ''];
+  const lab = { unk: 'לא יודעת', none: 'אין' };
+  for (const s of SECTIONS) { const lines = [];
+    for (const q of s.q) { if (q.show && !q.show(A)) continue; const k = q.k;
+      if (p.flags[k]) { lines.push('• ' + q.l + ': ' + lab[p.flags[k]]); continue; }
+      const v = p.answers[k]; if (v === undefined) { lines.push('• ' + q.l + ': ❔ לא נענה'); continue; }
+      if (q.t === 'rows') { lines.push('• ' + q.l + ':'); v.forEach((r, i) => lines.push('   ' + (i + 1) + '. ' + q.cols.map(([ck, cl]) => r[ck] ? cl + ': ' + r[ck] : '').filter(Boolean).join(' | '))); }
+      else if (q.t === 'ch') lines.push('• ' + q.l + ': ' + ((q.o.find(o => o[0] === v) || [, v])[1]));
+      else lines.push('• ' + q.l + ': ' + v + (q.t === 'n' ? ' ₪' : ''));
+    }
+    for (const d of (s.docs || [])) { const x = p.docs[d[0]]; if (!x) continue; lines.push('📎 ' + d[1] + ': ' + (x.state === 'has' ? 'צורפו ' + x.files.length : x.state === 'none' ? 'אין לי' : x.state === 'later' ? 'אשלח בהמשך' : 'לא טופל')); }
+    L.push('— ' + s.title + ' —', ...lines, '');
+  }
+  return L.join('\n');
+}
+function files() {
+  const out = []; let n = 0;
+  for (const s of SECTIONS) for (const [k, name] of (s.docs || [])) { const st = F[k]; if (!st) continue;
+    st.files.forEach((f, i) => { n++; const ext = (f.name.match(/\.[A-Za-z0-9]+$/) || [''])[0];
+      out.push(new File([f], String(n).padStart(2, '0') + ' ' + name.replace(/[\\/:*?"<>|]/g, '').slice(0, 45) + (st.files.length > 1 ? ' ' + (i + 1) : '') + ext, { type: f.type })); }); }
+  return out;
+}
+$('send').onclick = async () => {
+  const p = payload(); const fl = files(); const suffix = CLIENT ? ' - ' + CLIENT : '';
+  const js = new File([JSON.stringify(p, null, 1)], '00 הרצאת פרטים' + suffix + '.json', { type: 'application/json' });
+  const tx = new File([readable(p)], '00 תשובות הרצאת פרטים' + suffix + '.txt', { type: 'text/plain' });
+  const all = [tx, js, ...fl];
+  const done = SECTIONS.filter(secDone).length;
+  if (done < SECTIONS.length && !confirm('עדיין לא הושלמו ' + (SECTIONS.length - done) + ' חלקים. לשלוח בכל זאת? אפשר להשלים ולשלוח שוב אחר כך.')) return;
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: all })) {
+    try { await navigator.share({ title: 'הרצאת פרטים', text: 'הרצאת פרטים' + suffix, files: all }); toast('נשלח ✓', 'ok'); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  for (const f of all) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); }
+  $('send-modal').style.display = 'flex';
+};
+$('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
+$('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+window.addEventListener('beforeunload', e => { if (Object.values(F).some(s => s.files.length)) { e.preventDefault(); e.returnValue = ''; } });
+(function inApp() { const ua = navigator.userAgent || ''; if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block'; })();
+$('hello').textContent = 'שלום' + (CLIENT ? ' ' + CLIENT : '') + ',';
+load(); openId = SECTIONS.find(s => !secDone(s))?.id || null; draw(); openId = null;
+</script>
+</body>
+</html>
