@@ -102,12 +102,12 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=17"></script>
+<script src="docs/templates.js?v=18"></script>
 <script src="docs/sign-core.js?v=12"></script>
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
-let CONFIRM = null, DOCS = null, SIG = null, IDPHOTO = null, IDSEFACH = null, STAMP = null, NEED_ID = false, previewURL = null, origHref = location.href;
+let CONFIRM = null, DOCS = null, SIG = null, IDPHOTO = null, IDSEFACH = null, STAMP = null, NEED_ID = false, NO_SIGN = false, previewURL = null, origHref = location.href;
 const cache = {};
 async function getBytes(p) {
   if (cache[p]) return cache[p];
@@ -185,7 +185,7 @@ $('sig-save').onclick = async () => {
   catch (e) { toast('שגיאה: ' + e.message, 'err'); }
 };
 $('open-full').onclick = () => { if (previewURL) window.open(previewURL, '_blank'); };
-function updateSend() { $('btn-send').disabled = !SIG; } // a missing ID photo is caught on click, with a pop-up
+function updateSend() { $('btn-send').disabled = !(SIG || NO_SIGN); } // a missing ID photo is caught on click, with a pop-up
 // ID: two photos — the front of the card, then the ספח (the attached leaf with the address and children)
 function idDone() { return !!(IDPHOTO && IDSEFACH); }
 function idLabel() {
@@ -216,16 +216,16 @@ $('id-input').onchange = async e => {
   e.target.value = '';
 };
 $('btn-send').onclick = async () => {
-  if (!SIG) { toast('יש לחתום תחילה', 'err'); return; }
+  if (!SIG && !NO_SIGN) { toast('יש לחתום תחילה', 'err'); return; }
   if (NEED_ID && !idDone()) { $('id-modal-text').textContent = 'אי אפשר לשלוח לפני שמצרפים ' + idMissing() + '. צלמי בבירור, ואז לחצי שוב "שלח לעורך הדין".'; $('id-modal').style.display = 'flex'; return; }
   try {
     const blob = await render();
     const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
     const label = main.length === 1 ? SIGN_TEMPLATES[main[0].code].title.replace(/[()]/g, '').trim() : 'מסמכים';
-    const name = label + ' חתום - ' + clientName() + '.pdf';
+    const name = label + (NO_SIGN ? '' : ' חתום') + ' - ' + clientName() + '.pdf';
     const file = new File([blob], name, { type: 'application/pdf' });
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ title: 'מסמכים חתומים', text: 'שלום, חתמתי על המסמכים.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
+      try { await navigator.share({ title: 'מסמכים חתומים', text: NO_SIGN ? 'שלום, מצורפים צילום תעודת הזהות והספח.' : 'שלום, חתמתי על המסמכים.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
       catch (se) { if (se.name === 'AbortError') return; }
     }
     const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name;
@@ -304,6 +304,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   } catch (e) { $('intro').textContent = 'הקישור פגום, לא שלם או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
   try { history.replaceState(null, '', location.pathname); } catch (e) {}
   NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
+  NO_SIGN = DOCS.every(d => SIGN_TEMPLATES[d.code].noSign);
   const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
   $('intro').textContent = 'שלום ' + clientName() + ', ' + (main.length === 1 ? 'זה המסמך לחתימה. עברו עליו' : 'אלה המסמכים לחתימה. עברו עליהם') +
     (NEED_ID ? ', צלמו בכפתור הצילום את תעודת הזהות מקדימה ואחר כך את הספח (שתי תמונות)' : '') + ', לחצו "חתימה", ואז "שלח לעורך הדין".';
@@ -311,6 +312,8 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   DOCS.forEach(d => { const t = SIGN_TEMPLATES[d.code], li = document.createElement('li');
     li.textContent = t.appendix ? ('נספח ' + L[n++] + "' – " + t.title) : t.title; $('docs').appendChild(li); });
   if (NEED_ID) $('btn-id').style.display = '';
+  if (NO_SIGN) { $('btn-sign').style.display = 'none'; updateSend();
+    $('intro').textContent = 'שלום ' + clientName() + ', כאן מצרפים רק צילומים, בלי חתימה. לחצי על כפתור הצילום וצלמי את תעודת הזהות מקדימה, אחר כך את הספח, ואז לחצי "שלח לעורך הדין".'; }
   buildAsk();
   CONFIRM = DOCS.map(d => SIGN_TEMPLATES[d.code].confirm).find(Boolean) || null;
   const INTRO = DOCS.map(d => SIGN_TEMPLATES[d.code].intro).find(Boolean) || null;

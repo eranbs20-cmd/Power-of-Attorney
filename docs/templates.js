@@ -184,6 +184,11 @@
       ],
       sigs: [{ p: 2, cx: 150, y: 352, w: 105, h: 40 }],
     },
+    // ---- ID photos only (front + ספח), no signature: for replacing the ID appendix of documents already signed
+    13: {
+      key: 'idOnly', file: null, title: 'צילום תעודת זהות וספח', idPhoto: true, noSign: true,
+      fields: [{ k: 'name', hidden: true }], sigs: [],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
