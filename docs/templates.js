@@ -172,6 +172,18 @@
       sigs: [{ cx: 160, y: 414, w: 110, h: 40 }, { cx: 160, y: 750, w: 110, h: 40 }],
       stamps: [{ cx: 160, y: 562, w: 95 }, { p: 1, cx: 160, y: 128, w: 95 }],
     },
+    // ---- client fee agreement (Eran's own docx, Letter, 3 pages). Stored encrypted like 8-11. The signing date is
+    // written on the "נערך ונחתם ביום" line only on the signed copy; the client's signature goes on page index 2.
+    12: {
+      key: 'feeF', file: 'enc:doc', encFile: true, title: 'הסכם שכר טרחה',
+      confirm: 'קראתי את כל ההסכם, על כל עמודיו, ואני מסכימה לתנאיו.',
+      intro: 'זה הסכם שכר הטרחה. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". תאריך החתימה ייכנס להסכם אוטומטית.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'date', auto: 'date', signed: true, x0: 318, x1: 438, y: 114.5, s: 11.5, f: 'r' },
+      ],
+      sigs: [{ p: 2, cx: 150, y: 352, w: 105, h: 40 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
