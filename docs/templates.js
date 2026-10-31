@@ -155,6 +155,21 @@
       ],
       sigs: [{ p: 4, cx: 162, y: 402, w: 95, h: 38 }, { p: 9, cx: 172, y: 300, w: 90, h: 34 }],
     },
+    // ---- the legal-aid economic-eligibility affidavit exactly as issued for this client (attachAEM.pdf, Letter,
+    // 2 pages, incl. sections 4-5). Stored encrypted like 8-10. Lawyer name/date/stamp appear only once signed.
+    11: {
+      key: 'aidF', file: 'enc:doc', encFile: true, title: 'תצהיר זכאות לסיוע משפטי',
+      confirm: 'קראתי את התצהיר במלואו, ואני מאשרת שתוכנו נכון.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'date', auto: 'date', x0: 365, x1: 538, y: 747, s: 11 },
+        { k: 'l_name', fixed: 'ערן בן שושן', signed: true, x0: 298, x1: 501, y: 467, s: 11 },
+        { k: 'l_date1', auto: 'date', signed: true, x0: 107, x1: 195, y: 469, s: 10.5, white: [107, 458, 195, 473] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 365, x1: 538, y: 127, s: 11 },
+      ],
+      sigs: [{ cx: 160, y: 414, w: 110, h: 40 }, { cx: 160, y: 750, w: 110, h: 40 }],
+      stamps: [{ cx: 160, y: 562, w: 95 }, { p: 1, cx: 160, y: 128, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
