@@ -34,6 +34,13 @@
   .row{display:flex;gap:8px;margin-top:10px}
   .row button{flex:1;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
   #toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 80px);left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  #ask{display:none;background:var(--paper);margin:10px;border-radius:12px;padding:12px 14px;border:2px solid #e0b252}
+  #ask h2{margin:0 0 4px;font-size:16px;color:var(--accent)}
+  #ask p{margin:0 0 8px;font-size:13px;color:#555;line-height:1.5}
+  #ask label{display:block;font-size:13px;font-weight:bold;margin:8px 0 3px}
+  #ask input{width:100%;padding:9px 10px;font-size:16px;border:1px solid var(--line);border-radius:8px;font-family:inherit;direction:rtl}
+  #ask input.bad{border-color:#c0392b;background:#fdecea}
+  #ask .save{margin-top:12px;width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px;font-size:15px;font-weight:bold;font-family:inherit;cursor:pointer}
   #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:12px;text-align:center;line-height:1.5}
 </style>
 </head>
@@ -46,6 +53,11 @@
   <ol id="docs"></ol>
   <label id="confirm-wrap" style="display:none;margin:8px 0 0;padding:8px 10px;background:#fff7e6;border:1px solid #e0b252;border-radius:8px;font-size:14px;font-weight:bold;line-height:1.5;cursor:pointer"><input type="checkbox" id="confirm-read" style="width:18px;height:18px;vertical-align:middle;margin-left:6px"><span id="confirm-text"></span></label>
 </header>
+<section id="ask" aria-labelledby="ask-title"><h2 id="ask-title"></h2>
+  <p>מלאי את הפרטים, לחצי "שמור פרטים" ובדקי שהם הופיעו במסמך. שדות עם * הם חובה.</p>
+  <div id="ask-fields"></div>
+  <button type="button" class="save" id="ask-save">💾 שמור פרטים</button>
+</section>
 <iframe id="preview" title="המסמכים לחתימה"></iframe>
 <button type="button" class="full" id="open-full">📄 פתח את המסמכים במסך מלא</button>
 <div class="bar">
@@ -77,11 +89,20 @@
     <button type="button" id="send-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
   </div>
 </div>
+<div class="modal" id="id-modal" role="alertdialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:36px">🪪</div>
+    <h2>חסר צילום תעודת זהות</h2>
+    <p>אי אפשר לשלוח לפני שמצרפים צילום של תעודת הזהות <b>כולל הספח</b>. צלמי את התעודה ואת הספח בבירור, ואז לחצי שוב "שלח לעורך הדין".</p>
+    <button type="button" id="id-now" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📷 לצלם עכשיו</button>
+    <button type="button" id="id-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=15"></script>
+<script src="docs/templates.js?v=16"></script>
 <script src="docs/sign-core.js?v=11"></script>
 <script>
 const LAWYER_WA = '972522499887';
@@ -151,6 +172,7 @@ function trimmedPng(canvas) {
   return Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
 }
 $('btn-sign').onclick = () => {
+  if (ASK.length && !askComplete()) { toast('יש למלא ולשמור את פרטי הצד השני לפני החתימה', 'err'); $('ask').scrollIntoView({behavior:'smooth'}); return; }
   if (CONFIRM && !$('confirm-read').checked) { toast('יש לקרוא את כל המסמך ולסמן את תיבת האישור לפני החתימה', 'err'); $('confirm-wrap').scrollIntoView({behavior:'smooth'}); return; } const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); $('sig-modal').style.display = 'flex'; };
 $('sig-clear').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); };
 $('sig-close').onclick = () => { $('sig-modal').style.display = 'none'; };
@@ -158,11 +180,12 @@ $('sig-save').onclick = async () => {
   const png = trimmedPng($('sig-canvas'));
   if (!png) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
   SIG = png; $('sig-modal').style.display = 'none';
-  try { await render(); updateSend(); $('btn-sign').textContent = '✍ חתימה מחדש'; toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
+  try { await render(); updateSend(); $('btn-sign').textContent = '✍ חתימה מחדש';
+    if (NEED_ID && !IDPHOTO) toast('✓ החתימה נוספה. עכשיו צלמי את תעודת הזהות כולל הספח בכפתור "צילום ת.ז"', 'ok'); else toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
   catch (e) { toast('שגיאה: ' + e.message, 'err'); }
 };
 $('open-full').onclick = () => { if (previewURL) window.open(previewURL, '_blank'); };
-function updateSend() { $('btn-send').disabled = !(SIG && (!NEED_ID || IDPHOTO)); }
+function updateSend() { $('btn-send').disabled = !SIG; } // a missing ID photo is caught on click, with a pop-up
 $('btn-id').onclick = () => $('id-input').click();
 $('id-input').onchange = async e => {
   const f = e.target.files[0]; if (!f) return;
@@ -180,7 +203,7 @@ $('id-input').onchange = async e => {
 };
 $('btn-send').onclick = async () => {
   if (!SIG) { toast('יש לחתום תחילה', 'err'); return; }
-  if (NEED_ID && !IDPHOTO) { toast('יש לצרף צילום תעודת זהות כולל ספח', 'err'); return; }
+  if (NEED_ID && !IDPHOTO) { $('id-modal').style.display = 'flex'; return; }
   try {
     const blob = await render();
     const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
@@ -195,6 +218,40 @@ $('btn-send').onclick = async () => {
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 8000);
     $('send-modal').style.display = 'flex';
   } catch (e) { toast('שגיאה: ' + e.message, 'err'); }
+};
+$('id-now').onclick = () => { $('id-modal').style.display = 'none'; $('id-input').click(); };
+$('id-close').onclick = () => { $('id-modal').style.display = 'none'; };
+// ---- fields the client fills in (template field `ask`); `join` fields are composed from them
+let ASK = [];
+function askComplete() { return ASK.every(a => !a.f.req || (a.d.values[a.f.k] || '').trim()); }
+function buildAsk() {
+  const seen = new Set(); ASK = [];
+  DOCS.forEach(d => { const t = SIGN_TEMPLATES[d.code]; (t.fields || []).forEach(f => { if (f.ask && !seen.has(f.k)) { seen.add(f.k); ASK.push({ d, f, title: t.askTitle }); } }); });
+  if (!ASK.length) return;
+  $('ask-title').textContent = ASK[0].title || 'פרטים להשלמה';
+  const box = $('ask-fields'); box.innerHTML = '';
+  ASK.forEach(a => {
+    const lab = document.createElement('label'); lab.textContent = a.f.ask + (a.f.req ? ' *' : ''); lab.htmlFor = 'ask-' + a.f.k;
+    const inp = document.createElement('input'); inp.id = 'ask-' + a.f.k; inp.value = a.d.values[a.f.k] || ''; inp.autocomplete = 'off';
+    if (a.f.num) { inp.inputMode = 'numeric'; inp.maxLength = 9; } if (a.f.tel) { inp.type = 'tel'; inp.inputMode = 'tel'; }
+    box.appendChild(lab); box.appendChild(inp); a.inp = inp;
+  });
+  $('ask').style.display = 'block';
+}
+$('ask-save').onclick = async () => {
+  let bad = null;
+  ASK.forEach(a => {
+    let v = a.inp.value.replace(/\s+/g, ' ').trim(); a.inp.classList.remove('bad');
+    if (a.f.num) v = v.replace(/\D/g, '');
+    const wrong = (a.f.req && !v) || (a.f.num && v && v.length !== 9) || (a.f.tel && v && v.replace(/\D/g, '').length < 9);
+    if (wrong) { a.inp.classList.add('bad'); bad = bad || a; }
+    a.inp.value = v;
+  });
+  if (bad) { toast(bad.f.num ? 'מספר תעודת זהות צריך להכיל 9 ספרות (או להשאיר ריק)' : 'יש לבדוק את השדה: ' + bad.f.ask, 'err'); bad.inp.focus(); return; }
+  DOCS.forEach(d => { const t = SIGN_TEMPLATES[d.code];
+    ASK.forEach(a => { if (t.fields.some(f => f.k === a.f.k)) d.values[a.f.k] = a.inp.value; });
+    t.fields.filter(f => f.join).forEach(f => { d.values[f.k] = f.join.map(k => d.values[k] || '').join(' ').trim(); }); });
+  try { await render(); toast('✓ הפרטים נשמרו והופיעו במסמך', 'ok'); } catch (e) { toast('שגיאה: ' + e.message, 'err'); }
 };
 $('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
 $('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
@@ -240,6 +297,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   DOCS.forEach(d => { const t = SIGN_TEMPLATES[d.code], li = document.createElement('li');
     li.textContent = t.appendix ? ('נספח ' + L[n++] + "' – " + t.title) : t.title; $('docs').appendChild(li); });
   if (NEED_ID) $('btn-id').style.display = '';
+  buildAsk();
   CONFIRM = DOCS.map(d => SIGN_TEMPLATES[d.code].confirm).find(Boolean) || null;
   const INTRO = DOCS.map(d => SIGN_TEMPLATES[d.code].intro).find(Boolean) || null;
   if (CONFIRM) { $('confirm-text').textContent = CONFIRM; $('confirm-wrap').style.display = 'block';

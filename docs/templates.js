@@ -9,6 +9,8 @@
   const T = {
     1: {
       key: 'yishuv', file: 'docs/yishuv.pdf', title: 'בקשה ליישוב סכסוך (טופס 1)',
+      // fields with `ask` are filled by the client in sign.html ("פרטי הצד השני"); `join` is composed from other fields
+      askTitle: 'פרטי הצד השני (המשיב)',
       fields: [
         { k: 'court', x0: 336, x1: 423, y: 73, s: 10 },
         { k: 'city', x0: 197, x1: 326, y: 73, s: 11 },
@@ -19,10 +21,10 @@
         { k: 'l_first', x0: 450, x1: 523, y: 386 }, { k: 'l_last', x0: 377, x1: 450, y: 386 },
         { k: 'l_addr', x0: 186, x1: 377, y: 386 }, { k: 'l_phone', x0: 73, x1: 186, y: 386 },
         { k: 'l_fax', x0: 377, x1: 523, y: 435 }, { k: 'l_email', x0: 73, x1: 377, y: 435 },
-        { k: 'r_first', x0: 450, x1: 523, y: 519 }, { k: 'r_last', x0: 377, x1: 450, y: 519 },
-        { k: 'r_id', x0: 235, x1: 377, y: 519 }, { k: 'r_addr', x0: 73, x1: 235, y: 519 },
-        { k: 'r_phone', x0: 377, x1: 523, y: 568 }, { k: 'r_fax', x0: 235, x1: 377, y: 568 }, { k: 'r_email', x0: 73, x1: 235, y: 568 },
-        { k: 'between', x0: 274, x1: 386, y: 606, s: 10.5 },
+        { k: 'r_first', x0: 450, x1: 523, y: 519, ask: 'שם פרטי', req: true }, { k: 'r_last', x0: 377, x1: 450, y: 519, ask: 'שם משפחה', req: true },
+        { k: 'r_id', x0: 235, x1: 377, y: 519, ask: 'מספר תעודת זהות (אם ידוע)', num: true }, { k: 'r_addr', x0: 73, x1: 235, y: 519, ask: 'כתובת מגורים (רחוב, מספר, עיר)', req: true },
+        { k: 'r_phone', x0: 377, x1: 523, y: 568, ask: 'טלפון נייד', req: true, tel: true }, { k: 'r_fax', x0: 235, x1: 377, y: 568 }, { k: 'r_email', x0: 73, x1: 235, y: 568, ask: 'דואר אלקטרוני (אם ידוע)' },
+        { k: 'between', x0: 274, x1: 386, y: 606, s: 10.5, join: ['r_first', 'r_last'] },
       ],
       // "מחק את המיותר": keep "הורהו של ילדיי"
       strikes: [{ x0: 202.5, x1: 236.6, y: 602.3 }, { x0: 131.5, x1: 155.2, y: 602.3 }, { x0: 72, x1: 110.8, y: 602.3 }],
