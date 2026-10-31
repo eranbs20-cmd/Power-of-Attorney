@@ -189,6 +189,21 @@
       key: 'idOnly', file: null, title: 'צילום תעודת זהות וספח', idPhoto: true, noSign: true,
       fields: [{ k: 'name', hidden: true }], sigs: [],
     },
+    // ---- same as 11 (aidF) for an attachAEM.pdf whose top block sits ~29pt higher (signature label at y 387-404,
+    // lawyer line at 428-444). Added for a client whose affidavit layout differed; 11 stays unchanged.
+    14: {
+      key: 'aidF2', file: 'enc:doc', encFile: true, title: 'תצהיר זכאות לסיוע משפטי',
+      confirm: 'קראתי את התצהיר במלואו, ואני מאשרת שתוכנו נכון.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'date', auto: 'date', x0: 365, x1: 538, y: 733, s: 11 },
+        { k: 'l_name', fixed: 'ערן בן שושן', signed: true, x0: 298, x1: 501, y: 438, s: 11 },
+        { k: 'l_date1', auto: 'date', signed: true, x0: 107, x1: 195, y: 440, s: 10.5, white: [107, 428, 195, 444] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 365, x1: 538, y: 112, s: 11 },
+      ],
+      sigs: [{ cx: 160, y: 385, w: 110, h: 40 }, { cx: 160, y: 736, w: 110, h: 40 }],
+      stamps: [{ cx: 160, y: 548, w: 95 }, { p: 1, cx: 160, y: 113, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
