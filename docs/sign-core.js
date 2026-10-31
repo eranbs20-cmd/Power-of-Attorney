@@ -81,14 +81,23 @@
       }
       if (t.idPhoto) {
         const pg = out.addPage(A4);
-        if (extra.idPhoto) {
-          const u8 = new Uint8Array(extra.idPhoto);
-          const im = (u8[0] === 0x89) ? await out.embedPng(u8) : await out.embedJpg(u8);
-          const k = Math.min((A4[0] - 60) / im.width, (A4[1] - 60) / im.height);
-          const w = im.width * k, h = im.height * k;
-          pg.drawImage(im, { x: (A4[0] - w) / 2, y: (A4[1] - h) / 2, width: w, height: h });
+        // idPhotos: [front, ספח] stacked on one page with captions; idPhoto (single) kept for older callers
+        const photos = (extra.idPhotos && extra.idPhotos.length) ? extra.idPhotos : (extra.idPhoto ? [extra.idPhoto] : []);
+        if (photos.length) {
+          const caps = photos.length > 1 ? ['תעודת זהות – צד קדמי', 'ספח תעודת הזהות'] : [''];
+          const slot = (A4[1] - 40) / photos.length;
+          for (let i = 0; i < photos.length; i++) {
+            const u8 = new Uint8Array(photos[i]);
+            const im = (u8[0] === 0x89) ? await out.embedPng(u8) : await out.embedJpg(u8);
+            const capH = caps[i] ? 22 : 0;
+            const k = Math.min((A4[0] - 60) / im.width, (slot - 20 - capH) / im.height);
+            const w = im.width * k, h = im.height * k;
+            const top = A4[1] - 20 - slot * i;
+            if (caps[i]) { const ct = rtl(caps[i]), cw = fb.widthOfTextAtSize(ct, 13); pg.drawText(ct, { x: (A4[0] - cw) / 2, y: top - 16, size: 13, font: fb, color: black }); }
+            pg.drawImage(im, { x: (A4[0] - w) / 2, y: top - capH - 6 - h, width: w, height: h });
+          }
         } else {
-          const ph = rtl('כאן יצורף צילום תעודת הזהות'), pw = fr.widthOfTextAtSize(ph, 16);
+          const ph = rtl('כאן יצורפו צילום תעודת הזהות והספח'), pw = fr.widthOfTextAtSize(ph, 16);
           pg.drawText(ph, { x: (A4[0] - pw) / 2, y: A4[1] / 2, size: 16, font: fr, color: PDFLib.rgb(0.55, 0.55, 0.55) });
         }
         continue;
