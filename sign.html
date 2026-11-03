@@ -7,59 +7,79 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; img-src 'self' blob: data:; frame-src blob:; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <title>חתימה על מסמכים</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
 <style>
-  :root{--ink:#2b2340;--accent:#7c3aed;--ok:#1a6b3a;--paper:#fdfbf7;--line:#d4c9b8}
+  :root{--ink:#1d2742;--ink2:#4a5370;--muted:#7a8199;--navy:#22305a;--navy2:#2f4278;--gold:#b98a2f;--gold-soft:#fbf3e2;--ok:#1f7a4d;--ok-soft:#e7f4ec;--warn:#a8650a;--warn-soft:#fdf1df;--bg:#f3f1ec;--card:#fff;--line:#e6e2d9;--r:16px;
+        --accent:var(--navy);--paper:#fff}
   *{box-sizing:border-box}
-  body{margin:0;font-family:'David Libre',Arial,sans-serif;background:#525659;color:var(--ink);direction:rtl}
-  header{background:var(--paper);padding:12px 16px calc(10px);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:10}
-  header h1{margin:0;font-size:17px;color:var(--accent)}
-  header p{margin:4px 0 0;font-size:13px;line-height:1.5;color:#444}
-  #docs{margin:6px 0 0;padding:0 18px;font-size:13px}
-  #preview{width:100%;height:calc(100vh - 230px);min-height:360px;border:none;background:#fff;display:block}
-  .bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(253,251,247,.97);
-       border-top:1px solid var(--line);display:flex;gap:10px;justify-content:center;z-index:20}
-  .btn{border:none;border-radius:10px;padding:12px 8px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;flex:1;max-width:240px}
-  .btn.sign{background:var(--accent);color:#fff}
-  .btn.send{background:var(--ok);color:#fff}
-  .btn.id{background:#fff;color:var(--accent);border:2px solid var(--accent)}
-  .btn.id.done{border-color:var(--ok);color:var(--ok)}
-  .btn.send:disabled{background:#9bb5a4}
-  .full{display:block;margin:8px auto 90px;background:#fff;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:9px 18px;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:50}
-  .card{background:#fff;border-radius:14px;padding:18px;width:92%;max-width:520px;text-align:center}
-  .card h2{margin:0 0 6px;font-size:16px;color:var(--accent)}
-  .card p{margin:0 0 10px;font-size:13px;color:#555;line-height:1.6}
-  #sig-canvas{border:2px solid var(--line);border-radius:8px;touch-action:none;background:var(--paper);display:block;width:100%;height:190px}
-  .row{display:flex;gap:8px;margin-top:10px}
-  .row button{flex:1;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
-  #toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 80px);left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
-  #ask{display:none;background:var(--paper);margin:10px;border-radius:12px;padding:12px 14px;border:2px solid #e0b252}
-  #ask h2{margin:0 0 4px;font-size:16px;color:var(--accent)}
-  #ask p{margin:0 0 8px;font-size:13px;color:#555;line-height:1.5}
-  #ask label{display:block;font-size:13px;font-weight:bold;margin:8px 0 3px}
-  #ask input{width:100%;padding:9px 10px;font-size:16px;border:1px solid var(--line);border-radius:8px;font-family:inherit;direction:rtl}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:'Heebo',Arial,sans-serif;background:var(--bg);color:var(--ink);direction:rtl;line-height:1.5;padding-bottom:110px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+  header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:24px 0 64px}
+  .firm{font-size:13px;font-weight:500;opacity:.8;display:flex;align-items:center;gap:8px}
+  .firm i{display:inline-flex;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.14);align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:13px}
+  header h1{margin:12px 0 0;font-size:28px;font-weight:800;line-height:1.2}
+  .intro{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(29,39,66,.12);padding:20px;margin-top:-46px;position:relative}
+  #intro{margin:0;font-size:15.5px;color:var(--ink2)}
+  #docs{list-style:none;margin:14px 0 0;padding:0;counter-reset:d;display:grid;gap:8px}
+  #docs:empty{display:none}
+  #docs li{counter-increment:d;background:#f7f6f2;border-radius:12px;padding:10px 12px;font-size:14.5px;font-weight:700;display:flex;gap:10px;align-items:center}
+  #docs li::before{content:counter(d);flex:none;width:26px;height:26px;border-radius:8px;background:var(--navy);color:#fff;font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+  #confirm-wrap{margin:14px 0 0!important;padding:12px 14px!important;background:var(--gold-soft)!important;border:1px solid #efdcb3!important;border-radius:12px!important;font-size:14.5px!important;font-weight:700;color:#5a4414;line-height:1.6}
+  #confirm-wrap input{accent-color:var(--ok)}
+  #ask{display:none;background:var(--card);margin:14px 0 0;border-radius:var(--r);padding:16px 18px;box-shadow:0 0 0 2px #e8cf96,0 6px 18px rgba(185,138,47,.15)}
+  #ask h2{margin:0 0 4px;font-size:18px;font-weight:800;color:var(--ink)}
+  #ask p{margin:0 0 8px;font-size:14px;color:var(--muted)}
+  #ask label{display:block;font-size:14.5px;font-weight:700;margin:12px 0 6px}
+  #ask input{width:100%;padding:10px 12px;font-size:16px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;direction:rtl;background:#fcfbf8;color:var(--ink)}
+  #ask input:focus{outline:none;border-color:var(--navy2);background:#fff}
   #ask input.bad{border-color:#c0392b;background:#fdecea}
-  #ask .save{margin-top:12px;width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px;font-size:15px;font-weight:bold;font-family:inherit;cursor:pointer}
-  #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:12px;text-align:center;line-height:1.5}
+  #ask .save{margin-top:14px;width:100%;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+  .docwrap{background:var(--card);border-radius:var(--r);margin:14px 0 0;padding:8px;box-shadow:0 1px 2px rgba(29,39,66,.06),0 4px 14px rgba(29,39,66,.05)}
+  #preview{width:100%;height:72vh;min-height:420px;border:none;background:#525659;display:block;border-radius:10px}
+  .full{display:block;margin:12px auto 0;background:#fff;color:var(--navy);border:1.5px solid var(--navy);border-radius:10px;padding:9px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+       border-top:1px solid var(--line);display:flex;gap:10px;justify-content:center;z-index:20;box-shadow:0 -6px 20px rgba(29,39,66,.06)}
+  .btn{border:none;border-radius:12px;padding:14px 10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;flex:1;max-width:250px;white-space:nowrap}
+  .btn.sign{background:var(--navy);color:#fff;box-shadow:0 4px 12px rgba(34,48,90,.25)}
+  .btn.send{background:var(--ok);color:#fff;box-shadow:0 4px 12px rgba(31,122,77,.3)}
+  .btn.id{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+  .btn.id.done{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+  .btn.send:disabled{background:#a9c4b4;box-shadow:none}
+  .modal{position:fixed;inset:0;background:rgba(20,26,44,.55);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:18px;padding:22px;width:92%;max-width:520px;text-align:center}
+  .card h2{margin:0 0 8px;font-size:19px;font-weight:800;color:var(--ink)}
+  .card p{margin:0 0 12px;font-size:14.5px;color:var(--ink2);line-height:1.65}
+  .card button{font-family:inherit;font-weight:700;border-radius:10px!important}
+  #sig-canvas{border:2px dashed #cfc8b8;border-radius:12px;touch-action:none;background:#fff;display:block;width:100%;height:190px}
+  .row{display:flex;gap:8px;margin-top:12px}
+  .row button{flex:1;border:none;border-radius:10px;padding:12px 6px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+  #toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  #wv{display:none;background:var(--gold);color:#fff;padding:10px 14px;font-size:13.5px;font-weight:500;text-align:center;line-height:1.5}
+  @media (max-width:560px){header{padding:20px 0 60px} header h1{font-size:23px} .intro{padding:16px} .bar{gap:8px;padding-inline:10px} .btn{font-size:14.5px;padding:13px 6px} #preview{height:64vh}}
 </style>
 </head>
 <body>
 <div id="wv">⚠ כדי לשלוח את הקובץ החתום — פתחו את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"<br>
-  <button type="button" id="wv-copy" style="margin-top:6px;background:#fff;color:#7c3aed;border:none;border-radius:6px;padding:5px 14px;font-weight:bold;font-family:inherit">📋 העתק קישור</button></div>
-<header>
+  <button type="button" id="wv-copy" style="margin-top:6px;background:#fff;color:#22305a;border:none;border-radius:6px;padding:5px 14px;font-weight:bold;font-family:inherit">📋 העתק קישור</button></div>
+<header><div class="wrap">
+  <div class="firm"><i>עב</i>עו"ד ערן בן שושן · דיני משפחה</div>
   <h1>מסמכים לחתימה</h1>
+</div></header>
+<main class="wrap">
+<div class="intro">
   <p id="intro">טוען את המסמכים…</p>
   <ol id="docs"></ol>
   <label id="confirm-wrap" style="display:none;margin:8px 0 0;padding:8px 10px;background:#fff7e6;border:1px solid #e0b252;border-radius:8px;font-size:14px;font-weight:bold;line-height:1.5;cursor:pointer"><input type="checkbox" id="confirm-read" style="width:18px;height:18px;vertical-align:middle;margin-left:6px"><span id="confirm-text"></span></label>
-</header>
+</div>
 <section id="ask" aria-labelledby="ask-title"><h2 id="ask-title"></h2>
   <p>מלאי את הפרטים, לחצי "שמור פרטים" ובדקי שהם הופיעו במסמך. שדות עם * הם חובה.</p>
   <div id="ask-fields"></div>
   <button type="button" class="save" id="ask-save">💾 שמור פרטים</button>
 </section>
-<iframe id="preview" title="המסמכים לחתימה"></iframe>
+<div class="docwrap"><iframe id="preview" title="המסמכים לחתימה"></iframe></div>
 <button type="button" class="full" id="open-full">📄 פתח את המסמכים במסך מלא</button>
+</main>
 <div class="bar">
   <button type="button" class="btn id" id="btn-id" style="display:none">📷 ת.ז – צד קדמי</button>
   <input type="file" id="id-input" accept="image/*" style="display:none">
@@ -73,7 +93,7 @@
     <p>חתמו באצבע במסגרת. החתימה תופיע בכל המקומות המסומנים "חתימת המבקש" בכל המסמכים.</p>
     <canvas id="sig-canvas" width="700" height="300"></canvas>
     <div class="row">
-      <button type="button" id="sig-save" style="background:#7c3aed;color:#fff">שמור חתימה</button>
+      <button type="button" id="sig-save" style="background:#22305a;color:#fff">שמור חתימה</button>
       <button type="button" id="sig-clear" style="background:#f0f0f0;color:#444">נקה</button>
       <button type="button" id="sig-close" style="background:#f0f0f0;color:#444">ביטול</button>
     </div>
@@ -94,7 +114,7 @@
     <div style="font-size:36px">🪪</div>
     <h2>חסר צילום תעודת זהות</h2>
     <p id="id-modal-text"></p>
-    <button type="button" id="id-now" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📷 לצלם עכשיו</button>
+    <button type="button" id="id-now" style="background:#22305a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📷 לצלם עכשיו</button>
     <button type="button" id="id-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
   </div>
 </div>
@@ -103,7 +123,7 @@
     <div style="font-size:36px">📤</div>
     <h2>הקישור לחתימה השנייה מוכן</h2>
     <p style="text-align:right">אם וואטסאפ נפתח – בחר את איש הקשר ושלח. אם לא, לחץ "העתק הודעה" והדבק אותה בצ'אט.<br>ההסכם יגיע לעורך הדין רק אחרי ששני הצדדים חתמו.</p>
-    <button type="button" id="fwd-copy" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📋 העתק הודעה</button>
+    <button type="button" id="fwd-copy" style="background:#22305a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📋 העתק הודעה</button>
     <button type="button" id="fwd-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
   </div>
 </div>
