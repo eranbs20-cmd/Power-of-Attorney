@@ -7,76 +7,121 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <title>מסמכים להגשת התביעה</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
 <style>
-  :root{--ink:#2b2340;--accent:#7c3aed;--ok:#1a6b3a;--warn:#b26a00;--no:#8a8a8a;--paper:#fdfbf7;--line:#d4c9b8;--soft:#f7f5ff}
+  :root{--ink:#1d2742;--ink2:#4a5370;--muted:#7a8199;--navy:#22305a;--navy2:#2f4278;--gold:#b98a2f;--gold-soft:#fbf3e2;--ok:#1f7a4d;--ok-soft:#e7f4ec;--warn:#a8650a;--warn-soft:#fdf1df;--no:#8b90a0;--no-soft:#f0f1f4;--bg:#f3f1ec;--card:#fff;--line:#e6e2d9;--r:16px}
   *{box-sizing:border-box}
-  body{margin:0;font-family:'David Libre',Arial,sans-serif;background:#f1eee8;color:var(--ink);direction:rtl;padding-bottom:120px}
-  header{background:var(--paper);padding:14px 16px;border-bottom:2px solid var(--accent)}
-  header h1{margin:0;font-size:19px;color:var(--accent)}
-  header p{margin:6px 0 0;font-size:14px;line-height:1.6;color:#444}
-  #progress{position:sticky;top:0;z-index:5;background:var(--accent);color:#fff;font-size:13px;font-weight:bold;padding:7px 16px;text-align:center}
-  section{margin:12px 10px 0;background:#fff;border-radius:12px;padding:10px 12px 4px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  section h2{margin:2px 0 8px;font-size:16px;color:var(--accent)}
-  .item{border-top:1px solid #eee;padding:10px 0}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:'Heebo',Arial,sans-serif;background:var(--bg);color:var(--ink);direction:rtl;padding-bottom:130px;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+  header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:26px 0 70px}
+  .firm{font-size:13px;font-weight:500;letter-spacing:.2px;opacity:.8;display:flex;align-items:center;gap:8px}
+  .firm i{display:inline-flex;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.14);align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:13px}
+  header h1{margin:14px 0 6px;font-size:28px;font-weight:800;line-height:1.2}
+  #hello{margin:0;font-size:17px;opacity:.95}
+  .intro{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(29,39,66,.12);padding:20px 20px 18px;margin-top:-50px;position:relative}
+  .intro p{margin:0 0 14px;font-size:15.5px;color:var(--ink2)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .chips span{background:var(--gold-soft);color:#7a5a17;border:1px solid #efdcb3;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .step{background:#f7f6f2;border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink2);display:flex;gap:9px;align-items:flex-start}
+  .step b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+  .hint{margin:14px 0 0;font-size:13px;color:var(--muted)}
+  #progress{position:sticky;top:0;z-index:5;background:rgba(243,241,236,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:12px 0 10px;margin-top:6px}
+  .ptxt{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+  .ptxt .sig{font-weight:500;color:var(--muted)} .ptxt .sig.ok{color:var(--ok);font-weight:700}
+  .ptrack{height:8px;border-radius:99px;background:#e2ded4;overflow:hidden}
+  .pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ok),#34a56d);transition:width .35s ease}
+  section{background:var(--card);border-radius:var(--r);margin:14px 0 0;padding:6px 18px 6px;box-shadow:0 1px 2px rgba(29,39,66,.06),0 4px 14px rgba(29,39,66,.05)}
+  section.key{box-shadow:0 0 0 2px #e8cf96,0 6px 18px rgba(185,138,47,.15)}
+  .sh{display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--line)}
+  .sh .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--navy);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .sh h2{margin:0;font-size:18px;font-weight:800;flex:1}
+  .sh .pill{font-size:11.5px;font-weight:700;background:var(--gold);color:#fff;border-radius:99px;padding:2px 9px;margin-inline-start:6px;vertical-align:2px}
+  .sh .cnt{font-size:12.5px;font-weight:700;color:var(--muted);background:#f4f3ef;border-radius:99px;padding:3px 10px}
+  .sh .cnt.full{color:var(--ok);background:var(--ok-soft)}
+  .item{padding:14px 0;border-top:1px solid #f0ede6}
   .item:first-of-type{border-top:none}
-  .top{display:flex;gap:8px;align-items:flex-start}
-  .name{flex:1;font-size:15px;font-weight:bold;line-height:1.35}
-  .why{display:block;font-weight:normal;font-size:12.5px;color:#666;margin-top:2px}
-  .badge{font-size:11.5px;font-weight:bold;border-radius:20px;padding:3px 9px;white-space:nowrap;background:#eee;color:#666}
-  .item.has .badge{background:#e3f3e8;color:var(--ok)} .item.none .badge{background:#eee;color:var(--no)} .item.later .badge{background:#fff1dc;color:var(--warn)}
-  .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .acts button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;cursor:pointer;color:var(--ink)}
-  .acts button.add{border-color:var(--accent);color:var(--accent);font-weight:bold}
-  .acts button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .files{list-style:none;margin:8px 0 0;padding:0}
-  .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--soft);border-radius:6px;padding:5px 8px;margin-top:4px}
+  .top{display:flex;gap:12px;align-items:flex-start}
+  .name{flex:1;font-size:16px;font-weight:700;line-height:1.35}
+  .why{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+  .badge{flex:none;font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px;white-space:nowrap;background:var(--no-soft);color:var(--no)}
+  .item.has .badge{background:var(--ok-soft);color:var(--ok)} .item.none .badge{background:var(--no-soft);color:var(--ink2)} .item.later .badge{background:var(--warn-soft);color:var(--warn)}
+  .item.has .name::before{content:'✓';display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;align-items:center;justify-content:center;margin-inline-end:7px;vertical-align:1px}
+  .item.none .name,.item.later .name{color:var(--ink2)}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .acts button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-size:14px;font-family:inherit;font-weight:500;cursor:pointer;color:var(--ink2);transition:all .15s}
+  .acts button:hover{border-color:#cfc8b8;background:#faf9f6}
+  .acts button.add{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+  .acts button.add:hover{background:var(--navy2)}
+  .acts button{white-space:nowrap}
+  .acts button.on.st-none{background:var(--no-soft);border-color:#aeb3c2;color:var(--ink);font-weight:700}
+  .acts button.on.st-later{background:var(--warn-soft);border-color:#e6b770;color:var(--warn);font-weight:700}
+  .files{list-style:none;margin:10px 0 0;padding:0}
+  .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--ok-soft);border-radius:8px;padding:6px 10px;margin-top:5px;color:#245c3f}
   .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right}
-  .files li button{border:none;background:none;color:#a33;font-size:17px;cursor:pointer;padding:0 4px}
-  #signsec p{font-size:14px;line-height:1.6;margin:0 0 8px}
-  #decl{background:var(--soft);border-radius:8px;padding:10px;font-size:14.5px;line-height:1.65}
-  #sig-canvas{border:2px solid var(--line);border-radius:8px;touch-action:none;background:var(--paper);display:block;width:100%;height:170px;margin-top:8px}
-  .row{display:flex;gap:8px;margin:8px 0 10px}
-  .row button{flex:1;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
-  #sig-state{font-size:13px;font-weight:bold;margin-bottom:8px}
-  textarea{width:100%;font-family:inherit;font-size:15px;border:1px solid var(--line);border-radius:8px;padding:8px;min-height:60px;margin-bottom:10px}
-  .bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(253,251,247,.97);border-top:1px solid var(--line);z-index:20;text-align:center}
-  .bar button{width:100%;max-width:480px;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:bold;font-family:inherit;background:var(--ok);color:#fff;cursor:pointer}
-  .bar button:disabled{background:#9bb7a5}
-  .bar small{display:block;margin-top:5px;font-size:12px;color:#666}
-  #toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
-  .card{background:#fff;border-radius:14px;padding:18px;width:92%;max-width:520px;text-align:center}
-  .card h2{margin:0 0 6px;font-size:17px;color:var(--accent)}
-  .card p{margin:0 0 10px;font-size:14px;color:#444;line-height:1.6;text-align:right}
-  .card button{width:100%;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:bold;font-family:inherit;margin-top:8px;cursor:pointer}
-  #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:13px;text-align:center;line-height:1.5}
+  .files li button{border:none;background:none;color:#a33;font-size:16px;cursor:pointer;padding:0 4px}
+  .plain{padding:16px 18px 14px}
+  .plain h2{margin:2px 0 4px;font-size:18px;font-weight:800}
+  .plain .sub{font-size:14px;color:var(--muted);margin:0 0 10px}
+  #qs label{display:block;font-size:14.5px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+  textarea{width:100%;font-family:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:48px;background:#fcfbf8;color:var(--ink);resize:vertical;transition:border-color .15s,background .15s}
+  textarea:focus{outline:none;border-color:var(--navy2);background:#fff}
+  #signsec textarea{margin-bottom:12px}
+  #decl{background:var(--gold-soft);border:1px solid #efdcb3;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.7;color:#5a4414}
+  #sig-canvas{border:2px dashed #cfc8b8;border-radius:12px;touch-action:none;background:#fff;display:block;width:100%;height:180px;margin-top:12px}
+  .row{display:flex;gap:8px;margin:8px 0 6px;justify-content:space-between;align-items:center}
+  .row button{border:none;border-radius:8px;padding:8px 14px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  #sig-state{font-size:13.5px;font-weight:700}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:20;text-align:center;box-shadow:0 -6px 20px rgba(29,39,66,.06)}
+  .bar button{width:100%;max-width:520px;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:800;font-family:inherit;background:var(--ok);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(31,122,77,.3)}
+  .bar button:hover{background:#196a42}
+  .bar button:disabled{background:#9bb7a5;box-shadow:none}
+  .bar small{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+  #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .modal{position:fixed;inset:0;background:rgba(20,26,44,.55);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:18px;padding:22px;width:92%;max-width:480px;text-align:center}
+  .card h2{margin:0 0 8px;font-size:19px;color:var(--ink);font-weight:800}
+  .card p{margin:0 0 10px;font-size:14.5px;color:var(--ink2);line-height:1.65;text-align:right}
+  .card button{width:100%;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;margin-top:8px;cursor:pointer}
+  #wv{display:none;background:var(--gold);color:#fff;padding:10px 14px;font-size:13.5px;font-weight:500;text-align:center;line-height:1.5}
+  @media (max-width:560px){header{padding:20px 0 64px} header h1{font-size:23px} .steps{grid-template-columns:1fr} .intro{padding:16px} section{padding:4px 14px} .acts{gap:6px} .acts button{flex:1 1 auto;padding:9px 8px;font-size:13.5px} .name{font-size:15.5px}}
 </style>
 </head>
 <body>
 <div id="wv">⚠ כדי לצרף ולשלוח קבצים, פתחי את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"</div>
-<header>
-  <h1>מסמכים להגשת התביעה · עו"ד ערן בן שושן</h1>
+<header><div class="wrap">
+  <div class="firm"><i>עב</i>עו"ד ערן בן שושן · דיני משפחה</div>
+  <h1>מסמכים להגשת התביעה</h1>
   <p id="hello">שלום,</p>
-  <p>אנחנו מכינים את התביעות לבית המשפט לענייני משפחה: <b>תביעה לגבי הדירה והרכוש</b>, <b>תביעת מזונות</b> ו<b>בקשה למזונות זמניים</b>. בית המשפט דורש לצרף אליהן מסמכים וטפסים של הרצאת פרטים, ואותם אמלא אני לפי מה שתצרפי כאן.</p>
-  <p>ליד כל מסמך לחצי <b>📎 צרף</b> וצלמי או בחרי קובץ. אם אין לך אותו, סמני <b>אין לי</b>, ואם תשיגי אותו בהמשך, סמני <b>אשלח בהמשך</b>. בסוף ענִי בקצרה על השאלות, חתמי ולחצי <b>שלח לעורך הדין</b>. כל מסמך חשוב, גם אם נראה לך קטן. אפשר לחזור לדף ולשלוח שוב.</p>
-</header>
-<div id="progress"></div>
-<div id="list"></div>
-<section id="qsec">
-  <h2>שאלות קצרות</h2>
-  <p style="font-size:14px;line-height:1.6;margin:0 0 8px">כמה מילים בכל שאלה מספיקות. מה שלא ידוע לך, השאירי ריק.</p>
-  <div id="qs"></div>
-</section>
-<section id="signsec">
-  <h2>הערות וחתימה</h2>
-  <p>משהו שחשוב שאדע ואין עליו מסמך? (לא חובה)</p>
-  <textarea id="note" placeholder="למשל: הוא עובד בשחור, הילדה בטיפול רגשי, אין לי גישה לחשבון המשותף"></textarea>
-  <div id="decl"></div>
-  <canvas id="sig-canvas" width="700" height="260" aria-label="משטח חתימה"></canvas>
-  <div class="row"><button type="button" id="sig-clear" style="background:#f0f0f0;color:#555">נקה</button></div>
-  <div id="sig-state"></div>
-</section>
+</div></header>
+<main class="wrap">
+  <div class="intro">
+    <p>אנחנו מכינים את התביעות לבית המשפט לענייני משפחה. בית המשפט דורש לצרף אליהן מסמכים וטפסים של הרצאת פרטים, ואותם אמלא אני לפי מה שתצרפי כאן.</p>
+    <div class="chips"><span>תביעה לגבי הדירה והרכוש</span><span>תביעת מזונות</span><span>בקשה למזונות זמניים</span></div>
+    <div class="steps">
+      <div class="step"><b>1</b><div>ליד כל מסמך לחצי <strong>צרף</strong>, או סמני <strong>אין לי</strong> / <strong>אשלח בהמשך</strong></div></div>
+      <div class="step"><b>2</b><div>ענִי בקצרה על השאלות בסוף הדף</div></div>
+      <div class="step"><b>3</b><div>חתמי ולחצי <strong>שלח לעורך הדין</strong></div></div>
+    </div>
+    <p class="hint">כל מסמך חשוב, גם אם נראה לך קטן. הדף זוכר מה סימנת, ואפשר לחזור אליו ולשלוח שוב.</p>
+  </div>
+  <div id="progress"></div>
+  <div id="list"></div>
+  <section id="qsec" class="plain">
+    <h2>שאלות קצרות</h2>
+    <p class="sub">כמה מילים בכל שאלה מספיקות. מה שלא ידוע לך, השאירי ריק.</p>
+    <div id="qs"></div>
+  </section>
+  <section id="signsec" class="plain">
+    <h2>הערות וחתימה</h2>
+    <p class="sub">משהו שחשוב שאדע ואין עליו מסמך? (לא חובה)</p>
+    <textarea id="note" placeholder="למשל: הוא עובד בשחור, הילדה בטיפול רגשי, אין לי גישה לחשבון המשותף"></textarea>
+    <div id="decl"></div>
+    <canvas id="sig-canvas" width="700" height="260" aria-label="משטח חתימה"></canvas>
+    <div class="row"><div id="sig-state"></div><button type="button" id="sig-clear" style="background:#f0eee8;color:#555">נקה חתימה</button></div>
+  </section>
+</main>
 <div class="bar"><button type="button" id="send">📲 שלח לעורך הדין</button><small id="barnote">אפשר לשלוח כמה פעמים. הקבצים לא נשמרים באתר, הם עוברים ישירות לוואטסאפ.</small></div>
 <input type="file" id="file" multiple accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx" style="display:none">
 <div class="modal" id="send-modal" role="dialog" aria-modal="true">
@@ -170,8 +215,8 @@ function load() { try { const s = JSON.parse(localStorage.getItem(SKEY) || 'null
 function drawQs() {
   const box = $('qs'); box.innerHTML = '';
   for (const [k, label] of QS) {
-    const lab = el('label', null, label); lab.style.cssText = 'display:block;font-size:14px;font-weight:bold;margin:6px 0 4px';
-    const ta = el('textarea'); ta.id = 'q_' + k; ta.value = ANS[k] || ''; ta.style.minHeight = '44px'; ta.oninput = () => { ANS[k] = ta.value; save(); };
+    const lab = el('label', null, label); lab.htmlFor = 'q_' + k;
+    const ta = el('textarea'); ta.id = 'q_' + k; ta.value = ANS[k] || ''; ta.oninput = () => { ANS[k] = ta.value; save(); };
     box.appendChild(lab); box.appendChild(ta);
   }
 }
@@ -179,24 +224,30 @@ function toast(msg, cls) { const t = $('toast'); t.textContent = msg; t.style.ba
 function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 function draw() {
   const list = $('list'); list.innerHTML = ''; let total = 0, done = 0;
+  let si = 0;
   for (const [title, items] of LIST) {
-    const sec = el('section'); sec.appendChild(el('h2', null, title));
+    si++; const key = /הכי חשוב/.test(title); const clean = title.replace(/\s*\(.*?\)\s*$/, '');
+    const sec = el('section', key ? 'key' : null); const sh = el('div', 'sh');
+    sh.appendChild(el('span', 'n', String(si))); const h = el('h2', null, clean); if (key) h.appendChild(el('span', 'pill', 'הכי חשוב'));
+    sh.appendChild(h); const cnt = el('span', 'cnt'); sh.appendChild(cnt); sec.appendChild(sh); let sd = 0;
     for (const [k, name, why] of items) {
       const s = ST[k] || (ST[k] = { files: [], state: '' });
-      total++; if (s.files.length || s.state) done++;
+      total++; if (s.files.length || s.state) { done++; sd++; }
       const it = el('div', 'item' + (s.files.length ? ' has' : s.state ? ' ' + s.state : ''));
       const top = el('div', 'top'); const nm = el('div', 'name', name); if (why) nm.appendChild(el('span', 'why', why));
       top.appendChild(nm); top.appendChild(el('span', 'badge', s.files.length ? '📎 צורפו ' + s.files.length : s.state === 'none' ? '🚫 אין לי' : s.state === 'later' ? '⏳ אשלח בהמשך' : 'עוד לא')); it.appendChild(top);
       const acts = el('div', 'acts');
-      const add = el('button', 'add', '📎 צרף'); add.type = 'button'; add.onclick = () => { current = k; $('file').click(); }; acts.appendChild(add);
-      for (const [st, txt] of [['none', '🚫 אין לי'], ['later', '⏳ אשלח בהמשך']]) { const b = el('button', s.state === st ? 'on' : '', txt); b.type = 'button'; b.onclick = () => { s.state = s.state === st ? '' : st; save(); draw(); }; acts.appendChild(b); }
+      const add = el('button', 'add', s.files.length ? '📎 צרף עוד' : '📎 צרף'); add.type = 'button'; add.onclick = () => { current = k; $('file').click(); }; acts.appendChild(add);
+      for (const [st, txt] of [['none', '🚫 אין לי'], ['later', '⏳ אשלח בהמשך']]) { const b = el('button', 'st-' + st + (s.state === st ? ' on' : ''), txt); b.type = 'button'; b.onclick = () => { s.state = s.state === st ? '' : st; save(); draw(); }; acts.appendChild(b); }
       it.appendChild(acts);
       if (s.files.length) { const ul = el('ul', 'files'); s.files.forEach((f, i) => { const li = el('li'); li.appendChild(el('span', null, f.name)); const x = el('button', null, '🗑'); x.type = 'button'; x.setAttribute('aria-label', 'מחק ' + f.name); x.onclick = () => { s.files.splice(i, 1); draw(); toast('הקובץ נמחק'); }; li.appendChild(x); ul.appendChild(li); }); it.appendChild(ul); }
       sec.appendChild(it);
     }
+    cnt.textContent = sd + '/' + items.length; if (sd === items.length) cnt.classList.add('full');
     list.appendChild(sec);
   }
-  $('progress').textContent = 'טופלו ' + done + ' מתוך ' + total + ' מסמכים' + (SIGNED ? ' · ✓ נחתם' : ' · טרם נחתם');
+  const pct = total ? Math.round(done * 100 / total) : 0;
+  $('progress').innerHTML = '<div class="ptxt"><span>טופלו ' + done + ' מתוך ' + total + ' מסמכים</span><span class="sig' + (SIGNED ? ' ok' : '') + '">' + (SIGNED ? '✓ נחתם' : 'טרם נחתם') + '</span></div><div class="ptrack"><div class="pfill" style="width:' + pct + '%"></div></div>';
 }
 // photos are re-encoded as JPEG (also turns iPhone HEIC into something a PDF can hold)
 async function toJpeg(f) {
