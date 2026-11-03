@@ -204,6 +204,31 @@
       sigs: [{ cx: 160, y: 385, w: 110, h: 40 }, { cx: 160, y: 736, w: 110, h: 40 }],
       stamps: [{ cx: 160, y: 548, w: 95 }, { p: 1, cx: 160, y: 113, w: 95 }],
     },
+    // ---- two-party agreement signed in sequence (Davidov parenting-time agreement, Letter, 3 pages, enc:doc).
+    // Stage 1: the first party (male) signs; sign.html then builds a link for the second party that carries his
+    // signature strokes + signing date, AES-GCM encrypted with the token key (#<token>.<payload>).
+    // Stage 2: the second party (female) enters her ID number, signs, and only then the PDF with BOTH signatures
+    // goes to the lawyer. `final` fields are drawn only on the completed copy. Values: name, name2 (greeting only).
+    15: {
+      key: 'agree2', file: 'enc:doc', encFile: true, title: 'הסכם הסדרי שהות', twoStep: true,
+      askTitle: 'פרטייך להשלמה בהסכם',
+      parties: [
+        { k: 'name', g: 'm',
+          intro: 'זה ההסכם המלא. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור ולחץ "חתימה". אחר כך לחץ "שלח ל{other} לחתימה" ובחר את {other} בוואטסאפ. אחרי שגם היא תחתום, ההסכם החתום יישלח לעורך הדין.',
+          confirm: 'קראתי את כל ההסכם, על כל עמודיו, ואני מסכים לתנאיו.',
+          sigs: [{ p: 1, cx: 407, y: 656, w: 112, h: 40 }], dateLine: { p: 1, cx: 407, y: 688 } },
+        { k: 'name2', g: 'f',
+          intro: '{other} כבר חתם על ההסכם. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), מלאי את מספר תעודת הזהות שלך ולחצי "שמור פרטים", סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין".',
+          confirm: 'קראתי את כל ההסכם, על כל עמודיו, ואני מסכימה לתנאיו.',
+          sigs: [{ p: 1, cx: 192, y: 656, w: 112, h: 40 }], dateLine: { p: 1, cx: 192, y: 688 } },
+      ],
+      fields: [
+        { k: 'name', hidden: true }, { k: 'name2', hidden: true },
+        { k: 'r_id', step: 2, ask: 'מספר תעודת הזהות שלך', req: true, num: true, x0: 297, x1: 369, y: 149.5, s: 11, f: 'r', white: [297, 141, 369, 153] },
+        { k: 'date', auto: 'date', final: true, x0: 208, x1: 281, y: 94, s: 11, f: 'r', white: [208, 86, 281, 98] },
+      ],
+      sigs: [],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
