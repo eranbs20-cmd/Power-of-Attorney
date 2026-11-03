@@ -107,7 +107,7 @@
       pages.forEach(p => out.addPage(p));
       const page = pages[0]; const H = page.getHeight();
       for (const f of t.fields) {
-        if (f.hidden || (f.signed && !sigImg)) continue;
+        if (f.hidden || (f.signed && !sigImg) || (f.final && !extra.complete)) continue;
         const raw = f.fixed || (f.auto === 'date' ? dateStr : d.values[f.k]);
         if (!raw) continue;
         const pg = pages[f.p || 0];
@@ -133,6 +133,18 @@
           const w = s.w, h = w * st.height / st.width;
           pages[s.p || 0].drawImage(st, { x: s.cx - w / 2, y: H - s.y, width: w, height: h });
         }
+      }
+      // two-party documents: extra.partySigs[i] (PNG/JPEG) and extra.partyDates[i] per party, in order
+      if (t.parties && extra.partySigs) for (let i = 0; i < t.parties.length; i++) {
+        const ps = extra.partySigs[i]; if (!ps) continue;
+        const u8 = new Uint8Array(ps), im = (u8[0] === 0x89) ? await out.embedPng(u8) : await out.embedJpg(u8);
+        for (const s of t.parties[i].sigs) {
+          const k = Math.min(s.w / im.width, s.h / im.height), w = im.width * k, h = im.height * k;
+          pages[s.p || 0].drawImage(im, { x: s.cx - w / 2, y: H - s.y, width: w, height: h });
+        }
+        const dl = t.parties[i].dateLine, ds = extra.partyDates && extra.partyDates[i];
+        if (dl && ds) { const tx = rtl('נחתם דיגיטלית ביום ' + ds), tw = fr.widthOfTextAtSize(tx, 9);
+          pages[dl.p || 0].drawText(tx, { x: dl.cx - tw / 2, y: H - dl.y, size: 9, font: fr, color: black }); }
       }
       if (sigImg) for (const s of t.sigs) {
         const k = Math.min(s.w / sigImg.width, s.h / sigImg.height);
