@@ -229,6 +229,12 @@
       ],
       sigs: [],
     },
+    // ---- regular appointment letter (מינוי רגיל, not direct access) as an appendix: the office own PDF, stored
+    // encrypted like 8-12 (enc:doc), so the appendix is identical to what the legal-aid office issued. No fields.
+    16: {
+      key: 'minuiF', file: 'enc:doc', encFile: true, title: 'כתב מינוי', appendix: 'כתב מינוי להענקת שירות משפטי',
+      fields: [], sigs: [],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
