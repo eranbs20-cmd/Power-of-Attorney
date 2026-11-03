@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<title>מסמכים להגשת התביעה</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=David+Libre:wght@400;700&display=swap">
+<style>
+  :root{--ink:#2b2340;--accent:#7c3aed;--ok:#1a6b3a;--warn:#b26a00;--no:#8a8a8a;--paper:#fdfbf7;--line:#d4c9b8;--soft:#f7f5ff}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'David Libre',Arial,sans-serif;background:#f1eee8;color:var(--ink);direction:rtl;padding-bottom:120px}
+  header{background:var(--paper);padding:14px 16px;border-bottom:2px solid var(--accent)}
+  header h1{margin:0;font-size:19px;color:var(--accent)}
+  header p{margin:6px 0 0;font-size:14px;line-height:1.6;color:#444}
+  #progress{position:sticky;top:0;z-index:5;background:var(--accent);color:#fff;font-size:13px;font-weight:bold;padding:7px 16px;text-align:center}
+  section{margin:12px 10px 0;background:#fff;border-radius:12px;padding:10px 12px 4px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  section h2{margin:2px 0 8px;font-size:16px;color:var(--accent)}
+  .item{border-top:1px solid #eee;padding:10px 0}
+  .item:first-of-type{border-top:none}
+  .top{display:flex;gap:8px;align-items:flex-start}
+  .name{flex:1;font-size:15px;font-weight:bold;line-height:1.35}
+  .why{display:block;font-weight:normal;font-size:12.5px;color:#666;margin-top:2px}
+  .badge{font-size:11.5px;font-weight:bold;border-radius:20px;padding:3px 9px;white-space:nowrap;background:#eee;color:#666}
+  .item.has .badge{background:#e3f3e8;color:var(--ok)} .item.none .badge{background:#eee;color:var(--no)} .item.later .badge{background:#fff1dc;color:var(--warn)}
+  .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .acts button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;cursor:pointer;color:var(--ink)}
+  .acts button.add{border-color:var(--accent);color:var(--accent);font-weight:bold}
+  .acts button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .files{list-style:none;margin:8px 0 0;padding:0}
+  .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--soft);border-radius:6px;padding:5px 8px;margin-top:4px}
+  .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right}
+  .files li button{border:none;background:none;color:#a33;font-size:17px;cursor:pointer;padding:0 4px}
+  #signsec p{font-size:14px;line-height:1.6;margin:0 0 8px}
+  #decl{background:var(--soft);border-radius:8px;padding:10px;font-size:14.5px;line-height:1.65}
+  #sig-canvas{border:2px solid var(--line);border-radius:8px;touch-action:none;background:var(--paper);display:block;width:100%;height:170px;margin-top:8px}
+  .row{display:flex;gap:8px;margin:8px 0 10px}
+  .row button{flex:1;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit}
+  #sig-state{font-size:13px;font-weight:bold;margin-bottom:8px}
+  textarea{width:100%;font-family:inherit;font-size:15px;border:1px solid var(--line);border-radius:8px;padding:8px;min-height:60px;margin-bottom:10px}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(253,251,247,.97);border-top:1px solid var(--line);z-index:20;text-align:center}
+  .bar button{width:100%;max-width:480px;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:bold;font-family:inherit;background:var(--ok);color:#fff;cursor:pointer}
+  .bar button:disabled{background:#9bb7a5}
+  .bar small{display:block;margin-top:5px;font-size:12px;color:#666}
+  #toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:14px;padding:18px;width:92%;max-width:520px;text-align:center}
+  .card h2{margin:0 0 6px;font-size:17px;color:var(--accent)}
+  .card p{margin:0 0 10px;font-size:14px;color:#444;line-height:1.6;text-align:right}
+  .card button{width:100%;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:bold;font-family:inherit;margin-top:8px;cursor:pointer}
+  #wv{display:none;background:var(--accent);color:#fff;padding:9px 14px;font-size:13px;text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="wv">⚠ כדי לצרף ולשלוח קבצים, פתחי את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"</div>
+<header>
+  <h1>מסמכים להגשת התביעה · עו"ד ערן בן שושן</h1>
+  <p id="hello">שלום,</p>
+  <p>אנחנו מכינים את התביעות לבית המשפט לענייני משפחה: <b>תביעה לגבי הדירה והרכוש</b>, <b>תביעת מזונות</b> ו<b>בקשה למזונות זמניים</b>. בית המשפט דורש לצרף אליהן מסמכים וטפסים של הרצאת פרטים, ואותם אמלא אני לפי מה שתצרפי כאן.</p>
+  <p>ליד כל מסמך לחצי <b>📎 צרף</b> וצלמי או בחרי קובץ. אם אין לך אותו, סמני <b>אין לי</b>, ואם תשיגי אותו בהמשך, סמני <b>אשלח בהמשך</b>. בסוף ענִי בקצרה על השאלות, חתמי ולחצי <b>שלח לעורך הדין</b>. כל מסמך חשוב, גם אם נראה לך קטן. אפשר לחזור לדף ולשלוח שוב.</p>
+</header>
+<div id="progress"></div>
+<div id="list"></div>
+<section id="qsec">
+  <h2>שאלות קצרות</h2>
+  <p style="font-size:14px;line-height:1.6;margin:0 0 8px">כמה מילים בכל שאלה מספיקות. מה שלא ידוע לך, השאירי ריק.</p>
+  <div id="qs"></div>
+</section>
+<section id="signsec">
+  <h2>הערות וחתימה</h2>
+  <p>משהו שחשוב שאדע ואין עליו מסמך? (לא חובה)</p>
+  <textarea id="note" placeholder="למשל: הוא עובד בשחור, הילדה בטיפול רגשי, אין לי גישה לחשבון המשותף"></textarea>
+  <div id="decl"></div>
+  <canvas id="sig-canvas" width="700" height="260" aria-label="משטח חתימה"></canvas>
+  <div class="row"><button type="button" id="sig-clear" style="background:#f0f0f0;color:#555">נקה</button></div>
+  <div id="sig-state"></div>
+</section>
+<div class="bar"><button type="button" id="send">📲 שלח לעורך הדין</button><small id="barnote">אפשר לשלוח כמה פעמים. הקבצים לא נשמרים באתר, הם עוברים ישירות לוואטסאפ.</small></div>
+<input type="file" id="file" multiple accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx" style="display:none">
+<div class="modal" id="send-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:34px">✅</div>
+    <h2>הקובץ מוכן</h2>
+    <p>הקבצים <b>ירדו</b> למכשיר. לחצי "פתח וואטסאפ", ובצ'אט עם עו"ד ערן בן שושן לחצי 📎 ← <b>מסמך</b>, בחרי את הקבצים שירדו ושלחי.</p>
+    <button type="button" id="send-wa" style="background:#25d366;color:#fff">📲 פתח וואטסאפ</button>
+    <button type="button" id="send-close" style="background:#f0f0f0;color:#555;font-weight:normal">סגור</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script src="lib/pdf-lib.min.js"></script>
+<script src="lib/fontkit.umd.min.js"></script>
+<script>
+const LAWYER_WA = '972522499887';
+const $ = id => document.getElementById(id);
+// Everything needed to file a family-court claim bundle: a property claim (declaratory relief on a home
+// registered to the other spouse, dissolution of co-ownership, balancing of resources; Form 3), a child
+// maintenance claim (Form 4) and a motion for temporary maintenance.
+// Generic list; no client data lives in this file. Keys of the Form 4 items match t4.html, so the
+// hartzaat-pratim-link extraction table applies to them unchanged. The section tag says which filing the item feeds.
+const LIST = [
+  ['זהות ומעמד אישי', [
+    ['tz', 'תעודת זהות כולל הספח', 'שני הצדדים של התעודה והספח עם פרטי הילדים', 'טופס 4 א1-5, טופס 3'],
+    ['kids_birth', 'תעודות לידה של הילדים', 'או ספח שבו מופיעים הילדים', 'טופס 4 א1-5, ג'],
+    ['marriage', 'תעודת נישואין', 'כולל התאריך והמקום', 'טופס 3, טופס 4 ג1'],
+    ['citizenship', 'אישור אזרחות או מעמד בישראל', 'רק אם לא נולדת בישראל: דרכון, תעודת עולה או אשרה', 'טופס 4 ג3'],
+    ['residency', 'אישור תושבות או אישור כתובת', 'מהעירייה או מרשות האוכלוסין', 'טופס 4 א3, ג2'],
+    ['religion', 'מסמך על הדת', 'רק אם הדת לא מופיעה במסמך אחר', 'טופס 4 ג4'],
+    ['custody', 'מסמכים על הילדים ומגוריהם', 'אישור מהגן או מבית הספר, החלטות או הסכמים על משמורת וזמני שהות', 'טופס 4 ג2, ג5'],
+    ['agreement', 'החלטות, הסכמים או פסקי דין קודמים בינך לבינו', 'כל העמודים. כולל החלטות מבית הדין הרבני, אם יש לך', 'הליכים קודמים, טופס 4 א6'],
+  ]],
+  ['הדירה: איך הגיעה אליו ומה עשיתם בה', [
+    ['apt_reg', 'נסח טאבו או כל מסמך רישום של הדירה', 'אם אין לך, סמני "אין לי" ונזמין אנחנו', 'תביעת רכוש'],
+    ['apt_purchase', 'איך הדירה הגיעה אליו', 'חוזה קנייה, צוואה וצו ירושה, או מסמך מתנה', 'תביעת רכוש'],
+    ['mortgage', 'משכנתה על הדירה', 'הסכם ההלוואה, אישור יתרה, ואם את חתומה כלווה או ערבה', 'תביעת רכוש, טופס 3'],
+    ['live_proof', 'הוכחות שגרתם בדירה לאורך השנים', 'מכתבים ישנים לכתובת, חשבונות מהשנים הקודמות, אישור מהעירייה', 'תביעת רכוש'],
+    ['bills', 'חשבונות הבית: ארנונה, חשמל, מים, גז, ועד בית', 'עדיף גם חשבונות ישנים ועל שמך, וגם האחרונים', 'תביעת רכוש, טופס 4 א12, א15'],
+    ['insure', 'ביטוח מבנה או תכולה', 'הפוליסה, ומי רשום בה', 'תביעת רכוש'],
+  ]],
+  ['השיפוץ (הכי חשוב לתביעת הדירה)', [
+    ['reno_docs', 'חוזים, הצעות מחיר וחשבוניות של השיפוץ', 'מקבלנים, אינסטלטור, חשמלאי, מטבח, ריצוף, חלונות', 'תביעת רכוש'],
+    ['reno_money', 'מאיפה הגיע הכסף לשיפוץ', 'דפי חשבון מהתקופה, הלוואה שנלקחה, העברות מהחשבון שלך, עזרה מההורים שלך', 'תביעת רכוש'],
+    ['reno_photos', 'תמונות של הדירה לפני השיפוץ, במהלכו ואחריו', 'מהטלפון, מהגיבויים, מוואטסאפ. עדיף עם תאריך', 'תביעת רכוש'],
+    ['permit', 'היתר בנייה, תוכניות או מכתבים מהעירייה', 'אם השיפוץ כלל הריסת קירות, תוספת חדר או בנייה', 'תביעת רכוש'],
+    ['msgs', 'הודעות או מיילים שבהם הוא מדבר על הדירה כשלכם', '"הבית שלנו", תכנון השיפוץ יחד, החלטות משותפות', 'תביעת רכוש'],
+  ]],
+  ['רכוש נוסף (לאיזון משאבים)', [
+    ['pension', 'פנסיה, ביטוח מנהלים וקופות גמל שלך', 'הדוח השנתי האחרון של כל קרן', 'טופס 3, איזון משאבים'],
+    ['assets', 'חסכונות, קרן השתלמות, תיק השקעות שלך', 'אישור יתרה עדכני', 'טופס 3, טופס 4 א10'],
+    ['his_assets', 'מה שידוע לך על הרכוש שלו', 'חשבונות בנק, פנסיה, רכב, חסכונות, נכס נוסף, עסק. כל מסמך או צילום מסך', 'טופס 3, איזון משאבים'],
+    ['car', 'רישיון רכב', 'של כל רכב שלך או שלו', 'טופס 3, טופס 4 א14'],
+    ['debts', 'חובות', 'הלוואות, מינוס בבנק, תיק הוצאה לפועל. שלך ומשותפים', 'טופס 3, טופס 4 א11'],
+  ]],
+  ['הכנסות (12 החודשים האחרונים)', [
+    ['pay', 'תלושי שכר של 12 החודשים האחרונים', 'אם את עובדת', 'טופס 4 א8'],
+    ['bl', 'אישורים מביטוח לאומי', 'קצבת ילדים, הבטחת הכנסה, נכות, אבטלה', 'טופס 4 א8'],
+    ['tax', 'טופס 106 או אישור הכנסות אחר', 'אם יש', 'טופס 4 א8'],
+    ['his_inc', 'מסמכים על ההכנסות שלו', 'אישור קצבה, תלוש, צילום מסך, כל מה שיש לך', 'טופס 4 א9'],
+    ['bank_st', 'תדפיסי חשבון בנק של שלושת החודשים האחרונים', 'לכל חשבון שלך, כולל משותף', 'טופס 4 א7, א13, מזונות זמניים'],
+  ]],
+  ['מגורים והוצאות הילדים', [
+    ['lease', 'חוזה שכירות', 'רק אם את כבר גרה בדירה אחרת', 'טופס 4 א12'],
+    ['aid', 'אישור על סיוע בשכר דירה', 'אם יש', 'טופס 4 א12'],
+    ['receipts', 'קבלות על הוצאות הילדים', 'גן, צהרון, חוגים, רפואה, טיפולים, ביגוד, הסעות', 'טופס 4 א15, מזונות זמניים'],
+    ['urgent', 'מסמכים שמראים מצוקה כרגע', 'התראות על חובות, חשבונות שלא שולמו, הוצאה דחופה', 'מזונות זמניים'],
+  ]],
+  ['אחר', [
+    ['other', 'כל מסמך אחר שנראה לך חשוב', '', ''],
+  ]],
+];
+// Short answers that no document carries. Included in the bundle and in the manifest as `answers`.
+const QS = [
+  ['kids', 'שמות הילדים ותאריכי הלידה שלהם'],
+  ['kids_now', 'אצל מי הילדים גרים עכשיו, ומתי הם אצל האב (ימים, לינות)'],
+  ['his_details', 'הכתובת, הטלפון והדוא"ל של הבעל, ממה הוא מתפרנס'],
+  ['separated', 'האם אתם עדיין גרים יחד בדירה? אם לא, ממתי ומי עזב'],
+  ['apt_how', 'איך ומתי הדירה הגיעה אליו (קנה, ירש, קיבל במתנה), ומתי עברתם לגור בה'],
+  ['reno', 'מה כלל השיפוץ, באיזו שנה, כמה עלה בערך, ומי שילם על מה'],
+  ['mortgage_q', 'יש משכנתה על הדירה? מי שילם אותה ומאיזה חשבון'],
+  ['other_assets', 'רכוש נוסף של מי מכם: רכב, חסכונות, פנסיה, עסק, נכס אחר'],
+  ['monthly', 'כמה עולות לך הוצאות הילדים בחודש בערך, וכמה הוא משלם היום'],
+  ['urgent_q', 'משהו דחוף? למשל הוא הפסיק לשלם, אין כסף לשכר דירה או לאוכל'],
+];
+const ST = {}; const ANS = {}; let current = null, SIGNED = false;
+let CLIENT = ''; try { CLIENT = decodeURIComponent(location.hash.slice(1)).replace(/[^֐-׿A-Za-z \-']/g, '').slice(0, 30).trim(); } catch (e) {}
+const SKEY = 'tvia:' + (CLIENT || 'x');
+function save() { try { localStorage.setItem(SKEY, JSON.stringify({ st: Object.fromEntries(Object.entries(ST).map(([k, v]) => [k, v.state])), note: $('note').value, ans: ANS })); } catch (e) {} }
+function load() { try { const s = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (s) { for (const [k, st] of Object.entries(s.st || {})) ST[k] = { files: [], state: st }; $('note').value = s.note || ''; Object.assign(ANS, s.ans || {}); } } catch (e) {} }
+function drawQs() {
+  const box = $('qs'); box.innerHTML = '';
+  for (const [k, label] of QS) {
+    const lab = el('label', null, label); lab.style.cssText = 'display:block;font-size:14px;font-weight:bold;margin:6px 0 4px';
+    const ta = el('textarea'); ta.id = 'q_' + k; ta.value = ANS[k] || ''; ta.style.minHeight = '44px'; ta.oninput = () => { ANS[k] = ta.value; save(); };
+    box.appendChild(lab); box.appendChild(ta);
+  }
+}
+function toast(msg, cls) { const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block'; setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'err' ? 6000 : 2800); }
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function draw() {
+  const list = $('list'); list.innerHTML = ''; let total = 0, done = 0;
+  for (const [title, items] of LIST) {
+    const sec = el('section'); sec.appendChild(el('h2', null, title));
+    for (const [k, name, why] of items) {
+      const s = ST[k] || (ST[k] = { files: [], state: '' });
+      total++; if (s.files.length || s.state) done++;
+      const it = el('div', 'item' + (s.files.length ? ' has' : s.state ? ' ' + s.state : ''));
+      const top = el('div', 'top'); const nm = el('div', 'name', name); if (why) nm.appendChild(el('span', 'why', why));
+      top.appendChild(nm); top.appendChild(el('span', 'badge', s.files.length ? '📎 צורפו ' + s.files.length : s.state === 'none' ? '🚫 אין לי' : s.state === 'later' ? '⏳ אשלח בהמשך' : 'עוד לא')); it.appendChild(top);
+      const acts = el('div', 'acts');
+      const add = el('button', 'add', '📎 צרף'); add.type = 'button'; add.onclick = () => { current = k; $('file').click(); }; acts.appendChild(add);
+      for (const [st, txt] of [['none', '🚫 אין לי'], ['later', '⏳ אשלח בהמשך']]) { const b = el('button', s.state === st ? 'on' : '', txt); b.type = 'button'; b.onclick = () => { s.state = s.state === st ? '' : st; save(); draw(); }; acts.appendChild(b); }
+      it.appendChild(acts);
+      if (s.files.length) { const ul = el('ul', 'files'); s.files.forEach((f, i) => { const li = el('li'); li.appendChild(el('span', null, f.name)); const x = el('button', null, '🗑'); x.type = 'button'; x.setAttribute('aria-label', 'מחק ' + f.name); x.onclick = () => { s.files.splice(i, 1); draw(); toast('הקובץ נמחק'); }; li.appendChild(x); ul.appendChild(li); }); it.appendChild(ul); }
+      sec.appendChild(it);
+    }
+    list.appendChild(sec);
+  }
+  $('progress').textContent = 'טופלו ' + done + ' מתוך ' + total + ' מסמכים' + (SIGNED ? ' · ✓ נחתם' : ' · טרם נחתם');
+}
+// photos are re-encoded as JPEG (also turns iPhone HEIC into something a PDF can hold)
+async function toJpeg(f) {
+  if (!/^image\//.test(f.type)) return f;
+  try { const bmp = await createImageBitmap(f); const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+    return new File([blob], f.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) { return f; }
+}
+$('file').onchange = async e => {
+  const fs = [...e.target.files]; e.target.value = ''; if (!fs.length || !current) return;
+  const s = ST[current]; for (const f of fs) s.files.push(await toJpeg(f)); s.state = ''; save();
+  draw(); toast('✓ צורפו ' + fs.length + ' קבצים', 'ok');
+};
+$('note').oninput = save;
+// ---------- declaration + signature ----------
+const DECL = 'אני' + (CLIENT ? ' ' + CLIENT : '') + ' מאשרת כי המסמכים שצירפתי הם העתקים נאמנים של המקור, וכי הפרטים שמסרתי נכונים למיטב ידיעתי. אני מאשרת לעורך הדין ערן בן שושן להכין על בסיסם את כתבי התביעה, את הרצאות הפרטים ואת הבקשה למזונות זמניים, ולצרף אליהם את חתימתי זו.';
+$('decl').textContent = DECL;
+(function () {
+  const c = $('sig-canvas'); let drawing = false, lx = 0, ly = 0;
+  const pos = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) * c.width / r.width, (e.clientY - r.top) * c.height / r.height]; };
+  c.addEventListener('pointerdown', e => { drawing = true; [lx, ly] = pos(e); c.setPointerCapture(e.pointerId); e.preventDefault(); });
+  c.addEventListener('pointermove', e => {
+    if (!drawing) return; const [x, y] = pos(e); const ctx = c.getContext('2d');
+    ctx.strokeStyle = '#1a3fa8'; ctx.lineWidth = 3.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke(); lx = x; ly = y;
+  });
+  const end = () => { if (drawing) { drawing = false; SIGNED = !!trimmedPng(c); sigState(); draw(); } };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+})();
+function sigState() { $('sig-state').textContent = SIGNED ? '✓ החתימה נקלטה' : '✍ חתמי בתוך המסגרת'; $('sig-state').style.color = SIGNED ? 'var(--ok)' : 'var(--warn)'; }
+$('sig-clear').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); SIGNED = false; sigState(); draw(); };
+function trimmedPng(canvas) {
+  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, x1 = 0, y0 = h, y1 = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 10) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 < x0 || (x1 - x0) * (y1 - y0) < 400) return null;
+  const p = 3, t = document.createElement('canvas'); t.width = x1 - x0 + p * 2; t.height = y1 - y0 + p * 2;
+  t.getContext('2d').drawImage(canvas, x0 - p, y0 - p, t.width, t.height, 0, 0, t.width, t.height);
+  const b64 = t.toDataURL('image/png').split(',')[1];
+  return Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+}
+// ---------- building the annex bundle ----------
+// annex letters in Hebrew numerals: א..ט, י, י"א .. ט"ו/ט"ז .. כ, כ"א ... (up to 99)
+function hebNum(n) { const ones = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'], tens = ['','י','כ','ל','מ','נ','ס','ע','פ','צ'];
+  if (n === 15) return 'טו'; if (n === 16) return 'טז'; return tens[Math.floor(n / 10)] + ones[n % 10]; }
+function annexLabel(l) { return l.length === 1 ? l + "'" : l.slice(0, -1) + '"' + l.slice(-1); }
+function rtl(str) { if (!str) return ''; if (!/[֐-׿]/.test(str)) return str; return str.replace(/[0-9A-Za-z@._\-/]+/g, m => m.split('').reverse().join('')).replace(/[()]/g, c => (c === '(' ? ')' : '(')); }
+function today() { const d = new Date(); return d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getFullYear(); }
+function wrap(text, font, size, maxW) { const words = text.split(' '), lines = []; let cur = ''; for (const w of words) { const t = cur ? cur + ' ' + w : w; if (font.widthOfTextAtSize(rtl(t), size) > maxW && cur) { lines.push(cur); cur = w; } else cur = t; } if (cur) lines.push(cur); return lines; }
+async function bundle(sigPng) {
+  const { PDFDocument, rgb } = PDFLib; const A4 = [595.28, 841.89], M = 50;
+  const out = await PDFDocument.create(); out.registerFontkit(fontkit);
+  const fb = await out.embedFont(await (await fetch('Heebo-Bold.ttf')).arrayBuffer());
+  const black = rgb(0, 0, 0), grey = rgb(0.4, 0.4, 0.4);
+  const R = (pg, txt, y, size, color) => { const t = rtl(txt), w = fb.widthOfTextAtSize(t, size); pg.drawText(t, { x: A4[0] - M - w, y, size, font: fb, color: color || black }); };
+  const C = (pg, txt, y, size, color) => { const t = rtl(txt), w = fb.widthOfTextAtSize(t, size); pg.drawText(t, { x: (A4[0] - w) / 2, y, size, font: fb, color: color || black }); };
+  const answers = Object.fromEntries(QS.map(([k]) => [k, (ANS[k] || '').trim()]).filter(([, v]) => v));
+  const manifest = { form: 'tvia-annexes', v: 1, client: CLIENT, sent: new Date().toISOString(), signed: !!sigPng, note: $('note').value.trim(), answers, annexes: [], missing: [], extra_files: [] };
+  // cover page (filled at the end, once page numbers are known)
+  const cover = out.addPage(A4);
+  let li = 0;
+  for (const [, items] of LIST) for (const [k, name, why, sec] of items) {
+    const s = ST[k];
+    if (!s || !s.files.length) { manifest.missing.push({ key: k, name, section: sec, state: s && s.state || 'open' }); continue; }
+    const letter = hebNum(++li); const startPage = out.getPageCount() + 1;
+    const dv = out.addPage(A4); C(dv, 'נספח ' + annexLabel(letter), A4[1] / 2 + 30, 30); C(dv, name, A4[1] / 2 - 10, 16); if (sec) C(dv, sec, A4[1] / 2 - 36, 12, grey);
+    const files = [];
+    for (const f of s.files) {
+      try {
+        if (f.type === 'application/pdf' || /\.pdf$/i.test(f.name)) {
+          const src = await PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+          const pages = await out.copyPages(src, src.getPageIndices()); pages.forEach(p => out.addPage(p)); files.push({ file: f.name, pages: pages.length });
+        } else if (f.type === 'image/jpeg' || f.type === 'image/png') {
+          const img = f.type === 'image/png' ? await out.embedPng(await f.arrayBuffer()) : await out.embedJpg(await f.arrayBuffer());
+          const pg = out.addPage(A4); const k2 = Math.min((A4[0] - 40) / img.width, (A4[1] - 40) / img.height);
+          const w = img.width * k2, h = img.height * k2; pg.drawImage(img, { x: (A4[0] - w) / 2, y: (A4[1] - h) / 2, width: w, height: h }); files.push({ file: f.name, pages: 1 });
+        } else throw new Error('type');
+      } catch (e) {
+        const pg = out.addPage(A4); C(pg, 'הקובץ מצורף בנפרד: ' + f.name, A4[1] / 2, 14, grey);
+        manifest.extra_files.push({ annex: letter, file: f.name }); files.push({ file: f.name, pages: 1, separate: true });
+      }
+    }
+    manifest.annexes.push({ letter, key: k, name, section: sec, from_page: startPage, to_page: out.getPageCount(), files });
+  }
+  // answers page(s)
+  if (Object.keys(answers).length) {
+    let ap = out.addPage(A4), ay = A4[1] - 80; C(ap, 'תשובות לשאלות', ay, 18); ay -= 36;
+    manifest.answers_page = out.getPageCount();
+    for (const [k, label] of QS) {
+      if (!answers[k]) continue;
+      const lines = [label + ':'].concat(wrap(answers[k].replace(/\s+/g, ' '), fb, 12, A4[0] - 2 * M));
+      if (ay - lines.length * 19 < 60) { ap = out.addPage(A4); ay = A4[1] - 70; }
+      R(ap, lines[0], ay, 12, grey); ay -= 19;
+      for (const line of lines.slice(1)) { R(ap, line, ay, 12); ay -= 19; }
+      ay -= 10;
+    }
+  }
+  // signature page
+  const sp = out.addPage(A4); let y = A4[1] - 90;
+  C(sp, 'אישור וחתימה', y, 18); y -= 40;
+  for (const line of wrap(DECL, fb, 13, A4[0] - 2 * M)) { R(sp, line, y, 13); y -= 22; }
+  if ($('note').value.trim()) { y -= 10; R(sp, 'הערות:', y, 12, grey); y -= 20; for (const line of wrap($('note').value.trim().replace(/\s+/g, ' '), fb, 12, A4[0] - 2 * M)) { R(sp, line, y, 12, grey); y -= 19; } }
+  y -= 30; R(sp, 'תאריך: ' + today(), y, 13);
+  if (sigPng) { const img = await out.embedPng(sigPng); const k2 = Math.min(200 / img.width, 80 / img.height); const w = img.width * k2, h = img.height * k2; sp.drawImage(img, { x: M + 20, y: y - 10, width: w, height: h }); }
+  sp.drawLine({ start: { x: M, y: y - 16 }, end: { x: M + 240, y: y - 16 }, thickness: 0.8, color: black });
+  const signer = 'חתימת ' + (CLIENT || 'המצהירה'); const sw = fb.widthOfTextAtSize(rtl(signer), 11); sp.drawText(rtl(signer), { x: M + 120 - sw / 2, y: y - 32, size: 11, font: fb, color: black });
+  manifest.signature_page = out.getPageCount();
+  // cover content
+  let cy = A4[1] - 80; C(cover, 'מסמכים להגשת התביעה', cy, 20); cy -= 26; if (CLIENT) { C(cover, CLIENT, cy, 14, grey); cy -= 20; } C(cover, 'נשלח ' + today(), cy, 11, grey); cy -= 40;
+  R(cover, 'רשימת נספחים', cy, 14); cy -= 24;
+  for (const a of manifest.annexes) { R(cover, 'נספח ' + annexLabel(a.letter) + ' · ' + a.name + ' · עמ\' ' + a.from_page + '-' + a.to_page, cy, 11); cy -= 15; }
+  if (manifest.missing.length) { cy -= 14; R(cover, 'לא צורפו', cy, 14); cy -= 24;
+    for (const m of manifest.missing) { R(cover, m.name + ' · ' + (m.state === 'none' ? 'אין לי' : m.state === 'later' ? 'אשלח בהמשך' : 'לא טופל'), cy, 10.5, grey); cy -= 15; if (cy < 50) break; } }
+  return { pdf: await out.save(), manifest };
+}
+$('send').onclick = async () => {
+  const c = $('sig-canvas'); const sig = trimmedPng(c);
+  if (!sig) { toast('חסרה חתימה. חתמי בתוך המסגרת למטה', 'err'); $('signsec').scrollIntoView({ behavior: 'smooth' }); return; }
+  const nfiles = Object.values(ST).reduce((n, s) => n + s.files.length, 0);
+  if (!nfiles && !confirm('לא צירפת מסמכים. לשלוח רק את החתימה ואת הרשימה של מה שאין לך?')) return;
+  const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ מכין את קובץ הנספחים...';
+  try {
+    const { pdf, manifest } = await bundle(sig); const suffix = CLIENT ? ' - ' + CLIENT : '';
+    const all = [new File([pdf], 'מסמכים לתביעה' + suffix + '.pdf', { type: 'application/pdf' }),
+                 new File([sig], 'חתימה' + suffix + '.png', { type: 'image/png' }),
+                 new File([JSON.stringify(manifest, null, 1)], 'מסמכים לתביעה' + suffix + '.json', { type: 'application/json' })];
+    for (const x of manifest.extra_files) { const a = manifest.annexes.find(a => a.letter === x.annex); const f = a && ST[a.key].files.find(f => f.name === x.file); if (f) all.push(f); }
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: all })) {
+      try { await navigator.share({ title: 'מסמכים לתביעה', text: 'מסמכים לתביעה' + suffix, files: all }); toast('נשלח ✓', 'ok'); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    for (const f of all) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); }
+    $('send-modal').style.display = 'flex';
+  } catch (e) { toast('שגיאה בהכנת הקובץ: ' + e.message, 'err'); }
+  finally { btn.disabled = false; btn.textContent = '📲 שלח לעורך הדין'; }
+};
+$('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
+$('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+window.addEventListener('beforeunload', e => { if (Object.values(ST).some(s => s.files.length)) { e.preventDefault(); e.returnValue = ''; } });
+(function inApp() { const ua = navigator.userAgent || ''; if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block'; })();
+$('hello').textContent = 'שלום' + (CLIENT ? ' ' + CLIENT : '') + ',';
+load(); drawQs(); sigState(); draw();
+</script>
+</body>
+</html>
