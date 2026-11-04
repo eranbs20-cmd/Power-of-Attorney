@@ -121,8 +121,8 @@
 <div class="modal" id="fwd-modal" role="dialog" aria-modal="true">
   <div class="card">
     <div style="font-size:36px">📤</div>
-    <h2>הקישור לחתימה השנייה מוכן</h2>
-    <p style="text-align:right">אם וואטסאפ נפתח – בחר את איש הקשר ושלח. אם לא, לחץ "העתק הודעה" והדבק אותה בצ'אט.<br>ההסכם יגיע לעורך הדין רק אחרי ששני הצדדים חתמו.</p>
+    <h2 id="fwd-title">הקישור לחתימה השנייה מוכן</h2>
+    <p id="fwd-text" style="text-align:right">אם וואטסאפ נפתח – בחר את איש הקשר ושלח. אם לא, לחץ "העתק הודעה" והדבק אותה בצ'אט. ההסכם יגיע לעורך הדין רק אחרי ששני הצדדים חתמו.</p>
     <button type="button" id="fwd-copy" style="background:#22305a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📋 העתק הודעה</button>
     <button type="button" id="fwd-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
   </div>
@@ -136,7 +136,7 @@
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
-let TWO = null, STAGE = 1, TOKEN = null, TKEY = null, SIG1 = null, DATE1 = null, STROKES = [], PARTY = null;
+let TWO = null, STAGE = 1, TOKEN = null, TKEY = null, SIG1 = null, DATE1 = null, DATE2 = null, P1 = null, PREP = null, STROKES = [], PARTY = null;
 let CONFIRM = null, DOCS = null, SIG = null, IDPHOTO = null, IDSEFACH = null, STAMP = null, NEED_ID = false, NO_SIGN = false, previewURL = null, origHref = location.href;
 const cache = {};
 async function getBytes(p) {
@@ -174,8 +174,9 @@ async function render() {
   const needStamp = SIG && DOCS.some(d => (SIGN_TEMPLATES[d.code].stamps || []).length);
   const stamp = needStamp ? await loadStamp() : null;
   const ex = { idPhotos: [IDPHOTO, IDSEFACH].filter(Boolean), stamp };
-  if (TWO) { ex.partySigs = STAGE === 1 ? [SIG] : [SIG1, SIG]; ex.partyDates = STAGE === 1 ? [SIG ? today() : null] : [DATE1, SIG ? today() : null]; ex.complete = STAGE === 2 && !!SIG; }
-  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, TWO ? null : SIG, today(), ex);
+  const d2 = STAGE === 3 ? DATE2 : today();
+  if (TWO) { ex.partySigs = STAGE === 1 ? [SIG] : [SIG1, SIG]; ex.partyDates = STAGE === 1 ? [SIG ? today() : null] : [DATE1, SIG ? d2 : null]; ex.complete = STAGE >= 2 && !!SIG; }
+  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, TWO ? null : SIG, d2, ex);
   const blob = new Blob([bytes], { type: 'application/pdf' });
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = URL.createObjectURL(blob);
@@ -216,6 +217,7 @@ $('sig-save').onclick = async () => {
   const png = trimmedPng($('sig-canvas'));
   if (!png) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
   SIG = png; $('sig-modal').style.display = 'none';
+  if (TWO && STAGE < 3) { PREP = null; prepareTwo().catch(e => toast('שגיאה: ' + e.message, 'err')); }
   try { await render(); updateSend(); $('btn-sign').textContent = '✍ חתימה מחדש';
     if (NEED_ID && !idDone()) toast('✓ החתימה נוספה. עכשיו צלמי את תעודת הזהות מקדימה ואת הספח (שתי תמונות)', 'ok'); else toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
   catch (e) { toast('שגיאה: ' + e.message, 'err'); }
@@ -253,7 +255,8 @@ $('id-input').onchange = async e => {
 };
 $('btn-send').onclick = async () => {
   if (!SIG && !NO_SIGN) { toast('יש לחתום תחילה', 'err'); return; }
-  if (TWO && STAGE === 1) return forwardToSecond();
+  if (TWO && STAGE < 3) return sendTwo();
+  if (TWO && STAGE === 3) return downloadSigned();
   if (NEED_ID && !idDone()) { $('id-modal-text').textContent = 'אי אפשר לשלוח לפני שמצרפים ' + idMissing() + '. צלמי בבירור, ואז לחצי שוב "שלח לעורך הדין".'; $('id-modal').style.display = 'flex'; return; }
   try {
     const blob = await render();
@@ -275,8 +278,9 @@ $('id-now').onclick = () => { $('id-modal').style.display = 'none'; $('id-input'
 $('id-close').onclick = () => { $('id-modal').style.display = 'none'; };
 // ---- two-party documents: the first signature travels to the second party inside her link, encrypted.
 // payload bytes: [1][date dd/mm/yyyy x10][n strokes][per stroke: n points (2 bytes), x0,y0 (2+2 bytes), then dx,dy as int8]
-function encStrokes(date) {
-  const out = [1, ...new TextEncoder().encode(date)], strokes = STROKES.filter(s => s.length);
+function encStrokes(date, id) {
+  const out = id === undefined ? [1, ...new TextEncoder().encode(date)] : [2, ...new TextEncoder().encode(date), id.length, ...new TextEncoder().encode(id)];
+  const strokes = STROKES.filter(s => s.length);
   out.push(strokes.length & 255, strokes.length >> 8);
   for (const s of strokes) {
     const pts = [s[0]]; // split long jumps so every delta fits in int8
@@ -289,11 +293,12 @@ function encStrokes(date) {
   return new Uint8Array(out);
 }
 function decStrokes(b) {
-  if (b[0] !== 1) throw new Error('bad payload');
-  const date = new TextDecoder().decode(b.slice(1, 11)); let i = 11; const n = b[i] | (b[i + 1] << 8); i += 2; const strokes = [];
+  if (b[0] !== 1 && b[0] !== 2) throw new Error('bad payload');
+  const date = new TextDecoder().decode(b.slice(1, 11)); let i = 11, id = '';
+  if (b[0] === 2) { id = new TextDecoder().decode(b.slice(12, 12 + b[11])); i = 12 + b[11]; } const n = b[i] | (b[i + 1] << 8); i += 2; const strokes = [];
   for (let k = 0; k < n; k++) { const m = b[i] | (b[i + 1] << 8); let x = b[i + 2] | (b[i + 3] << 8), y = b[i + 4] | (b[i + 5] << 8); i += 6;
     const s = [[x, y]]; for (let j = 1; j < m; j++) { x += (b[i] << 24) >> 24; y += (b[i + 1] << 24) >> 24; i += 2; s.push([x, y]); } strokes.push(s); }
-  return { date, strokes };
+  return { date, id, strokes };
 }
 function strokesPng(strokes) {
   const c = document.createElement('canvas'); c.width = 700; c.height = 300; const ctx = c.getContext('2d');
@@ -306,22 +311,52 @@ async function zip(b, dir) {
   const r = new Response(new Blob([b]).stream().pipeThrough(new S('deflate-raw')));
   return new Uint8Array(await r.arrayBuffer());
 }
-async function forwardToSecond() {
-  try {
-    if (!STROKES.length) { toast('יש לחתום מחדש לפני השליחה', 'err'); return; }
-    let raw = encStrokes(today()), body;
-    if (typeof CompressionStream !== 'undefined') body = new Uint8Array([1, ...(await zip(raw, true))]); else body = new Uint8Array([0, ...raw]);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const k = await crypto.subtle.importKey('raw', TKEY, 'AES-GCM', false, ['encrypt']);
-    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, body));
-    const link = location.origin + location.pathname.replace(/sign\.html$/, '') + 's#' + TOKEN + '.' + SIGN_CORE.B64U.enc(new Uint8Array([...iv, ...ct]));
-    const other = firstName(DOCS[0].values[TWO.parties[1].k]), me = clientName();
-    const msg = 'שלום ' + other + ',\n' + me + ' חתם על ' + TWO.title + '. זה הקישור לחתימה שלך:\n' + link +
-      '\nקראי את ההסכם, מלאי את מספר תעודת הזהות, לחצי "חתימה" ואז "שלח לעורך הדין".\nעו"ד ערן בן שושן';
-    FWD = msg;
-    if (navigator.share) { try { await navigator.share({ text: msg }); $('fwd-modal').style.display = 'flex'; return; } catch (se) { if (se.name === 'AbortError') return; } }
-    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank'); $('fwd-modal').style.display = 'flex';
-  } catch (e) { toast('שגיאה: ' + e.message, 'err'); }
+async function seal(raw) {
+  const body = typeof CompressionStream !== 'undefined' ? new Uint8Array([1, ...(await zip(raw, true))]) : new Uint8Array([0, ...raw]);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const k = await crypto.subtle.importKey('raw', TKEY, 'AES-GCM', false, ['encrypt']);
+  return SIGN_CORE.B64U.enc(new Uint8Array([...iv, ...new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, body))]));
+}
+async function unseal(t, k) {
+  const pb = SIGN_CORE.B64U.dec(t);
+  const body = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: pb.slice(0, 12) }, k, pb.slice(12)));
+  return body[0] === 1 ? await zip(body.slice(1), false) : body.slice(1);
+}
+const BASE_LINK = () => location.origin + location.pathname.replace(/sign\.html$/, '') + 's#';
+// stage 1: link for the second party (first signature inside). stage 2: link for the lawyer (both signatures + her ID),
+// sent as a plain text message straight to the lawyer's WhatsApp chat — no file, no contact search.
+async function prepareTwo() {
+  if (!STROKES.length) return;
+  if (STAGE === 1) {
+    const link = BASE_LINK() + TOKEN + '.' + await seal(encStrokes(today()));
+    const other = firstName(DOCS[0].values[TWO.parties[1].k]);
+    PREP = { link, url: 'https://wa.me/?text=', msg: 'שלום ' + other + ',\n' + clientName() + ' חתם על ' + TWO.title + '. זה הקישור לחתימה שלך:\n' + link +
+      '\nקראי את ההסכם, מלאי את מספר תעודת הזהות, לחצי "חתימה" ואז "שלח לעורך הדין".\nעו"ד ערן בן שושן' };
+  } else {
+    const rid = DOCS[0].values.r_id || '';
+    const link = BASE_LINK() + TOKEN + '.' + P1 + '.' + await seal(encStrokes(today(), rid));
+    PREP = { link, url: 'https://wa.me/' + LAWYER_WA + '?text=', msg: 'שלום עו"ד בן שושן,\n' + DOCS[0].values[TWO.parties[0].k] + ' ו' +
+      DOCS[0].values[TWO.parties[1].k] + ' חתמו על ' + TWO.title + '. זה הקישור להסכם החתום:\n' + link };
+  }
+  FWD = PREP.msg;
+}
+function sendTwo() {
+  if (!PREP) { toast('רגע, מכין את הקישור… נסו שוב בעוד שנייה', 'err'); prepareTwo().catch(() => {}); return; }
+  if (STAGE === 1 && navigator.share) {
+    navigator.share({ text: PREP.msg }).then(() => { $('fwd-modal').style.display = 'flex'; }).catch(se => { if (se.name !== 'AbortError') { location.href = PREP.url + encodeURIComponent(PREP.msg); } });
+    return;
+  }
+  const w = window.open(PREP.url + encodeURIComponent(PREP.msg), '_blank');
+  if (!w) location.href = PREP.url + encodeURIComponent(PREP.msg);
+  if (STAGE === 2) { $('fwd-title').textContent = 'נפתח צ\'אט עם עו"ד ערן בן שושן';
+    $('fwd-text').textContent = 'בצ\'אט שנפתח כבר כתובה הודעה עם הקישור להסכם החתום. לחצי על כפתור השליחה ➤. אם הצ\'אט לא נפתח, לחצי "העתק הודעה" ושלחי אותה בוואטסאפ ל-052-2499887.'; }
+  $('fwd-modal').style.display = 'flex';
+}
+async function downloadSigned() {
+  const blob = await render();
+  const name = TWO.title + ' חתום - ' + DOCS[0].values[TWO.parties[0].k] + ' ו' + DOCS[0].values[TWO.parties[1].k] + '.pdf';
+  const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 8000);
 }
 let FWD = '';
 // ---- fields the client fills in (template field `ask`); `join` fields are composed from them
@@ -354,6 +389,7 @@ $('ask-save').onclick = async () => {
   DOCS.forEach(d => { const t = SIGN_TEMPLATES[d.code];
     ASK.forEach(a => { if (t.fields.some(f => f.k === a.f.k)) d.values[a.f.k] = a.inp.value; });
     t.fields.filter(f => f.join).forEach(f => { d.values[f.k] = f.join.map(k => d.values[k] || '').join(' ').trim(); }); });
+  if (TWO && SIG) { PREP = null; prepareTwo().catch(() => {}); }
   try { await render(); toast('✓ הפרטים נשמרו והופיעו במסמך', 'ok'); } catch (e) { toast('שגיאה: ' + e.message, 'err'); }
 };
 $('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
@@ -368,7 +404,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
 (async function init() {
   const h = location.hash;
   try {
-    const hm = h.match(/^#([A-Za-z0-9_-]{16})(?:\.([A-Za-z0-9_-]{20,}))?$/);
+    const hm = h.match(/^#([A-Za-z0-9_-]{16})(?:\.([A-Za-z0-9_-]{20,}))?(?:\.([A-Za-z0-9_-]{20,}))?$/);
     if (hm) {
       // short link: #<token> (16 chars = 96-bit secret). File name and AES key are both derived from the token,
       // so the repo never shows which file belongs to which link, and nothing readable is stored.
@@ -392,11 +428,13 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
       }
       TWO = SIGN_TEMPLATES[DOCS[0].code].twoStep ? SIGN_TEMPLATES[DOCS[0].code] : null;
       if (TWO && hm[2]) { // second party: unlock the first party's signature
-        const pb = SIGN_CORE.B64U.dec(hm[2]);
-        let body = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: pb.slice(0, 12) }, k, pb.slice(12)));
-        body = body[0] === 1 ? await zip(body.slice(1), false) : body.slice(1);
-        const st = decStrokes(body); DATE1 = st.date; SIG1 = strokesPng(st.strokes); if (!SIG1) throw new Error('sig');
+        P1 = hm[2];
+        const st = decStrokes(await unseal(hm[2], k)); DATE1 = st.date; SIG1 = strokesPng(st.strokes); if (!SIG1) throw new Error('sig');
         STAGE = 2;
+        if (hm[3]) { // lawyer: both signatures present
+          const s2 = decStrokes(await unseal(hm[3], k)); DATE2 = s2.date; SIG = strokesPng(s2.strokes); if (!SIG) throw new Error('sig');
+          DOCS[0].values.r_id = s2.id; STAGE = 3;
+        }
       }
     } else if (h.startsWith('#d')) {
       DOCS = SIGN_CORE.unpack(h.slice(2));
@@ -414,6 +452,11 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   if (NEED_ID) $('btn-id').style.display = '';
   if (NO_SIGN) { $('btn-sign').style.display = 'none'; updateSend();
     $('intro').textContent = 'שלום ' + clientName() + ', כאן מצרפים רק צילומים, בלי חתימה. לחצי על כפתור הצילום וצלמי את תעודת הזהות מקדימה, אחר כך את הספח, ואז לחצי "שלח לעורך הדין".'; }
+  if (TWO && STAGE === 3) {
+    document.querySelector('header h1').textContent = TWO.title + ' – חתום על ידי שני הצדדים';
+    $('intro').textContent = 'ההסכם נחתם על ידי ' + DOCS[0].values[TWO.parties[0].k] + ' ביום ' + DATE1 + ' ועל ידי ' + DOCS[0].values[TWO.parties[1].k] + ' ביום ' + DATE2 + '. לחץ על הכפתור כדי להוריד את הקובץ החתום.';
+    $('btn-sign').style.display = 'none'; $('btn-send').disabled = false; $('btn-send').textContent = '⬇ הורדת ההסכם החתום';
+    try { await render(); } catch (e) { toast('שגיאה: ' + e.message, 'err'); } return; }
   if (TWO) { PARTY = TWO.parties[STAGE - 1];
     const other = firstName(DOCS[0].values[TWO.parties[2 - STAGE].k]);
     if (STAGE === 1) $('btn-send').textContent = '📤 שלח ל' + other + ' לחתימה';
