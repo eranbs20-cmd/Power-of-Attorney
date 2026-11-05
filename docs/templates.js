@@ -250,6 +250,21 @@
       ],
       sigs: [{ p: 8, cx: 162, y: 578, w: 95, h: 36 }],
     },
+    // ---- same as 14 (aidF2) for a shorter attachAEM.pdf (sections 1-3 only): the top block sits ~29pt higher
+    // (signature label at y 359-375, lawyer line at 399-416), the waiver signature at 695-711, page 2 at 69-86.
+    18: {
+      key: 'aidF3', file: 'enc:doc', encFile: true, title: 'תצהיר זכאות לסיוע משפטי',
+      confirm: 'קראתי את התצהיר במלואו, ואני מאשרת שתוכנו נכון.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'date', auto: 'date', x0: 365, x1: 538, y: 690, s: 11 },
+        { k: 'l_name', fixed: 'ערן בן שושן', signed: true, x0: 298, x1: 501, y: 409, s: 11 },
+        { k: 'l_date1', auto: 'date', signed: true, x0: 107, x1: 195, y: 411, s: 10.5, white: [107, 399, 195, 415] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 365, x1: 538, y: 66, s: 11 },
+      ],
+      sigs: [{ cx: 160, y: 357, w: 110, h: 40 }, { cx: 160, y: 693, w: 110, h: 40 }],
+      stamps: [{ cx: 160, y: 519, w: 95 }, { p: 1, cx: 160, y: 67, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
