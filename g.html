@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<title>שאלון לפתיחת התיק</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
+<style>
+  :root{--ink:#1d2742;--ink2:#4a5370;--muted:#7a8199;--navy:#22305a;--navy2:#2f4278;--gold:#b98a2f;--gold-soft:#fbf3e2;--ok:#1f7a4d;--ok-soft:#e7f4ec;--warn:#a8650a;--warn-soft:#fdf1df;--no:#8b90a0;--no-soft:#f0f1f4;--bg:#f3f1ec;--card:#fff;--line:#e6e2d9;--r:16px}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:'Heebo',Arial,sans-serif;background:var(--bg);color:var(--ink);direction:rtl;padding-bottom:130px;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+  header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:26px 0 70px}
+  .firm{font-size:13px;font-weight:500;letter-spacing:.2px;opacity:.8;display:flex;align-items:center;gap:8px}
+  .firm i{display:inline-flex;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.14);align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:13px}
+  header h1{margin:14px 0 6px;font-size:28px;font-weight:800;line-height:1.2}
+  #hello{margin:0;font-size:17px;opacity:.95}
+  .intro{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(29,39,66,.12);padding:20px 20px 18px;margin-top:-50px;position:relative}
+  .intro p{margin:0 0 14px;font-size:15.5px;color:var(--ink2)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .chips span{background:var(--gold-soft);color:#7a5a17;border:1px solid #efdcb3;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .step{background:#f7f6f2;border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink2);display:flex;gap:9px;align-items:flex-start}
+  .step b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+  .hint{margin:14px 0 0;font-size:13px;color:var(--muted)}
+  #progress{position:sticky;top:0;z-index:5;background:rgba(243,241,236,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:12px 0 10px;margin-top:6px}
+  .ptxt{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+  .ptxt .sig{font-weight:500;color:var(--muted)} .ptxt .sig.ok{color:var(--ok);font-weight:700}
+  .ptrack{height:8px;border-radius:99px;background:#e2ded4;overflow:hidden}
+  .pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ok),#34a56d);transition:width .35s ease}
+  section{background:var(--card);border-radius:var(--r);margin:14px 0 0;padding:6px 18px 6px;box-shadow:0 1px 2px rgba(29,39,66,.06),0 4px 14px rgba(29,39,66,.05)}
+  section.key{box-shadow:0 0 0 2px #e8cf96,0 6px 18px rgba(185,138,47,.15)}
+  .sh{display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--line)}
+  .sh .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--navy);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .sh h2{margin:0;font-size:18px;font-weight:800;flex:1}
+  .sh .pill{font-size:11.5px;font-weight:700;background:var(--gold);color:#fff;border-radius:99px;padding:2px 9px;margin-inline-start:6px;vertical-align:2px}
+  .sh .cnt{font-size:12.5px;font-weight:700;color:var(--muted);background:#f4f3ef;border-radius:99px;padding:3px 10px}
+  .sh .cnt.full{color:var(--ok);background:var(--ok-soft)}
+  .item{padding:14px 0;border-top:1px solid #f0ede6}
+  .item:first-of-type{border-top:none}
+  .top{display:flex;gap:12px;align-items:flex-start}
+  .name{flex:1;font-size:16px;font-weight:700;line-height:1.35}
+  .why{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+  .badge{flex:none;font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px;white-space:nowrap;background:var(--no-soft);color:var(--no)}
+  .item.has .badge{background:var(--ok-soft);color:var(--ok)} .item.none .badge{background:var(--no-soft);color:var(--ink2)} .item.later .badge{background:var(--warn-soft);color:var(--warn)}
+  .item.has .name::before{content:'✓';display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;align-items:center;justify-content:center;margin-inline-end:7px;vertical-align:1px}
+  .item.none .name,.item.later .name{color:var(--ink2)}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .acts button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-size:14px;font-family:inherit;font-weight:500;cursor:pointer;color:var(--ink2);transition:all .15s}
+  .acts button:hover{border-color:#cfc8b8;background:#faf9f6}
+  .acts button.add{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+  .acts button.add:hover{background:var(--navy2)}
+  .acts button{white-space:nowrap}
+  .acts button.on.st-none{background:var(--no-soft);border-color:#aeb3c2;color:var(--ink);font-weight:700}
+  .acts button.on.st-later{background:var(--warn-soft);border-color:#e6b770;color:var(--warn);font-weight:700}
+  .files{list-style:none;margin:10px 0 0;padding:0}
+  .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--ok-soft);border-radius:8px;padding:6px 10px;margin-top:5px;color:#245c3f}
+  .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right}
+  .files li button{border:none;background:none;color:#a33;font-size:16px;cursor:pointer;padding:0 4px}
+  .plain{padding:16px 18px 14px}
+  .plain h2{margin:2px 0 4px;font-size:18px;font-weight:800}
+  .plain .sub{font-size:14px;color:var(--muted);margin:0 0 10px}
+  #qs label{display:block;font-size:14.5px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+  textarea{width:100%;font-family:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:48px;background:#fcfbf8;color:var(--ink);resize:vertical;transition:border-color .15s,background .15s}
+  textarea:focus{outline:none;border-color:var(--navy2);background:#fff}
+  #signsec textarea{margin-bottom:12px}
+  #decl{background:var(--gold-soft);border:1px solid #efdcb3;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.7;color:#5a4414}
+  #sig-canvas{border:2px dashed #cfc8b8;border-radius:12px;touch-action:none;background:#fff;display:block;width:100%;height:180px;margin-top:12px}
+  .row{display:flex;gap:8px;margin:8px 0 6px;justify-content:space-between;align-items:center}
+  .row button{border:none;border-radius:8px;padding:8px 14px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  #sig-state{font-size:13.5px;font-weight:700}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:20;text-align:center;box-shadow:0 -6px 20px rgba(29,39,66,.06)}
+  .bar button{width:100%;max-width:520px;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:800;font-family:inherit;background:var(--ok);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(31,122,77,.3)}
+  .bar button:hover{background:#196a42}
+  .bar button:disabled{background:#9bb7a5;box-shadow:none}
+  .bar small{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+  #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .modal{position:fixed;inset:0;background:rgba(20,26,44,.55);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:18px;padding:22px;width:92%;max-width:480px;text-align:center}
+  .card h2{margin:0 0 8px;font-size:19px;color:var(--ink);font-weight:800}
+  .card p{margin:0 0 10px;font-size:14.5px;color:var(--ink2);line-height:1.65;text-align:right}
+  .card button{width:100%;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;margin-top:8px;cursor:pointer}
+  #wv{display:none;background:var(--gold);color:#fff;padding:10px 14px;font-size:13.5px;font-weight:500;text-align:center;line-height:1.5}
+  @media (max-width:560px){header{padding:20px 0 64px} header h1{font-size:23px} .steps{grid-template-columns:1fr} .intro{padding:16px} section{padding:4px 14px} .acts{gap:6px} .acts button{flex:1 1 auto;padding:9px 8px;font-size:13.5px} .name{font-size:15.5px}}
+  .sh .pill{white-space:nowrap;display:inline-block}
+  .q{padding:14px 0;border-top:1px solid #f0ede6}
+  .q:first-of-type{border-top:none}
+  .q .ql{display:block;font-size:16px;font-weight:700;line-height:1.35;margin-bottom:8px}
+  .q .ql small{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+  .q.done .ql::before{content:'✓';display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;align-items:center;justify-content:center;margin-inline-end:7px;vertical-align:1px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opts button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-size:14px;font-family:inherit;font-weight:500;cursor:pointer;color:var(--ink2);white-space:nowrap;transition:all .15s}
+  .opts button:hover{border-color:#cfc8b8;background:#faf9f6}
+  .opts button.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+  .q textarea.big{min-height:110px}
+  .q input[type=text]{width:100%;font-family:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fcfbf8;color:var(--ink)}
+  .q input[type=text]:focus{outline:none;border-color:var(--navy2);background:#fff}
+  @media (max-width:560px){.opts{gap:6px} .opts button{flex:1 1 auto;padding:9px 8px;font-size:13.5px} .q .ql{font-size:15.5px}}
+</style>
+</head>
+<body>
+<div id="wv">⚠ כדי לשלוח את השאלון, פתחי את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"</div>
+<header><div class="wrap">
+  <div class="firm"><i>עב</i>עו"ד ערן בן שושן · דיני משפחה</div>
+  <h1>שאלון לפתיחת התיק</h1>
+  <p id="hello">שלום,</p>
+</div></header>
+<main class="wrap">
+  <div class="intro">
+    <p>מוניתי לייצג אותך מטעם הסיוע המשפטי. כדי שאוכל לדווח לסיוע המשפטי ולהכין את ההליך, אני צריך לדעת כמה דברים עלייך, על הילדים ועל מה שקרה. התשובות נשארות ביני לבינך ולסיוע המשפטי.</p>
+    <div class="chips"><span>סיוע משפטי · גישה ישירה</span><span>ענייני משפחה</span></div>
+    <div class="steps">
+      <div class="step"><b>1</b><div>עני על השאלות. כמה מילים בכל שאלה מספיקות</div></div>
+      <div class="step"><b>2</b><div>מה שלא ידוע לך, השאירי ריק</div></div>
+      <div class="step"><b>3</b><div>חתמי ולחצי <strong>שלח לעורך הדין</strong></div></div>
+    </div>
+    <p class="hint">הדף זוכר את מה שכתבת, ואפשר לחזור אליו ולהשלים. מסמכים שולחים בקישור המסמכים הנפרד.</p>
+  </div>
+  <div id="progress"></div>
+  <div id="list"></div>
+  <section id="signsec" class="plain">
+    <h2>הערות וחתימה</h2>
+    <p class="sub">משהו נוסף שחשוב שאדע? (לא חובה)</p>
+    <textarea id="note" placeholder="כל דבר שלא נשאל כאן"></textarea>
+    <div id="decl"></div>
+    <canvas id="sig-canvas" width="700" height="260" aria-label="משטח חתימה"></canvas>
+    <div class="row"><div id="sig-state"></div><button type="button" id="sig-clear" style="background:#f0eee8;color:#555">נקה חתימה</button></div>
+  </section>
+</main>
+<div class="bar"><button type="button" id="send">📲 שלח לעורך הדין</button><small>התשובות לא נשמרות באתר. הן עוברות ישירות לוואטסאפ של עורך הדין.</small></div>
+<div class="modal" id="send-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:34px">✅</div>
+    <h2>הקובץ מוכן</h2>
+    <p>הקובץ <b>ירד</b> למכשיר. לחצי "פתח וואטסאפ", ובצ'אט עם עו"ד ערן בן שושן לחצי 📎 ← <b>מסמך</b>, בחרי את הקובץ שירד ושלחי.</p>
+    <button type="button" id="send-wa" style="background:#25d366;color:#fff">📲 פתח וואטסאפ</button>
+    <button type="button" id="send-close" style="background:#f0f0f0;color:#555;font-weight:normal">סגור</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script src="lib/pdf-lib.min.js"></script>
+<script src="lib/fontkit.umd.min.js"></script>
+<script>
+const LAWYER_WA = '972522499887';
+const $ = id => document.getElementById(id);
+// Intake questionnaire for a new legal-aid (direct access) family case. Answers feed the initial report form
+// (טופס דיווח ראשוני - גישה ישירה): background, children, violence, prior proceedings, urgency, further aid.
+// Generic: no client data lives in this file; only the first name arrives in the hash.
+// Each question: [key, type ('text' | 'long' | 'choice' | 'multi'), label, hint, options]
+const LIST = [
+  ['עלייך', [
+    ['age', 'text', 'בת כמה את?', ''],
+    ['fam', 'choice', 'מה המצב המשפחתי שלך היום?', '', ['נשואה', 'ידועה בציבור', 'פרודה', 'גרושה', 'רווקה', 'אלמנה']],
+    ['together', 'choice', 'האם את גרה היום עם אבי הילדים?', '', ['כן', 'לא']],
+    ['sep', 'text', 'אם נפרדתם: ממתי, ומי עזב את הבית?', ''],
+    ['work', 'long', 'במה את עובדת, ומה ההכנסה החודשית שלך בערך?', 'כולל קצבאות מביטוח לאומי: הבטחת הכנסה, קצבת ילדים, נכות'],
+    ['statusil', 'choice', 'מה המעמד שלך בישראל?', '', ['אזרחית ישראלית', 'תושבת קבע', 'אשרה או תושבות זמנית', 'אחר']],
+  ]],
+  ['הילדים', [
+    ['kids', 'long', 'שמות הילדים, תאריכי הלידה, בן או בת', ''],
+    ['kidswhere', 'long', 'אצל מי הילדים גרים, ומתי הם עם האב?', 'ימים בשבוע, לינות, סופי שבוע. גם אם אין קשר בכלל'],
+    ['father', 'choice', 'האם האב רשום כאב של הילדים במשרד הפנים?', '', ['כן', 'לא', 'לא יודעת']],
+    ['kidsspecial', 'long', 'משהו מיוחד אצל הילדים?', 'בריאות, טיפול רגשי, צרכים מיוחדים, מסגרת חינוך. אם אין, השאירי ריק'],
+  ]],
+  ['הצד השני', [
+    ['oname', 'text', 'השם המלא של אבי הילדים', ''],
+    ['ocontact', 'long', 'הכתובת והטלפון שלו', 'ומספר תעודת הזהות, אם ידוע לך'],
+    ['owork', 'long', 'במה הוא עובד, וכמה הוא מרוויח בערך?', ''],
+    ['opay', 'long', 'האם הוא משלם היום מזונות או עוזר בהוצאות? כמה?', ''],
+  ]],
+  ['מה קרה ומה את מבקשת (הכי חשוב)', [
+    ['story', 'long', 'ספרי בקצרה מה קרה ומה המצב היום', 'כמה שורות מספיקות. את הפרטים נשלים בשיחה'],
+    ['goals', 'multi', 'מה את רוצה להשיג? (אפשר לסמן כמה)', '', ['משמורת הילדים', 'זמני שהות', 'מזונות לילדים', 'גירושין', 'רכוש או דירה', 'צו הגנה', 'אחר']],
+    ['agree', 'choice', 'לדעתך, אפשר להגיע איתו להסכמות?', '', ['כן', 'אולי', 'לא']],
+  ]],
+  ['אלימות ובטיחות', [
+    ['viol', 'choice', 'האם הייתה או יש אלימות כלפייך או כלפי הילדים?', 'פיזית, מילולית, כלכלית או איומים', ['כן', 'לא', 'אעדיף לספר בטלפון']],
+    ['viold', 'long', 'אם כן: מה קרה ומתי? הוגשה תלונה במשטרה? יש צו הגנה?', ''],
+    ['welfare', 'choice', 'האם עובדת סוציאלית או לשכת הרווחה מלוות אותך או את הילדים?', '', ['כן', 'לא']],
+  ]],
+  ['הליכים קודמים', [
+    ['prev', 'choice', 'האם היו או יש הליכים בינך לבינו?', 'בית משפט, בית הדין הרבני, יחידת הסיוע, הוצאה לפועל, משטרה', ['כן', 'לא', 'לא יודעת']],
+    ['prevd', 'long', 'אם כן: איפה, מתי, ומה הוחלט?', 'יש לך החלטה או הסכם? צרפי אותם בקישור המסמכים'],
+  ]],
+  ['דחיפות ועזרה נוספת', [
+    ['urgent', 'choice', 'האם יש משהו דחוף?', '', ['כן', 'לא']],
+    ['urgentd', 'long', 'אם כן: מה דחוף?', 'דיון קרוב, מכתב מבית משפט, אין כסף לאוכל או לשכר דירה, חשש לביטחון'],
+    ['morehelp', 'multi', 'צריכה עזרה גם בנושאים אחרים?', '', ['חובות או הוצאה לפועל', 'ביטוח לאומי', 'דיור', 'מעמד בישראל', 'לא צריכה']],
+    ['callme', 'text', 'מתי הכי נוח לדבר איתך בטלפון?', ''],
+  ]],
+];
+const ANS = {}; let SIGNED = false;
+let CLIENT = ''; try { CLIENT = decodeURIComponent(location.hash.slice(1)).replace(/[^֐-׿A-Za-z \-']/g, '').slice(0, 30).trim(); } catch (e) {}
+const SKEY = 'gq:' + (CLIENT || 'x');
+function save() { try { localStorage.setItem(SKEY, JSON.stringify({ ans: ANS, note: $('note').value })); } catch (e) {} }
+function load() { try { const s = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (s) { Object.assign(ANS, s.ans || {}); $('note').value = s.note || ''; } } catch (e) {} }
+function toast(msg, cls) { const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block'; setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'err' ? 6000 : 2800); }
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function filled(k) { const v = ANS[k]; return Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim()); }
+function answerText(type, k) { const v = ANS[k]; return Array.isArray(v) ? v.join(', ') : (v || '').trim(); }
+function progress() {
+  let total = 0, done = 0;
+  for (const [, qs] of LIST) for (const [k] of qs) { total++; if (filled(k)) done++; }
+  const pct = total ? Math.round(done * 100 / total) : 0;
+  $('progress').innerHTML = '<div class="ptxt"><span>ענית על ' + done + ' מתוך ' + total + ' שאלות</span><span class="sig' + (SIGNED ? ' ok' : '') + '">' + (SIGNED ? '✓ נחתם' : 'טרם נחתם') + '</span></div><div class="ptrack"><div class="pfill" style="width:' + pct + '%"></div></div>';
+  document.querySelectorAll('section[data-i]').forEach(sec => { const qs = LIST[+sec.dataset.i][1]; const n = qs.filter(q => filled(q[0])).length;
+    const c = sec.querySelector('.cnt'); c.textContent = n + '/' + qs.length; c.classList.toggle('full', n === qs.length);
+    sec.querySelectorAll('.q').forEach(q => q.classList.toggle('done', filled(q.dataset.k))); });
+}
+function draw() {
+  const list = $('list'); list.innerHTML = '';
+  LIST.forEach(([title, qs], si) => {
+    const key = /הכי חשוב/.test(title); const clean = title.replace(/\s*\(.*?\)\s*$/, '');
+    const sec = el('section', key ? 'key' : null); sec.dataset.i = si; const sh = el('div', 'sh');
+    sh.appendChild(el('span', 'n', String(si + 1))); const h = el('h2', null, clean); if (key) h.appendChild(el('span', 'pill', 'הכי חשוב'));
+    sh.appendChild(h); sh.appendChild(el('span', 'cnt')); sec.appendChild(sh);
+    for (const [k, type, label, hint, opts] of qs) {
+      const q = el('div', 'q'); q.dataset.k = k;
+      const lab = el('label', 'ql', label); lab.htmlFor = 'q_' + k; if (hint) lab.appendChild(el('small', null, hint)); q.appendChild(lab);
+      if (type === 'choice' || type === 'multi') {
+        const box = el('div', 'opts'); box.setAttribute('role', type === 'choice' ? 'radiogroup' : 'group');
+        for (const o of opts) {
+          const sel = type === 'multi' ? (ANS[k] || []).includes(o) : ANS[k] === o;
+          const b = el('button', sel ? 'on' : null, o); b.type = 'button'; b.setAttribute('aria-pressed', sel ? 'true' : 'false');
+          b.onclick = () => {
+            if (type === 'multi') { const a = new Set(ANS[k] || []); a.has(o) ? a.delete(o) : a.add(o); ANS[k] = opts.filter(x => a.has(x)); }
+            else ANS[k] = ANS[k] === o ? '' : o;
+            save(); draw();
+          };
+          box.appendChild(b);
+        }
+        q.appendChild(box);
+      } else {
+        const inp = type === 'long' ? el('textarea', k === 'story' ? 'big' : null) : el('input'); if (type !== 'long') inp.type = 'text';
+        inp.id = 'q_' + k; inp.value = ANS[k] || ''; inp.autocomplete = 'off'; inp.oninput = () => { ANS[k] = inp.value; save(); progress(); };
+        q.appendChild(inp);
+      }
+      sec.appendChild(q);
+    }
+    list.appendChild(sec);
+  });
+  progress();
+}
+$('note').oninput = save;
+// ---------- declaration + signature ----------
+const DECL = 'אני' + (CLIENT ? ' ' + CLIENT : '') + ' מאשרת כי הפרטים שמסרתי בשאלון נכונים למיטב ידיעתי, ואני מסכימה שעורך הדין ערן בן שושן ישתמש בהם לצורך הטיפול בעניין שלי ולדיווח לסיוע המשפטי.';
+$('decl').textContent = DECL;
+(function () {
+  const c = $('sig-canvas'); let drawing = false, lx = 0, ly = 0;
+  const pos = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) * c.width / r.width, (e.clientY - r.top) * c.height / r.height]; };
+  c.addEventListener('pointerdown', e => { drawing = true; [lx, ly] = pos(e); c.setPointerCapture(e.pointerId); e.preventDefault(); });
+  c.addEventListener('pointermove', e => {
+    if (!drawing) return; const [x, y] = pos(e); const ctx = c.getContext('2d');
+    ctx.strokeStyle = '#1a3fa8'; ctx.lineWidth = 3.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke(); lx = x; ly = y;
+  });
+  const end = () => { if (drawing) { drawing = false; SIGNED = !!trimmedPng(c); sigState(); progress(); } };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+})();
+function sigState() { $('sig-state').textContent = SIGNED ? '✓ החתימה נקלטה' : '✍ חתמי בתוך המסגרת'; $('sig-state').style.color = SIGNED ? 'var(--ok)' : 'var(--warn)'; }
+$('sig-clear').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); SIGNED = false; sigState(); progress(); };
+function trimmedPng(canvas) {
+  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, x1 = 0, y0 = h, y1 = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 10) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 < x0 || (x1 - x0) * (y1 - y0) < 400) return null;
+  const p = 3, t = document.createElement('canvas'); t.width = x1 - x0 + p * 2; t.height = y1 - y0 + p * 2;
+  t.getContext('2d').drawImage(canvas, x0 - p, y0 - p, t.width, t.height, 0, 0, t.width, t.height);
+  const b64 = t.toDataURL('image/png').split(',')[1];
+  return Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+}
+// ---------- the answers PDF ----------
+function rtl(str) { if (!str) return ''; if (!/[֐-׿]/.test(str)) return str; return str.replace(/[0-9A-Za-z@._\-/:]+/g, m => m.split('').reverse().join('')).replace(/[()]/g, c => (c === '(' ? ')' : '(')); }
+function today() { const d = new Date(); return d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getFullYear(); }
+function wrap(text, font, size, maxW) { const lines = []; for (const para of String(text).split(/\n+/)) { const words = para.trim().split(/\s+/); let cur = ''; for (const w of words) { const t = cur ? cur + ' ' + w : w; if (font.widthOfTextAtSize(rtl(t), size) > maxW && cur) { lines.push(cur); cur = w; } else cur = t; } if (cur) lines.push(cur); } return lines; }
+async function buildPdf(sigPng) {
+  const { PDFDocument, rgb } = PDFLib; const A4 = [595.28, 841.89], M = 50, W = A4[0] - 2 * M;
+  const out = await PDFDocument.create(); out.registerFontkit(fontkit);
+  const fb = await out.embedFont(await (await fetch('Heebo-Bold.ttf')).arrayBuffer());
+  const black = rgb(0, 0, 0), grey = rgb(0.42, 0.42, 0.42), navy = rgb(0.133, 0.188, 0.353);
+  let pg = out.addPage(A4), y = A4[1] - 70;
+  const need = h => { if (y - h < 60) { pg = out.addPage(A4); y = A4[1] - 60; } };
+  const R = (txt, size, color) => { const t = rtl(txt), w = fb.widthOfTextAtSize(t, size); pg.drawText(t, { x: A4[0] - M - w, y, size, font: fb, color: color || black }); };
+  const C = (txt, size, color) => { const t = rtl(txt), w = fb.widthOfTextAtSize(t, size); pg.drawText(t, { x: (A4[0] - w) / 2, y, size, font: fb, color: color || black }); };
+  C('שאלון לפתיחת התיק', 20, navy); y -= 24; if (CLIENT) { C(CLIENT, 14, grey); y -= 18; } C('נשלח ' + today(), 11, grey); y -= 34;
+  const answers = {};
+  LIST.forEach(([title, qs], si) => {
+    need(40); R(title.replace(/\s*\(.*?\)\s*$/, ''), 14, navy); y -= 8;
+    pg.drawLine({ start: { x: M, y }, end: { x: A4[0] - M, y }, thickness: 0.6, color: rgb(0.8, 0.78, 0.72) }); y -= 18;
+    for (const [k, type, label] of qs) {
+      const a = answerText(type, k); if (a) answers[k] = ANS[k];
+      const lines = wrap(a || '—', fb, 11.5, W - 10);
+      need(18 + lines.length * 17); R(label, 10.5, grey); y -= 17;
+      for (const l of lines) { need(17); R(l, 11.5, a ? black : grey); y -= 17; }
+      y -= 8;
+    }
+    y -= 6;
+  });
+  const note = $('note').value.trim();
+  if (note) { need(40); R('הערות', 14, navy); y -= 22; for (const l of wrap(note, fb, 11.5, W)) { need(17); R(l, 11.5); y -= 17; } y -= 10; }
+  need(200); y -= 10;
+  for (const l of wrap(DECL, fb, 12, W)) { R(l, 12); y -= 20; }
+  y -= 80; R('תאריך: ' + today(), 12);
+  if (sigPng) { const img = await out.embedPng(sigPng); const k2 = Math.min(200 / img.width, 70 / img.height); const w = img.width * k2, h = img.height * k2; pg.drawImage(img, { x: M + 20, y: y - 10, width: w, height: h }); }
+  pg.drawLine({ start: { x: M, y: y - 16 }, end: { x: M + 240, y: y - 16 }, thickness: 0.8, color: black });
+  const sg = rtl('חתימת ' + (CLIENT || 'הפונה')), sw = fb.widthOfTextAtSize(sg, 11); pg.drawText(sg, { x: M + 120 - sw / 2, y: y - 32, size: 11, font: fb, color: black });
+  const manifest = { form: 'gisha-intake', v: 1, client: CLIENT, sent: new Date().toISOString(), signed: !!sigPng, note, answers };
+  return { pdf: await out.save(), manifest };
+}
+$('send').onclick = async () => {
+  const sig = trimmedPng($('sig-canvas'));
+  if (!sig) { toast('חסרה חתימה. חתמי בתוך המסגרת למטה', 'err'); $('signsec').scrollIntoView({ behavior: 'smooth' }); return; }
+  const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ מכין את הקובץ...';
+  try {
+    const { pdf, manifest } = await buildPdf(sig); const suffix = CLIENT ? ' - ' + CLIENT : '';
+    const all = [new File([pdf], 'שאלון פתיחת תיק' + suffix + '.pdf', { type: 'application/pdf' }),
+                 new File([JSON.stringify(manifest, null, 1)], 'שאלון פתיחת תיק' + suffix + '.json', { type: 'application/json' })];
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: all })) {
+      try { await navigator.share({ title: 'שאלון פתיחת תיק', text: 'שאלון פתיחת תיק' + suffix, files: all }); toast('נשלח ✓', 'ok'); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    for (const f of all) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); }
+    $('send-modal').style.display = 'flex';
+  } catch (e) { toast('שגיאה בהכנת הקובץ: ' + e.message, 'err'); }
+  finally { btn.disabled = false; btn.textContent = '📲 שלח לעורך הדין'; }
+};
+$('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
+$('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+(function inApp() { const ua = navigator.userAgent || ''; if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block'; })();
+$('hello').textContent = 'שלום' + (CLIENT ? ' ' + CLIENT : '') + ',';
+load(); sigState(); draw();
+</script>
+</body>
+</html>
