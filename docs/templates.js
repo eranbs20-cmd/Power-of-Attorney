@@ -235,6 +235,21 @@
       key: 'minuiF', file: 'enc:doc', encFile: true, title: 'כתב מינוי', appendix: 'כתב מינוי להענקת שירות משפטי',
       fields: [], sigs: [],
     },
+    // ---- complete filing signed by a male declarant, affidavit on page index 8 (Letter, 9 pages): Mordov response
+    // to a protection-order request. Same encrypted-file mechanism as 8-10; coordinates from pdftotext -bbox.
+    17: {
+      key: 'fullM9', file: 'enc:doc', encFile: true, title: 'תגובה לבקשה למתן צו הגנה, כולל תצהיר',
+      confirm: 'קראתי את כל המסמך במלואו, על כל עמודיו, ואני מאשר שתוכן התצהיר נכון.',
+      intro: 'זה המסמך המלא שיוגש לבית המשפט. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בתצהיר.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'c_line', fixed: 'המצהיר אישר, לפני חתימתו, כי קרא את כל המסמך במלואו, על כל עמודיו, וכי תוכן תצהירו נכון.', signed: true,
+          p: 8, x1: 540, y: 714, s: 10.5, al: 'r', f: 'r' },
+        { k: 'c_label', fixed: 'תאריך החתימה הדיגיטלית:', signed: true, p: 8, x1: 540, y: 730, s: 10.5, al: 'r', f: 'r' },
+        { k: 'c_date', auto: 'date', signed: true, p: 8, x1: 413, y: 730, s: 10.5, al: 'r', f: 'r' },
+      ],
+      sigs: [{ p: 8, cx: 162, y: 578, w: 95, h: 36 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
