@@ -65,7 +65,7 @@ function newClient() {
 
 /** Also callable from the web app with the admin key, so Claude can open a case without the menu. */
 function createCase_(name, phone, caseNo) {
-  const token = Utilities.base64EncodeWebSafe(Utilities.newBlob(Utilities.getUuid() + Utilities.getUuid()).getBytes())
+  const token = Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + Utilities.getUuid() + Date.now()))
     .replace(/=+$/, '').slice(0, 24);
   const root = DriveApp.getFolderById(PropertiesService.getScriptProperties().getProperty('ROOT'));
   const folder = root.createFolder(name + ' – מסמכים מהלקוח');
