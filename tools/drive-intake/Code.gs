@@ -45,7 +45,7 @@ function setup() {
   p.setProperty('EMAIL', Session.getActiveUser().getEmail());
   ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger('dailyDigest').timeBased().everyDays(1).atHour(8).create();
-  SpreadsheetApp.getUi().alert('ההתקנה הושלמה. עכשיו: פריסה ← פריסה חדשה ← אפליקציית אינטרנט (הפעלה בתור: אני, גישה: כל אחד).');
+  try { SpreadsheetApp.getUi().alert('ההתקנה הושלמה. עכשיו: פריסה ← פריסה חדשה ← אפליקציית אינטרנט (הפעלה בתור: אני, גישה: כל אחד).'); } catch (e) { Logger.log('setup done'); }
 }
 
 function newClient() {

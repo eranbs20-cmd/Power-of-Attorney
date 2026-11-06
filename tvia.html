@@ -151,7 +151,7 @@ const LAWYER_WA = '972522499887';
 // Cloud mode: tvia.html#c=<token>. Every file is uploaded to the lawyer's Google Drive the moment it is picked,
 // so the client can upload one document at a time, close the page and come back from any device.
 // API = the Apps Script web app in tools/drive-intake/Code.gs. Without a token the page works as before (WhatsApp bundle).
-const API = '';
+const API = 'https://script.google.com/macros/s/AKfycbw5g1p5uIOCoG53a5s7fmic74X_yTDdwh90fIpfAkrJCXLBho9Oy48hq6ZBXg2yq1WghQ/exec';
 const TOKEN = (/^#c=([A-Za-z0-9_-]{20,40})$/.exec(location.hash) || [])[1] || '';
 const CLOUD = !!(API && TOKEN);
 async function api(a, extra) {
