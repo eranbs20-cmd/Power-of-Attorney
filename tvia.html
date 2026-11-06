@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <title>מסמכים להגשת התביעה</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
 <style>
@@ -60,6 +60,8 @@
   .files{list-style:none;margin:10px 0 0;padding:0}
   .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--ok-soft);border-radius:8px;padding:6px 10px;margin-top:5px;color:#245c3f}
   .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right}
+  .files li .saved{font-size:12px;font-weight:700;color:var(--ok);white-space:nowrap}
+  .files li.pending{background:var(--warn-soft);color:var(--warn)} .files li.pending .saved{color:var(--warn)}
   .files li button{border:none;background:none;color:#a33;font-size:16px;cursor:pointer;padding:0 4px}
   .plain{padding:16px 18px 14px}
   .plain h2{margin:2px 0 4px;font-size:18px;font-weight:800}
@@ -104,7 +106,7 @@
       <div class="step"><b>2</b><div>ענִי בקצרה על השאלות בסוף הדף</div></div>
       <div class="step"><b>3</b><div>חתמי ולחצי <strong>שלח לעורך הדין</strong></div></div>
     </div>
-    <p class="hint">כל מסמך חשוב, גם אם נראה לך קטן. הדף זוכר מה סימנת, ואפשר לחזור אליו ולשלוח שוב.</p>
+    <p class="hint" id="hint">כל מסמך חשוב, גם אם נראה לך קטן. הדף זוכר מה סימנת, ואפשר לחזור אליו ולשלוח שוב.</p>
   </div>
   <div id="progress"></div>
   <div id="list"></div>
@@ -133,11 +135,36 @@
     <button type="button" id="send-close" style="background:#f0f0f0;color:#555;font-weight:normal">סגור</button>
   </div>
 </div>
+<div class="modal" id="done-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:34px">✅</div>
+    <h2>התקבל, תודה!</h2>
+    <p>כל המסמכים, התשובות והחתימה נשמרו אצל עורך הדין. אם תמצאי עוד מסמך, אפשר לחזור לאותו קישור ולהעלות אותו בכל זמן.</p>
+    <button type="button" id="done-close" style="background:#22305a;color:#fff">סגור</button>
+  </div>
+</div>
 <div id="toast"></div>
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
 <script>
 const LAWYER_WA = '972522499887';
+// Cloud mode: tvia.html#c=<token>. Every file is uploaded to the lawyer's Google Drive the moment it is picked,
+// so the client can upload one document at a time, close the page and come back from any device.
+// API = the Apps Script web app in tools/drive-intake/Code.gs. Without a token the page works as before (WhatsApp bundle).
+const API = '';
+const TOKEN = (/^#c=([A-Za-z0-9_-]{20,40})$/.exec(location.hash) || [])[1] || '';
+const CLOUD = !!(API && TOKEN);
+async function api(a, extra) {
+  const r = await fetch(API, { method: 'POST', body: JSON.stringify(Object.assign({ a, t: TOKEN }, extra || {})) });
+  const j = await r.json(); if (!j.ok) throw new Error(j.error || 'error'); return j;
+}
+function fromServer(j) {
+  for (const k of Object.keys(ST)) if (!(j.items || {})[k]) { ST[k].files = []; ST[k].state = ''; }
+  for (const [k, it] of Object.entries(j.items || {})) { const s = ST[k] || (ST[k] = { files: [], state: '' }); s.files = it.files.map(f => Object.assign({ remote: true }, f)); s.state = it.state || ''; }
+}
+function b64(file) { return new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(file); }); }
+let ansTimer = null;
+function pushAnswers() { if (!CLOUD) return; clearTimeout(ansTimer); ansTimer = setTimeout(() => api('answers', { answers: ANS, note: $('note').value }).catch(() => toast('לא הצלחתי לשמור את התשובות. בדקי חיבור לאינטרנט', 'err')), 1500); }
 const $ = id => document.getElementById(id);
 // Everything needed to file a family-court claim bundle: a property claim (declaratory relief on a home
 // registered to the other spouse, dissolution of co-ownership, balancing of resources; Form 3), a child
@@ -208,9 +235,9 @@ const QS = [
   ['urgent_q', 'משהו דחוף? למשל הוא הפסיק לשלם, אין כסף לשכר דירה או לאוכל'],
 ];
 const ST = {}; const ANS = {}; let current = null, SIGNED = false;
-let CLIENT = ''; try { CLIENT = decodeURIComponent(location.hash.slice(1)).replace(/[^֐-׿A-Za-z \-']/g, '').slice(0, 30).trim(); } catch (e) {}
-const SKEY = 'tvia:' + (CLIENT || 'x');
-function save() { try { localStorage.setItem(SKEY, JSON.stringify({ st: Object.fromEntries(Object.entries(ST).map(([k, v]) => [k, v.state])), note: $('note').value, ans: ANS })); } catch (e) {} }
+let CLIENT = ''; try { if (!/^#c=/.test(location.hash)) CLIENT = decodeURIComponent(location.hash.slice(1)).replace(/[^֐-׿A-Za-z \-']/g, '').slice(0, 30).trim(); } catch (e) {}
+const SKEY = 'tvia:' + (TOKEN || CLIENT || 'x');
+function save() { pushAnswers(); try { localStorage.setItem(SKEY, JSON.stringify({ st: Object.fromEntries(Object.entries(ST).map(([k, v]) => [k, v.state])), note: $('note').value, ans: ANS })); } catch (e) {} }
 function load() { try { const s = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (s) { for (const [k, st] of Object.entries(s.st || {})) ST[k] = { files: [], state: st }; $('note').value = s.note || ''; Object.assign(ANS, s.ans || {}); } } catch (e) {} }
 function drawQs() {
   const box = $('qs'); box.innerHTML = '';
@@ -238,9 +265,13 @@ function draw() {
       top.appendChild(nm); top.appendChild(el('span', 'badge', s.files.length ? '📎 צורפו ' + s.files.length : s.state === 'none' ? '🚫 אין לי' : s.state === 'later' ? '⏳ אשלח בהמשך' : 'עוד לא')); it.appendChild(top);
       const acts = el('div', 'acts');
       const add = el('button', 'add', s.files.length ? '📎 צרף עוד' : '📎 צרף'); add.type = 'button'; add.onclick = () => { current = k; $('file').click(); }; acts.appendChild(add);
-      for (const [st, txt] of [['none', '🚫 אין לי'], ['later', '⏳ אשלח בהמשך']]) { const b = el('button', 'st-' + st + (s.state === st ? ' on' : ''), txt); b.type = 'button'; b.onclick = () => { s.state = s.state === st ? '' : st; save(); draw(); }; acts.appendChild(b); }
+      for (const [st, txt] of [['none', '🚫 אין לי'], ['later', '⏳ אשלח בהמשך']]) { const b = el('button', 'st-' + st + (s.state === st ? ' on' : ''), txt); b.type = 'button'; b.onclick = () => { s.state = s.state === st ? '' : st; save(); draw(); if (CLOUD) api('state', { key: k, state: s.state }).catch(() => toast('לא נשמר. בדקי חיבור לאינטרנט', 'err')); }; acts.appendChild(b); }
       it.appendChild(acts);
-      if (s.files.length) { const ul = el('ul', 'files'); s.files.forEach((f, i) => { const li = el('li'); li.appendChild(el('span', null, f.name)); const x = el('button', null, '🗑'); x.type = 'button'; x.setAttribute('aria-label', 'מחק ' + f.name); x.onclick = () => { s.files.splice(i, 1); draw(); toast('הקובץ נמחק'); }; li.appendChild(x); ul.appendChild(li); }); it.appendChild(ul); }
+      if (s.files.length || (s.pending || []).length) { const ul = el('ul', 'files'); s.files.forEach((f, i) => { const li = el('li'); li.appendChild(el('span', null, f.name)); if (f.remote) li.appendChild(el('b', 'saved', '✓ נשמר'));
+          const x = el('button', null, '🗑'); x.type = 'button'; x.setAttribute('aria-label', 'מחק ' + f.name);
+          x.onclick = async () => { if (f.remote) { if (!confirm('למחוק את "' + f.name + '"?')) return; try { fromServer(await api('delete', { key: k, id: f.id })); } catch (e) { toast('המחיקה נכשלה, נסי שוב', 'err'); return; } } else s.files.splice(i, 1); draw(); toast('הקובץ נמחק'); };
+          li.appendChild(x); ul.appendChild(li); });
+        (s.pending || []).forEach(n => { const li = el('li', 'pending'); li.appendChild(el('span', null, n)); li.appendChild(el('b', 'saved', '⏳ מעלה...')); ul.appendChild(li); }); it.appendChild(ul); }
       sec.appendChild(it);
     }
     cnt.textContent = sd + '/' + items.length; if (sd === items.length) cnt.classList.add('full');
@@ -261,13 +292,22 @@ async function toJpeg(f) {
 }
 $('file').onchange = async e => {
   const fs = [...e.target.files]; e.target.value = ''; if (!fs.length || !current) return;
-  const s = ST[current]; for (const f of fs) s.files.push(await toJpeg(f)); s.state = ''; save();
-  draw(); toast('✓ צורפו ' + fs.length + ' קבצים', 'ok');
+  const k = current, s = ST[k];
+  if (!CLOUD) { for (const f of fs) s.files.push(await toJpeg(f)); s.state = ''; save(); draw(); toast('✓ צורפו ' + fs.length + ' קבצים', 'ok'); return; }
+  s.pending = (s.pending || []).concat(fs.map(f => f.name)); draw(); let ok = 0;
+  for (const f0 of fs) {
+    try { const f = await toJpeg(f0);
+      if (f.size > 15 * 1024 * 1024) { toast('"' + f0.name + '" גדול מדי (מעל 15MB). שלחי אותו בוואטסאפ', 'err'); }
+      else { fromServer(await api('upload', { key: k, name: f.name, mime: f.type, data: await b64(f) })); ok++; }
+    } catch (err) { toast('העלאת "' + f0.name + '" נכשלה. נסי שוב', 'err'); }
+    s.pending.shift(); draw();
+  }
+  if (ok) toast('✓ ' + (ok === 1 ? 'הקובץ נשמר' : ok + ' קבצים נשמרו') + ' אצל עורך הדין', 'ok');
 };
 $('note').oninput = save;
 // ---------- declaration + signature ----------
-const DECL = 'אני' + (CLIENT ? ' ' + CLIENT : '') + ' מאשרת כי המסמכים שצירפתי הם העתקים נאמנים של המקור, וכי הפרטים שמסרתי נכונים למיטב ידיעתי. אני מאשרת לעורך הדין ערן בן שושן להכין על בסיסם את כתבי התביעה, את הרצאות הפרטים ואת הבקשה למזונות זמניים, ולצרף אליהם את חתימתי זו.';
-$('decl').textContent = DECL;
+const DECLF = () => 'אני' + (CLIENT ? ' ' + CLIENT : '') + ' מאשרת כי המסמכים שצירפתי הם העתקים נאמנים של המקור, וכי הפרטים שמסרתי נכונים למיטב ידיעתי. אני מאשרת לעורך הדין ערן בן שושן להכין על בסיסם את כתבי התביעה, את הרצאות הפרטים ואת הבקשה למזונות זמניים, ולצרף אליהם את חתימתי זו.';
+$('decl').textContent = DECLF();
 (function () {
   const c = $('sig-canvas'); let drawing = false, lx = 0, ly = 0;
   const pos = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) * c.width / r.width, (e.clientY - r.top) * c.height / r.height]; };
@@ -351,7 +391,7 @@ async function bundle(sigPng) {
   // signature page
   const sp = out.addPage(A4); let y = A4[1] - 90;
   C(sp, 'אישור וחתימה', y, 18); y -= 40;
-  for (const line of wrap(DECL, fb, 13, A4[0] - 2 * M)) { R(sp, line, y, 13); y -= 22; }
+  for (const line of wrap(DECLF(), fb, 13, A4[0] - 2 * M)) { R(sp, line, y, 13); y -= 22; }
   if ($('note').value.trim()) { y -= 10; R(sp, 'הערות:', y, 12, grey); y -= 20; for (const line of wrap($('note').value.trim().replace(/\s+/g, ' '), fb, 12, A4[0] - 2 * M)) { R(sp, line, y, 12, grey); y -= 19; } }
   y -= 30; R(sp, 'תאריך: ' + today(), y, 13);
   if (sigPng) { const img = await out.embedPng(sigPng); const k2 = Math.min(200 / img.width, 80 / img.height); const w = img.width * k2, h = img.height * k2; sp.drawImage(img, { x: M + 20, y: y - 10, width: w, height: h }); }
@@ -369,6 +409,14 @@ async function bundle(sigPng) {
 $('send').onclick = async () => {
   const c = $('sig-canvas'); const sig = trimmedPng(c);
   if (!sig) { toast('חסרה חתימה. חתמי בתוך המסגרת למטה', 'err'); $('signsec').scrollIntoView({ behavior: 'smooth' }); return; }
+  if (CLOUD) {
+    if (Object.values(ST).some(s => (s.pending || []).length)) { toast('רגע, עדיין מעלה קבצים...', 'err'); return; }
+    const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ שולח...';
+    try { fromServer(await api('submit', { sig: await b64(new Blob([sig])), answers: ANS, note: $('note').value })); draw(); $('done-modal').style.display = 'flex'; }
+    catch (e) { toast('השליחה נכשלה. בדקי חיבור לאינטרנט ונסי שוב', 'err'); }
+    finally { btn.disabled = false; btn.textContent = '✅ סיימתי, שלח לעורך הדין'; }
+    return;
+  }
   const nfiles = Object.values(ST).reduce((n, s) => n + s.files.length, 0);
   if (!nfiles && !confirm('לא צירפת מסמכים. לשלוח רק את החתימה ואת הרשימה של מה שאין לך?')) return;
   const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ מכין את קובץ הנספחים...';
@@ -389,10 +437,27 @@ $('send').onclick = async () => {
 };
 $('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
 $('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
-window.addEventListener('beforeunload', e => { if (Object.values(ST).some(s => s.files.length)) { e.preventDefault(); e.returnValue = ''; } });
+$('done-close').onclick = () => { $('done-modal').style.display = 'none'; };
+window.addEventListener('beforeunload', e => { if (Object.values(ST).some(s => (CLOUD ? (s.pending || []).length : s.files.length))) { e.preventDefault(); e.returnValue = ''; } });
 (function inApp() { const ua = navigator.userAgent || ''; if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block'; })();
 $('hello').textContent = 'שלום' + (CLIENT ? ' ' + CLIENT : '') + ',';
 load(); drawQs(); sigState(); draw();
+if (/^#c=/.test(location.hash) && !CLOUD) { $('hello').textContent = 'הקישור עדיין לא פעיל. נסי שוב מאוחר יותר או פני לעורך הדין.'; }
+if (CLOUD) (async () => {
+  $('hint').textContent = 'כל מסמך נשמר מיד אצל עורך הדין. אפשר להעלות אחד-אחד, לסגור ולחזור מתי שנוח, גם מטלפון אחר.';
+  $('barnote').textContent = 'הכול כבר נשמר אצל עורך הדין. בסוף, חתמי ולחצי כאן כדי להודיע שסיימת.';
+  $('send').textContent = '✅ סיימתי, שלח לעורך הדין';
+  const labels = {}; for (const [, items] of LIST) for (const [k, name] of items) labels[k] = name;
+  try {
+    const j = await api('status', { labels });
+    CLIENT = j.first || ''; $('hello').textContent = 'שלום' + (CLIENT ? ' ' + CLIENT : '') + ','; $('decl').textContent = DECLF();
+    fromServer(j); Object.assign(ANS, j.answers || {}); if (j.note) $('note').value = j.note; drawQs(); draw();
+    if (j.submitted) toast('כבר שלחת. אפשר להוסיף מסמכים בכל זמן', 'ok');
+  } catch (e) {
+    $('hello').textContent = e.message === 'closed' ? 'הקישור נסגר. אם צריך להעלות עוד מסמכים, פני לעורך הדין.' : e.message === 'link' ? 'הקישור לא תקין. בקשי מעורך הדין קישור חדש.' : 'אין חיבור כרגע. בדקי אינטרנט ורענני את הדף.';
+    $('list').style.display = 'none';
+  }
+})();
 </script>
 </body>
 </html>
