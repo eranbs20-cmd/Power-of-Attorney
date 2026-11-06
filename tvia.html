@@ -60,6 +60,7 @@
   .files{list-style:none;margin:10px 0 0;padding:0}
   .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--ok-soft);border-radius:8px;padding:6px 10px;margin-top:5px;color:#245c3f}
   .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right}
+  .quick-btn{width:100%;border:none;border-radius:12px;padding:16px;font-size:17px;font-weight:800;font-family:inherit;background:var(--navy);color:#fff;cursor:pointer;margin-top:4px;box-shadow:0 4px 12px rgba(34,48,90,.25)}
   .files li .saved{font-size:12px;font-weight:700;color:var(--ok);white-space:nowrap}
   .files li.pending{background:var(--warn-soft);color:var(--warn)} .files li.pending .saved{color:var(--warn)}
   .files li button{border:none;background:none;color:#a33;font-size:16px;cursor:pointer;padding:0 4px}
@@ -108,6 +109,12 @@
     </div>
     <p class="hint" id="hint">כל מסמך חשוב, גם אם נראה לך קטן. הדף זוכר מה סימנת, ואפשר לחזור אליו ולשלוח שוב.</p>
   </div>
+  <section id="quick" class="plain key" style="display:none">
+    <h2>📤 העלאת מסמכים</h2>
+    <p class="sub">הדרך הכי פשוטה: לחצי על הכפתור, בחרי מהגלריה או מהקבצים את כל המסמכים שיש לך (אפשר כמה ביחד), ואני כבר אמיין. אפשר גם לצרף כל מסמך במקום שלו ברשימה למטה.</p>
+    <button type="button" id="quick-btn" class="quick-btn">📎 בחרי מסמכים להעלאה</button>
+    <ul class="files" id="quick-files"></ul>
+  </section>
   <div id="progress"></div>
   <div id="list"></div>
   <section id="qsec" class="plain">
@@ -255,6 +262,15 @@ function drawQs() {
 }
 function toast(msg, cls) { const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block'; setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'err' ? 6000 : 2800); }
 function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function drawQuick() {
+  const s = ST.general || (ST.general = { files: [], state: '' }); const ul = $('quick-files'); ul.innerHTML = '';
+  s.files.forEach(f => { const li = el('li'); li.appendChild(el('span', null, f.name)); li.appendChild(el('b', 'saved', '✓ נשמר'));
+    const x = el('button', null, '🗑'); x.type = 'button'; x.setAttribute('aria-label', 'מחק ' + f.name);
+    x.onclick = async () => { if (!confirm('למחוק את "' + f.name + '"?')) return; try { fromServer(await api('delete', { key: 'general', id: f.id })); draw(); toast('הקובץ נמחק'); } catch (e) { toast('המחיקה נכשלה, נסי שוב', 'err'); } };
+    li.appendChild(x); ul.appendChild(li); });
+  (s.pending || []).forEach(n => { const li = el('li', 'pending'); li.appendChild(el('span', null, n)); li.appendChild(el('b', 'saved', '⏳ מעלה...')); ul.appendChild(li); });
+  $('quick-btn').textContent = s.files.length ? '📎 העלי עוד מסמכים' : '📎 בחרי מסמכים להעלאה';
+}
 function draw() {
   const list = $('list'); list.innerHTML = ''; let total = 0, done = 0;
   let si = 0;
@@ -284,7 +300,9 @@ function draw() {
     list.appendChild(sec);
   }
   const pct = total ? Math.round(done * 100 / total) : 0;
-  $('progress').innerHTML = '<div class="ptxt"><span>טופלו ' + done + ' מתוך ' + total + ' מסמכים</span><span class="sig' + (SIGNED ? ' ok' : '') + '">' + (SIGNED ? '✓ נחתם' : 'טרם נחתם') + '</span></div><div class="ptrack"><div class="pfill" style="width:' + pct + '%"></div></div>';
+  if (CLOUD) drawQuick();
+  const gen = (ST.general || { files: [] }).files.length;
+  $('progress').innerHTML = '<div class="ptxt"><span>טופלו ' + done + ' מתוך ' + total + ' מסמכים' + (gen ? ' · ' + gen + ' הועלו בהעלאה המהירה' : '') + '</span><span class="sig' + (SIGNED ? ' ok' : '') + '">' + (SIGNED ? '✓ נחתם' : 'טרם נחתם') + '</span></div><div class="ptrack"><div class="pfill" style="width:' + pct + '%"></div></div>';
 }
 // photos are re-encoded as JPEG (also turns iPhone HEIC into something a PDF can hold)
 async function toJpeg(f) {
@@ -418,7 +436,9 @@ $('send').onclick = async () => {
   if (CLOUD) {
     if (Object.values(ST).some(s => (s.pending || []).length)) { toast('רגע, עדיין מעלה קבצים...', 'err'); return; }
     const nup = Object.values(ST).reduce((n, s) => n + s.files.length, 0);
-    if (!nup && !confirm('עדיין לא העלית אף מסמך. כדי להעלות, לחצי "צרף" ליד כל מסמך ברשימה. לשלוח בכל זאת רק את החתימה והתשובות?')) { $('list').scrollIntoView({ behavior: 'smooth' }); return; }
+    const nmark = Object.values(ST).filter(s => s.state).length;
+    if (!nup && !nmark) { $('quick').scrollIntoView({ behavior: 'smooth' }); toast('עוד לא העלית אף מסמך. לחצי למעלה על "בחרי מסמכים להעלאה" 📎', 'err'); return; }
+    if (!nup && !confirm('לא העלית אף מסמך, רק סימנת. לשלוח כך?')) { $('quick').scrollIntoView({ behavior: 'smooth' }); return; }
     const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ שולח...';
     try { fromServer(await api('submit', { sig: await b64(await onWhite(sig)), answers: ANS, note: $('note').value, qlabels: Object.fromEntries(QS) })); draw(); $('done-modal').style.display = 'flex'; }
     catch (e) { toast('השליחה נכשלה. בדקי חיבור לאינטרנט ונסי שוב', 'err'); }
@@ -455,7 +475,9 @@ if (CLOUD) (async () => {
   $('hint').textContent = 'כל מסמך נשמר מיד אצל עורך הדין. אפשר להעלות אחד-אחד, לסגור ולחזור מתי שנוח, גם מטלפון אחר.';
   $('barnote').textContent = 'הכול כבר נשמר אצל עורך הדין. בסוף, חתמי ולחצי כאן כדי להודיע שסיימת.';
   $('send').textContent = '✅ סיימתי, שלח לעורך הדין';
-  const labels = {}; for (const [, items] of LIST) for (const [k, name] of items) labels[k] = name;
+  const labels = { general: 'מסמכים מההעלאה המהירה (לא ממוינים)' }; for (const [, items] of LIST) for (const [k, name] of items) labels[k] = name;
+  $('quick').style.display = ''; $('quick-btn').onclick = () => { current = 'general'; $('file').click(); };
+  const st1 = document.querySelector('.step div'); if (st1) st1.innerHTML = 'לחצי <strong>📎 בחרי מסמכים להעלאה</strong> והעלי את כל מה שיש לך';
   try {
     const j = await api('status', { labels });
     CLIENT = j.first || ''; $('hello').textContent = 'שלום' + (CLIENT ? ' ' + CLIENT : '') + ','; $('decl').textContent = DECLF();
