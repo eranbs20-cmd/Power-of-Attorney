@@ -162,6 +162,12 @@ function fromServer(j) {
   for (const k of Object.keys(ST)) if (!(j.items || {})[k]) { ST[k].files = []; ST[k].state = ''; }
   for (const [k, it] of Object.entries(j.items || {})) { const s = ST[k] || (ST[k] = { files: [], state: '' }); s.files = it.files.map(f => Object.assign({ remote: true }, f)); s.state = it.state || ''; }
 }
+// the signature is a transparent PNG; Drive previews transparency as black, so flatten it onto white
+async function onWhite(png) {
+  try { const bmp = await createImageBitmap(new Blob([png], { type: 'image/png' })); const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(bmp, 0, 0); return await new Promise(r => c.toBlob(r, 'image/png')); }
+  catch (e) { return new Blob([png], { type: 'image/png' }); }
+}
 function b64(file) { return new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(file); }); }
 let ansTimer = null;
 function pushAnswers() { if (!CLOUD) return; clearTimeout(ansTimer); ansTimer = setTimeout(() => api('answers', { answers: ANS, note: $('note').value }).catch(() => toast('לא הצלחתי לשמור את התשובות. בדקי חיבור לאינטרנט', 'err')), 1500); }
@@ -411,8 +417,10 @@ $('send').onclick = async () => {
   if (!sig) { toast('חסרה חתימה. חתמי בתוך המסגרת למטה', 'err'); $('signsec').scrollIntoView({ behavior: 'smooth' }); return; }
   if (CLOUD) {
     if (Object.values(ST).some(s => (s.pending || []).length)) { toast('רגע, עדיין מעלה קבצים...', 'err'); return; }
+    const nup = Object.values(ST).reduce((n, s) => n + s.files.length, 0);
+    if (!nup && !confirm('עדיין לא העלית אף מסמך. כדי להעלות, לחצי "צרף" ליד כל מסמך ברשימה. לשלוח בכל זאת רק את החתימה והתשובות?')) { $('list').scrollIntoView({ behavior: 'smooth' }); return; }
     const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ שולח...';
-    try { fromServer(await api('submit', { sig: await b64(new Blob([sig])), answers: ANS, note: $('note').value })); draw(); $('done-modal').style.display = 'flex'; }
+    try { fromServer(await api('submit', { sig: await b64(await onWhite(sig)), answers: ANS, note: $('note').value })); draw(); $('done-modal').style.display = 'flex'; }
     catch (e) { toast('השליחה נכשלה. בדקי חיבור לאינטרנט ונסי שוב', 'err'); }
     finally { btn.disabled = false; btn.textContent = '✅ סיימתי, שלח לעורך הדין'; }
     return;
