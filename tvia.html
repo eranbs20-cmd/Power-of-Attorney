@@ -420,7 +420,7 @@ $('send').onclick = async () => {
     const nup = Object.values(ST).reduce((n, s) => n + s.files.length, 0);
     if (!nup && !confirm('עדיין לא העלית אף מסמך. כדי להעלות, לחצי "צרף" ליד כל מסמך ברשימה. לשלוח בכל זאת רק את החתימה והתשובות?')) { $('list').scrollIntoView({ behavior: 'smooth' }); return; }
     const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ שולח...';
-    try { fromServer(await api('submit', { sig: await b64(await onWhite(sig)), answers: ANS, note: $('note').value })); draw(); $('done-modal').style.display = 'flex'; }
+    try { fromServer(await api('submit', { sig: await b64(await onWhite(sig)), answers: ANS, note: $('note').value, qlabels: Object.fromEntries(QS) })); draw(); $('done-modal').style.display = 'flex'; }
     catch (e) { toast('השליחה נכשלה. בדקי חיבור לאינטרנט ונסי שוב', 'err'); }
     finally { btn.disabled = false; btn.textContent = '✅ סיימתי, שלח לעורך הדין'; }
     return;
