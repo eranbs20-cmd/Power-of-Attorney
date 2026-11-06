@@ -145,7 +145,8 @@ function route_(q) {
         const folder = caseFolder_(q.t);
         if (q.sig) folder.createFile(Utilities.newBlob(Utilities.base64Decode(q.sig), 'image/png', 'חתימה - ' + st.name + '.png'));
         st.submitted = new Date().toISOString();
-        notify_(st, folder); break; }
+        if (q.qlabels) st.qlabels = q.qlabels;
+        summary_(st, folder); notify_(st, folder); break; }
       default: throw new Error('bad');
     }
     writeState_(q.t, st); updateRow_(q.t, st);
@@ -188,6 +189,21 @@ function wa_(phone, first, link, missing) {
     : 'זה הקישור להעלאת המסמכים לתביעה.\n') +
     'כל מסמך שמעלים נשמר מיד אצלי, ואפשר להעלות אחד-אחד ולחזור מתי שנוח:\n' + link + '\nתודה, עו"ד ערן בן שושן';
   return 'https://wa.me/' + d + '?text=' + encodeURIComponent(txt);
+}
+/** A readable summary next to the documents: what was marked, what was answered, the note. Overwritten on every submit. */
+function summary_(st, folder) {
+  const L = [st.name + ' – תשובות וסימונים', 'נשלח: ' + Utilities.formatDate(new Date(), 'Asia/Jerusalem', 'dd.MM.yyyy HH:mm'), ''];
+  L.push('== מסמכים ==');
+  for (const [k, label] of Object.entries(st.labels || {})) {
+    const it = st.items[k] || { files: [], state: '' };
+    L.push((it.files.length ? '✓ ' + it.files.length + ' קבצים' : it.state === 'none' ? '✗ אין לי' : it.state === 'later' ? '⏳ אשלח בהמשך' : '— לא טופל') + '  |  ' + label);
+  }
+  L.push('', '== תשובות ==');
+  const ql = st.qlabels || {};
+  for (const [k, v] of Object.entries(st.answers || {})) if (String(v).trim()) L.push((ql[k] || k) + ':', '   ' + String(v).trim(), '');
+  if (st.note) L.push('== הערות ==', st.note);
+  const name = 'תשובות וסימונים - ' + st.name + '.txt'; const it = folder.getFilesByName(name);
+  if (it.hasNext()) it.next().setContent(L.join('\n')); else folder.createFile(name, L.join('\n'), 'text/plain');
 }
 function notify_(st, folder) {
   try { MailApp.sendEmail(PropertiesService.getScriptProperties().getProperty('EMAIL'), st.name + ' שלח/ה את המסמכים לתביעה',
