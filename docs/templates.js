@@ -295,6 +295,21 @@
       sigs: [{ cx: 160, y: 443, w: 110, h: 40 }, { p: 1, cx: 160, y: 48, w: 110, h: 40 }],
       stamps: [{ cx: 160, y: 590.5, w: 95 }, { p: 1, cx: 142, y: 153.5, w: 90 }],
     },
+    // ---- two statements of defence of a male defendant, merged without appendices (Letter, 21 pages, enc:doc);
+    // each ends with his affidavit (page index 10 and 20). He signs once; the signature goes on both affidavits.
+    // Signed copy only: the attestation date replaces "ביום ____" and the lawyer stamp sits on his line.
+    21: {
+      key: 'def2M', file: 'enc:doc', encFile: true, title: 'כתבי הגנה ותצהירים',
+      confirm: 'קראתי את שני כתבי ההגנה במלואם, על כל עמודיהם, ואני מאשר שתוכן התצהירים נכון.',
+      intro: 'אלה שני כתבי ההגנה שיוגשו לבית המשפט, ובסוף כל אחד מהם התצהיר שלך. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בשני התצהירים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 10, x0: 392, x1: 442, y: 379.5, s: 11, f: 'r', white: [391, 368.5, 443, 382.5] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 20, x0: 392, x1: 442, y: 379.5, s: 11, f: 'r', white: [391, 368.5, 443, 382.5] },
+      ],
+      sigs: [{ p: 10, cx: 162, y: 303, w: 100, h: 38 }, { p: 20, cx: 162, y: 303, w: 100, h: 38 }],
+      stamps: [{ p: 10, cx: 162, y: 456.5, w: 95 }, { p: 20, cx: 162, y: 456.5, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
