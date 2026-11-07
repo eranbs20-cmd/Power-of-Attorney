@@ -280,6 +280,21 @@
       sigs: [{ p: 0, cx: 162, y: 645, w: 100, h: 38 }, { p: 2, cx: 162, y: 645, w: 100, h: 38 }],
       stamps: [{ p: 1, cx: 162, y: 195.5, w: 95 }, { p: 3, cx: 162, y: 195.5, w: 95 }],
     },
+    // ---- same as 11 (aidF) for an attachAEM.pdf whose page-1 block sits ~28pt lower (applicant line 445, lawyer
+    // line 592.5) and whose waiver signature/date lines moved to the top of page 2 (lines 50.5 and 155.5).
+    20: {
+      key: 'aidF4', file: 'enc:doc', encFile: true, title: 'תצהיר זכאות לסיוע משפטי',
+      confirm: 'קראתי את התצהיר במלואו, ואני מאשרת שתוכנו נכון.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'date', auto: 'date', p: 1, x0: 365, x1: 538, y: 45, s: 11 },
+        { k: 'l_name', fixed: 'ערן בן שושן', signed: true, x0: 298, x1: 501, y: 494.5, s: 11 },
+        { k: 'l_date1', auto: 'date', signed: true, x0: 107, x1: 195, y: 496.5, s: 10.5, white: [107, 485.5, 195, 500.5] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 365, x1: 538, y: 152.5, s: 11 },
+      ],
+      sigs: [{ cx: 160, y: 443, w: 110, h: 40 }, { p: 1, cx: 160, y: 48, w: 110, h: 40 }],
+      stamps: [{ cx: 160, y: 590.5, w: 95 }, { p: 1, cx: 142, y: 153.5, w: 90 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
