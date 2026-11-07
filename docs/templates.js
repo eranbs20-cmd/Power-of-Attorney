@@ -265,6 +265,21 @@
       sigs: [{ cx: 160, y: 357, w: 110, h: 40 }, { cx: 160, y: 693, w: 110, h: 40 }],
       stamps: [{ cx: 160, y: 519, w: 95 }, { p: 1, cx: 160, y: 67, w: 95 }],
     },
+    // ---- two witness affidavits of a female declarant, merged (Letter, 4 pages, 2 per affidavit, enc:doc).
+    // She signs once; the signature goes on her line in both affidavits (pages 0 and 2). On the signed copy only,
+    // the attestation date replaces the "ביום ____" blank (pages 1 and 3) and the lawyer stamp sits on his line.
+    19: {
+      key: 'aff2F', file: 'enc:doc', encFile: true, title: 'תצהיר עדות',
+      confirm: 'קראתי את שני התצהירים במלואם, ואני מאשרת שתוכנם נכון.',
+      intro: 'אלה שני תצהירים זהים, אחד לכל תיק בבית המשפט. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בשני התצהירים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 1, x0: 395, x1: 445, y: 118.5, s: 11, f: 'r', white: [394, 107.5, 446, 121.5] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 3, x0: 395, x1: 445, y: 118.5, s: 11, f: 'r', white: [394, 107.5, 446, 121.5] },
+      ],
+      sigs: [{ p: 0, cx: 162, y: 645, w: 100, h: 38 }, { p: 2, cx: 162, y: 645, w: 100, h: 38 }],
+      stamps: [{ p: 1, cx: 162, y: 195.5, w: 95 }, { p: 3, cx: 162, y: 195.5, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
