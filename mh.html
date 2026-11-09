@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; base-uri 'none'; form-action 'none'">
+<title>מסמכים לכתבי ההגנה</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
+<style>
+  :root{--ink:#1d2742;--ink2:#4a5370;--muted:#7a8199;--navy:#22305a;--navy2:#2f4278;--gold:#b98a2f;--gold-soft:#fbf3e2;--ok:#1f7a4d;--ok-soft:#e7f4ec;--warn:#a8650a;--warn-soft:#fdf1df;--no:#8b90a0;--no-soft:#f0f1f4;--bg:#f3f1ec;--card:#fff;--line:#e6e2d9;--r:16px}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:'Heebo',Arial,sans-serif;background:var(--bg);color:var(--ink);direction:rtl;padding-bottom:130px;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+  header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:26px 0 70px}
+  .firm{font-size:13px;font-weight:500;letter-spacing:.2px;opacity:.8;display:flex;align-items:center;gap:8px}
+  .firm i{display:inline-flex;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.14);align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:13px}
+  header h1{margin:14px 0 6px;font-size:28px;font-weight:800;line-height:1.2}
+  #hello{margin:0;font-size:17px;opacity:.95}
+  .intro{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(29,39,66,.12);padding:20px 20px 18px;margin-top:-50px;position:relative}
+  .intro p{margin:0 0 14px;font-size:15.5px;color:var(--ink2)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px}
+  .legend span{background:#f7f6f2;color:var(--ink2);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:500;white-space:nowrap}
+  #progress{position:sticky;top:0;z-index:5;background:rgba(243,241,236,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:12px 0 10px;margin-top:6px;font-size:13.5px;font-weight:700;color:var(--ink2)}
+  section{background:var(--card);border-radius:var(--r);margin:14px 0 0;padding:6px 18px 6px;box-shadow:0 1px 2px rgba(29,39,66,.06),0 4px 14px rgba(29,39,66,.05)}
+  .sh{display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--line)}
+  .sh .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--navy);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .sh h2{margin:0;font-size:18px;font-weight:800;flex:1}
+  .item{padding:14px 0;border-top:1px solid #f0ede6}
+  .item:first-of-type{border-top:none}
+  .top{display:flex;gap:12px;align-items:flex-start}
+  .name{flex:1;font-size:16px;font-weight:700;line-height:1.35}
+  .why{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+  .badge{flex:none;font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px;white-space:nowrap;background:var(--no-soft);color:var(--no)}
+  .item.has .badge{background:var(--ok-soft);color:var(--ok)} .item.none .badge{background:var(--no-soft);color:var(--ink2)} .item.later .badge{background:var(--warn-soft);color:var(--warn)}
+  .item.has .name::before{content:'✓';display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;align-items:center;justify-content:center;margin-inline-end:7px;vertical-align:1px}
+  .item.none .name,.item.later .name{color:var(--ink2)}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .acts button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-size:14px;font-family:inherit;font-weight:500;cursor:pointer;color:var(--ink2);transition:all .15s;white-space:nowrap}
+  .acts button:hover{border-color:#cfc8b8;background:#faf9f6}
+  .acts button.add{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+  .acts button.add:hover{background:var(--navy2)}
+  .acts button.on.st-none{background:var(--no-soft);border-color:#aeb3c2;color:var(--ink);font-weight:700}
+  .acts button.on.st-later{background:var(--warn-soft);border-color:#e6b770;color:var(--warn);font-weight:700}
+  .acts button.rm{color:#a33;border-color:#ecd3d3}
+  .files{list-style:none;margin:10px 0 0;padding:0}
+  .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--ok-soft);border-radius:8px;padding:6px 10px;margin-top:5px;color:#245c3f}
+  .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:right}
+  .files li button{border:none;background:none;color:#a33;font-size:16px;cursor:pointer;padding:0 4px}
+  textarea{width:100%;margin-top:10px;font-family:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:48px;background:#fcfbf8;color:var(--ink);resize:vertical;transition:border-color .15s,background .15s;display:none}
+  textarea:focus{outline:none;border-color:var(--navy2);background:#fff}
+  .item.note textarea{display:block}
+  #removed{margin:14px 0 0;font-size:13.5px;color:var(--muted);display:none;background:var(--card);border-radius:var(--r);padding:12px 18px;box-shadow:0 1px 2px rgba(29,39,66,.06),0 4px 14px rgba(29,39,66,.05)}
+  #removed button{border:none;background:none;color:var(--navy2);text-decoration:underline;font-family:inherit;font-size:13.5px;font-weight:500;cursor:pointer;padding:2px}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:20;text-align:center;box-shadow:0 -6px 20px rgba(29,39,66,.06)}
+  .bar button{width:100%;max-width:520px;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:800;font-family:inherit;background:var(--ok);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(31,122,77,.3)}
+  .bar button:hover{background:#196a42}
+  .bar small{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+  #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .modal{position:fixed;inset:0;background:rgba(20,26,44,.55);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:18px;padding:22px;width:92%;max-width:480px;text-align:center}
+  .card h2{margin:0 0 8px;font-size:19px;color:var(--ink);font-weight:800}
+  .card p{margin:0 0 10px;font-size:14.5px;color:var(--ink2);line-height:1.65;text-align:right}
+  .card button{width:100%;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;margin-top:8px;cursor:pointer}
+  #wv{display:none;background:var(--gold);color:#fff;padding:10px 14px;font-size:13.5px;font-weight:500;text-align:center;line-height:1.5}
+  @media (max-width:560px){header{padding:20px 0 64px} header h1{font-size:23px} .intro{padding:16px} section{padding:4px 14px} .acts{gap:6px} .acts button{flex:1 1 auto;padding:9px 8px;font-size:13.5px} .name{font-size:15.5px}}
+</style>
+</head>
+<body>
+<div id="wv">⚠ כדי לצרף ולשלוח קבצים — פתח את הדף בדפדפן Chrome או Safari: ⋮ ← "פתח בדפדפן"</div>
+<header><div class="wrap">
+  <div class="firm"><i>עב</i>עו"ד ערן בן שושן · דיני משפחה</div>
+  <h1>מסמכים לכתבי ההגנה</h1>
+  <p id="hello">שלום,</p>
+</div></header>
+<main class="wrap">
+  <div class="intro">
+    <p>כדי לחזק את כתבי ההגנה בשתי התביעות של רפעה אני צריך את המסמכים שברשימה. ליד כל מסמך: לחץ <b>📎 צרף</b> וצלם או בחר קובץ. אם אין לך את המסמך, סמן <b>אין לי</b>; אם תשיג אותו בהמשך, סמן <b>אשלח בהמשך</b>. בסוף לחץ <b>שלח לעורך הדין</b>. חשוב לשלוח עד יום חמישי.</p>
+    <div class="legend"><span>📎 צירפתי</span><span>🚫 אין לי</span><span>⏳ אשלח בהמשך</span><span>✕ לא רלוונטי</span></div>
+  </div>
+  <div id="progress"></div>
+  <div id="list"></div>
+  <div id="removed">הוסרו מהרשימה: <span id="removed-list"></span></div>
+</main>
+<div class="bar"><button type="button" id="send">📲 שלח לעורך הדין</button><small>אפשר לשלוח כמה פעמים. הקבצים לא נשמרים באתר — הם עוברים ישירות לוואטסאפ.</small></div>
+<input type="file" id="file" multiple accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx" style="display:none">
+<div class="modal" id="send-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:34px">✅</div>
+    <h2>הקבצים מוכנים</h2>
+    <p>הקבצים <b>ירדו</b> למכשיר. לחץ "פתח וואטסאפ", ובצ'אט עם עו"ד ערן בן שושן לחץ 📎 ← <b>מסמך</b>, בחר את כל הקבצים שירדו ושלח.</p>
+    <button type="button" id="send-wa" style="background:#25d366;color:#fff">📲 פתח וואטסאפ</button>
+    <button type="button" id="send-close" style="background:#f0f0f0;color:#555;font-weight:normal">סגור</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const LAWYER_WA = '972522499887';
+const $ = id => document.getElementById(id);
+// The checklist. Generic for family claims; no client data lives in this file.
+const LIST = [
+  ['ביטוח לאומי (הכי חשוב)', [
+    ['bl_ded', 'אישור מביטוח לאומי על הסכום שמנוכה ממך כל חודש בגלל המזונות', 'אפשר להוציא באתר ביטוח לאומי באזור האישי, או לבקש בסניף'],
+    ['bl_nec', 'אישור מביטוח לאומי על קצבת הנכות שאתה מקבל', 'אישור זכאות או מכתב עם סכום הקצבה'],
+  ]],
+  ['נישואין', [
+    ['marr2', 'תעודת הנישואין שלך עם יסמין', 'מבית הדין השרעי או ממשרד הפנים'],
+    ['pics', 'תמונות נוספות מהחתונה עם יסמין', 'במיוחד תמונות שרפעה מופיעה בהן. בלי חיצים ובלי כיתוב על התמונה'],
+  ]],
+  ['מסמכים נוספים, אם יש לך', [
+    ['mort', 'הסכם המשכנתא או מסמכי המשכנתא על הבית', 'מהבנק למשכנתאות'],
+    ['sharia', 'פסק הדין של בית הדין השרעי משנת 2011', 'כל החלטה או פסק דין בינך לבין רפעה'],
+    ['other', 'כל מסמך אחר שנראה לך חשוב', ''],
+  ]],
+];
+const ST = {}; // key -> {files:[File], state:'', removed:false, note:''}
+let current = null;
+function toast(msg, cls) { const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block'; setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'err' ? 6000 : 2800); }
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function label(k) { for (const [, items] of LIST) for (const it of items) if (it[0] === k) return it[1]; return k; }
+function badge(s) { return s.files.length ? '📎 צורפו ' + s.files.length : s.state === 'none' ? '🚫 אין לי' : s.state === 'later' ? '⏳ אשלח בהמשך' : 'עוד לא'; }
+function draw() {
+  const list = $('list'); list.innerHTML = ''; const rem = [];
+  let total = 0, done = 0;
+  let si = 0;
+  for (const [title, items] of LIST) {
+    const sec = el('section'); const sh = el('div', 'sh'); sh.appendChild(el('span', 'n', String(si + 1))); sh.appendChild(el('h2', null, title)); sec.appendChild(sh); let shown = 0;
+    for (const [k, name, why] of items) {
+      const s = ST[k] || (ST[k] = { files: [], state: '', removed: false, note: '' });
+      if (s.removed) { rem.push(k); continue; }
+      total++; if (s.files.length || s.state) done++; shown++;
+      const it = el('div', 'item' + (s.files.length ? ' has' : s.state ? ' ' + s.state : '') + (s.note || s.noteOpen ? ' note' : ''));
+      const top = el('div', 'top'); const nm = el('div', 'name', name); if (why) nm.appendChild(el('span', 'why', why));
+      top.appendChild(nm); top.appendChild(el('span', 'badge', badge(s))); it.appendChild(top);
+      const acts = el('div', 'acts');
+      const add = el('button', 'add', '📎 צרף'); add.type = 'button'; add.onclick = () => { current = k; $('file').click(); }; acts.appendChild(add);
+      for (const [st, txt] of [['none', '🚫 אין לי'], ['later', '⏳ אשלח בהמשך']]) {
+        const b = el('button', 'st-' + st + (s.state === st ? ' on' : ''), txt); b.type = 'button';
+        b.onclick = () => { s.state = s.state === st ? '' : st; draw(); }; acts.appendChild(b);
+      }
+      const nb = el('button', '', '✏ הערה'); nb.type = 'button'; nb.onclick = () => { s.noteOpen = true; draw(); const ta = document.querySelector('textarea[data-k="' + k + '"]'); if (ta) ta.focus(); }; acts.appendChild(nb);
+      const rm = el('button', 'rm', '✕ לא רלוונטי'); rm.type = 'button'; rm.onclick = () => { s.removed = true; draw(); toast('הוסר מהרשימה — אפשר להחזיר למטה'); }; acts.appendChild(rm);
+      it.appendChild(acts);
+      if (s.files.length) { const ul = el('ul', 'files');
+        s.files.forEach((f, i) => { const li = el('li'); li.appendChild(el('span', null, f.name));
+          const x = el('button', null, '🗑'); x.type = 'button'; x.title = 'מחק את הקובץ'; x.setAttribute('aria-label', 'מחק ' + f.name);
+          x.onclick = () => { s.files.splice(i, 1); draw(); toast('הקובץ נמחק'); }; li.appendChild(x); ul.appendChild(li); });
+        it.appendChild(ul); }
+      const ta = el('textarea'); ta.dataset.k = k; ta.placeholder = 'הערה לעורך הדין (לא חובה)'; ta.value = s.note; ta.oninput = () => { s.note = ta.value; };
+      it.appendChild(ta);
+      sec.appendChild(it);
+    }
+    if (shown) { si++; list.appendChild(sec); }
+  }
+  $('progress').textContent = 'טופלו ' + done + ' מתוך ' + total + ' פריטים';
+  const rl = $('removed-list'); rl.innerHTML = '';
+  rem.forEach((k, i) => { const b = el('button', null, '↩ ' + label(k)); b.type = 'button'; b.onclick = () => { ST[k].removed = false; draw(); }; rl.appendChild(b); if (i < rem.length - 1) rl.appendChild(document.createTextNode(' · ')); });
+  $('removed').style.display = rem.length ? 'block' : 'none';
+}
+async function shrink(f) { // photos are resized so WhatsApp accepts many of them
+  if (!/^image\//.test(f.type) || f.size < 900000) return f;
+  try { const bmp = await createImageBitmap(f); const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+    return new File([blob], f.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) { return f; }
+}
+$('file').onchange = async e => {
+  const fs = [...e.target.files]; e.target.value = ''; if (!fs.length || !current) return;
+  const s = ST[current]; for (const f of fs) s.files.push(await shrink(f)); s.state = '';
+  draw(); toast('✓ צורפו ' + fs.length + ' קבצים', 'ok');
+};
+function summary() {
+  const lines = ['מסמכים לתיק' + (CLIENT ? ' — ' + CLIENT : ''), 'נשלח: ' + new Date().toLocaleString('he-IL'), ''];
+  const grp = { has: [], none: [], later: [], open: [], rm: [] };
+  for (const [, items] of LIST) for (const [k, name] of items) { const s = ST[k]; if (!s) continue;
+    const n = s.note ? ' — הערה: ' + s.note.trim() : '';
+    if (s.removed) grp.rm.push(name); else if (s.files.length) grp.has.push(name + ' (' + s.files.length + ' קבצים)' + n);
+    else if (s.state === 'none') grp.none.push(name + n); else if (s.state === 'later') grp.later.push(name + n); else grp.open.push(name + n); }
+  const out = (h, a) => { if (a.length) { lines.push(h); a.forEach(x => lines.push('• ' + x)); lines.push(''); } };
+  out('📎 צורפו:', grp.has); out('⏳ אשלח בהמשך:', grp.later); out('🚫 אין לי:', grp.none); out('❔ עוד לא טופלו:', grp.open); out('✕ לא רלוונטי:', grp.rm);
+  return lines.join('\n');
+}
+function files() {
+  const out = []; let n = 0;
+  for (const [, items] of LIST) for (const [k, name] of items) { const s = ST[k]; if (!s || s.removed) continue;
+    s.files.forEach((f, i) => { n++; const ext = (f.name.match(/\.[A-Za-z0-9]+$/) || [''])[0];
+      out.push(new File([f], String(n).padStart(2, '0') + ' ' + name.replace(/[\\/:*?"<>|]/g, '').slice(0, 50) + (s.files.length > 1 ? ' ' + (i + 1) : '') + ext, { type: f.type })); }); }
+  return out;
+}
+$('send').onclick = async () => {
+  const fl = files(), sum = summary();
+  const txt = new File([sum], '00 רשימת מסמכים' + (CLIENT ? ' - ' + CLIENT : '') + '.txt', { type: 'text/plain' });
+  const all = [txt, ...fl];
+  if (!fl.length && !confirm('לא צירפת קבצים. לשלוח רק את הרשימה (מה אין לך ומה תשלח בהמשך)?')) return;
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: all })) {
+    try { await navigator.share({ title: 'מסמכים לתיק', text: sum, files: all }); toast('נשלח ✓', 'ok'); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  for (const f of all) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); }
+  $('send-modal').style.display = 'flex';
+};
+$('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
+$('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+window.addEventListener('beforeunload', e => { if (Object.values(ST).some(s => s.files.length)) { e.preventDefault(); e.returnValue = ''; } });
+(function inApp() { const ua = navigator.userAgent || ''; if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block'; })();
+// first name only, in the hash (never sent to the server)
+let CLIENT = ''; try { CLIENT = decodeURIComponent(location.hash.slice(1)).replace(/[^֐-׿A-Za-z \-']/g, '').slice(0, 30).trim(); } catch (e) {}
+$('hello').textContent = 'שלום' + (CLIENT ? ' ' + CLIENT : '') + ',';
+draw();
+</script>
+</body>
+</html>
