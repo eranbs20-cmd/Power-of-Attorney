@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ro" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Întrebări pentru dosar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
+<style>
+  :root{--ink:#1d2742;--ink2:#4a5370;--muted:#7a8199;--navy:#22305a;--navy2:#2f4278;--gold:#b98a2f;--gold-soft:#fbf3e2;--ok:#1f7a4d;--ok-soft:#e7f4ec;--warn:#a8650a;--warn-soft:#fdf1df;--no:#8b90a0;--no-soft:#f0f1f4;--bg:#f3f1ec;--card:#fff;--line:#e6e2d9;--r:16px}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:'Heebo',Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);direction:ltr;padding-bottom:130px;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+  header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:26px 0 70px}
+  .firm{font-size:13px;font-weight:500;letter-spacing:.2px;opacity:.8;display:flex;align-items:center;gap:8px}
+  .firm i{display:inline-flex;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.14);align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:13px}
+  header h1{margin:14px 0 6px;font-size:28px;font-weight:800;line-height:1.2}
+  #hello{margin:0;font-size:17px;opacity:.95}
+  .intro{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(29,39,66,.12);padding:20px 20px 18px;margin-top:-50px;position:relative}
+  .intro p{margin:0 0 14px;font-size:15.5px;color:var(--ink2)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .chips span{background:var(--gold-soft);color:#7a5a17;border:1px solid #efdcb3;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .step{background:#f7f6f2;border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink2);display:flex;gap:9px;align-items:flex-start}
+  .step b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+  .hint{margin:14px 0 0;font-size:13px;color:var(--muted)}
+  #progress{position:sticky;top:0;z-index:5;background:rgba(243,241,236,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:12px 0 10px;margin-top:6px}
+  .ptxt{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+  .ptxt .sig{font-weight:500;color:var(--muted)} .ptxt .sig.ok{color:var(--ok);font-weight:700}
+  .ptrack{height:8px;border-radius:99px;background:#e2ded4;overflow:hidden}
+  .pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ok),#34a56d);transition:width .35s ease}
+  section{background:var(--card);border-radius:var(--r);margin:14px 0 0;padding:6px 18px 6px;box-shadow:0 1px 2px rgba(29,39,66,.06),0 4px 14px rgba(29,39,66,.05)}
+  section.key{box-shadow:0 0 0 2px #e8cf96,0 6px 18px rgba(185,138,47,.15)}
+  .sh{display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--line)}
+  .sh .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--navy);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .sh h2{margin:0;font-size:18px;font-weight:800;flex:1}
+  .sh .pill{font-size:11.5px;font-weight:700;background:var(--gold);color:#fff;border-radius:99px;padding:2px 9px;margin-inline-start:6px;vertical-align:2px}
+  .sh .cnt{font-size:12.5px;font-weight:700;color:var(--muted);background:#f4f3ef;border-radius:99px;padding:3px 10px}
+  .sh .cnt.full{color:var(--ok);background:var(--ok-soft)}
+  .item{padding:14px 0;border-top:1px solid #f0ede6}
+  .item:first-of-type{border-top:none}
+  .top{display:flex;gap:12px;align-items:flex-start}
+  .name{flex:1;font-size:16px;font-weight:700;line-height:1.35}
+  .why{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+  .badge{flex:none;font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px;white-space:nowrap;background:var(--no-soft);color:var(--no)}
+  .item.has .badge{background:var(--ok-soft);color:var(--ok)} .item.none .badge{background:var(--no-soft);color:var(--ink2)} .item.later .badge{background:var(--warn-soft);color:var(--warn)}
+  .item.has .name::before{content:'✓';display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;align-items:center;justify-content:center;margin-inline-end:7px;vertical-align:1px}
+  .item.none .name,.item.later .name{color:var(--ink2)}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .acts button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-size:14px;font-family:inherit;font-weight:500;cursor:pointer;color:var(--ink2);transition:all .15s}
+  .acts button:hover{border-color:#cfc8b8;background:#faf9f6}
+  .acts button.add{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+  .acts button.add:hover{background:var(--navy2)}
+  .acts button{white-space:nowrap}
+  .acts button.on.st-none{background:var(--no-soft);border-color:#aeb3c2;color:var(--ink);font-weight:700}
+  .acts button.on.st-later{background:var(--warn-soft);border-color:#e6b770;color:var(--warn);font-weight:700}
+  .files{list-style:none;margin:10px 0 0;padding:0}
+  .files li{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--ok-soft);border-radius:8px;padding:6px 10px;margin-top:5px;color:#245c3f}
+  .files li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .quick-btn{width:100%;border:none;border-radius:12px;padding:16px;font-size:17px;font-weight:800;font-family:inherit;background:var(--navy);color:#fff;cursor:pointer;margin-top:4px;box-shadow:0 4px 12px rgba(34,48,90,.25)}
+  .files li .saved{font-size:12px;font-weight:700;color:var(--ok);white-space:nowrap}
+  .files li.pending{background:var(--warn-soft);color:var(--warn)} .files li.pending .saved{color:var(--warn)}
+  .files li button{border:none;background:none;color:#a33;font-size:16px;cursor:pointer;padding:0 4px}
+  .plain{padding:16px 18px 14px}
+  .plain h2{margin:2px 0 4px;font-size:18px;font-weight:800}
+  .plain .sub{font-size:14px;color:var(--muted);margin:0 0 10px}
+  #qs label{display:block;font-size:14.5px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+  textarea{width:100%;font-family:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:48px;background:#fcfbf8;color:var(--ink);resize:vertical;transition:border-color .15s,background .15s}
+  textarea:focus{outline:none;border-color:var(--navy2);background:#fff}
+  #signsec textarea{margin-bottom:12px}
+  #decl{background:var(--gold-soft);border:1px solid #efdcb3;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.7;color:#5a4414}
+  #sig-canvas{border:2px dashed #cfc8b8;border-radius:12px;touch-action:none;background:#fff;display:block;width:100%;height:180px;margin-top:12px}
+  .row{display:flex;gap:8px;margin:8px 0 6px;justify-content:space-between;align-items:center}
+  .row button{border:none;border-radius:8px;padding:8px 14px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  #sig-state{font-size:13.5px;font-weight:700}
+  .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:20;text-align:center;box-shadow:0 -6px 20px rgba(29,39,66,.06)}
+  .bar button{width:100%;max-width:520px;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:800;font-family:inherit;background:var(--ok);color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(31,122,77,.3)}
+  .bar button:hover{background:#196a42}
+  .bar button:disabled{background:#9bb7a5;box-shadow:none}
+  .bar small{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+  #toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:60;display:none;max-width:90vw;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  .modal{position:fixed;inset:0;background:rgba(20,26,44,.55);display:none;align-items:center;justify-content:center;z-index:50}
+  .card{background:#fff;border-radius:18px;padding:22px;width:92%;max-width:480px;text-align:center}
+  .card h2{margin:0 0 8px;font-size:19px;color:var(--ink);font-weight:800}
+  .card p{margin:0 0 10px;font-size:14.5px;color:var(--ink2);line-height:1.65;text-align:right}
+  .card button{width:100%;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;margin-top:8px;cursor:pointer}
+  #wv{display:none;background:var(--gold);color:#fff;padding:10px 14px;font-size:13.5px;font-weight:500;text-align:center;line-height:1.5}
+  @media (max-width:560px){header{padding:20px 0 64px} header h1{font-size:23px} .steps{grid-template-columns:1fr} .intro{padding:16px} section{padding:4px 14px} .acts{gap:6px} .acts button{flex:1 1 auto;padding:9px 8px;font-size:13.5px} .name{font-size:15.5px}}
+
+  .q{padding:14px 0;border-top:1px solid #f0ede6}
+  .q:first-of-type{border-top:none}
+  .q .qt{display:flex;gap:12px;align-items:flex-start}
+  .q label{flex:1;font-size:16px;font-weight:700;line-height:1.35;display:block}
+  .q label .why{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+  .q.ans label::before{content:'✓';display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;align-items:center;justify-content:center;margin-inline-end:7px;vertical-align:1px}
+  .q textarea{margin-top:10px}
+  .q .acts{margin-top:8px}
+  .q .acts button{flex:0 0 auto}
+  .q.dk textarea{opacity:.55}
+  .qn{color:var(--muted);font-weight:800;margin-inline-end:4px}
+</style>
+</head>
+<body>
+<div id="wv">⚠ Pentru a atașa și trimite fișiere, deschideți pagina în Chrome sau Safari: ⋮ → „Deschide în browser”</div>
+<header><div class="wrap">
+  <div class="firm"><i>EB</i>Av. Eran Ben Shoshan · Dreptul familiei</div>
+  <h1>Întrebări pentru dosar</h1>
+  <p id="hello">Bună ziua,</p>
+</div></header>
+<main class="wrap">
+  <div class="intro">
+    <p>Pregătim cererile pentru Tribunalul pentru Familie. Am nevoie de răspunsurile dumneavoastră la câteva întrebări și de câteva documente. Răspunsurile mă ajută să stabilesc pensia de întreținere pentru copil și data despărțirii, de la care se împart bunurile.</p>
+    <div class="chips"><span>Pensia de întreținere pentru copil</span><span>Împărțirea bunurilor</span><span>Apartamentul</span></div>
+    <div class="steps">
+      <div class="step"><b>1</b><div>Scrieți un răspuns scurt la fiecare întrebare. Dacă nu știți, apăsați <strong>Nu știu</strong></div></div>
+      <div class="step"><b>2</b><div>Atașați documentele pe care le aveți, sau apăsați <strong>Nu am</strong> / <strong>Trimit mai târziu</strong></div></div>
+      <div class="step"><b>3</b><div>Semnați la final și apăsați <strong>Trimite avocatului</strong></div></div>
+    </div>
+    <p class="hint">Câteva cuvinte sunt suficiente. Pagina ține minte ce ați scris, așa că puteți închide și reveni mai târziu.</p>
+  </div>
+  <div id="progress"></div>
+  <div id="qsecs"></div>
+  <div id="list"></div>
+  <section id="signsec" class="plain">
+    <h2>Observații și semnătură</h2>
+    <p class="sub">Mai este ceva important pe care trebuie să îl știu? (nu este obligatoriu)</p>
+    <textarea id="note" placeholder="De exemplu: tatăl a spus că vrea să vândă apartamentul, copilul are nevoie de tratament"></textarea>
+    <div id="decl"></div>
+    <canvas id="sig-canvas" width="700" height="260" aria-label="Spațiu pentru semnătură"></canvas>
+    <div class="row"><div id="sig-state"></div><button type="button" id="sig-clear" style="background:#f0eee8;color:#555">Șterge semnătura</button></div>
+  </section>
+</main>
+<div class="bar"><button type="button" id="send">📲 Trimite avocatului</button><small>Puteți trimite de mai multe ori. Fișierele nu sunt salvate pe site, merg direct pe WhatsApp.</small></div>
+<input type="file" id="file" multiple accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx" style="display:none">
+<div class="modal" id="send-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:34px">✅</div>
+    <h2>Fișierul este gata</h2>
+    <p>Fișierele au fost <b>descărcate</b> în telefon. Apăsați „Deschide WhatsApp”, iar în conversația cu av. Eran Ben Shoshan apăsați 📎 → <b>Document</b>, alegeți fișierele descărcate și trimiteți-le.</p>
+    <button type="button" id="send-wa" style="background:#25d366;color:#fff">📲 Deschide WhatsApp</button>
+    <button type="button" id="send-close" style="background:#f0f0f0;color:#555;font-weight:normal">Închide</button>
+  </div>
+</div>
+<div id="toast"></div>
+<script src="lib/pdf-lib.min.js"></script>
+<script src="lib/fontkit.umd.min.js"></script>
+<script>
+const LAWYER_WA = '972522499887';
+const $ = id => document.getElementById(id);
+// Romanian-language client questionnaire (maintenance with shared parenting time, date of separation, property).
+// Generic: no client data lives in this file. The client's first name comes from the link hash (ro.html#Name).
+// Answers go into a PDF + JSON bundle shared to the lawyer's WhatsApp, the same way tvia.html works without a token.
+const QSEC = [
+  ['Despărțirea', [
+    ['sep_date', 'În ce zi exactă v-ați mutat cu copilul din apartament în locuința închiriată?', 'Contractul de închiriere începe la 1.9.2025. Este data corectă?'],
+    ['sep_back', 'După această dată ați mai locuit împreună cu soțul, chiar și pentru scurt timp?', 'Dacă da, în ce perioadă?'],
+    ['joint_acc', 'Ați avut un cont bancar comun?', 'Dacă da: la ce bancă, și când a fost închis sau separat?'],
+    ['joint_pay', 'După despărțire ați mai plătit împreună cheltuieli?', 'Rata ipotecară, facturi, cumpărături. Până când?'],
+    ['early_rift', 'Înainte de septembrie 2025 a existat o perioadă în care nu mai trăiați ca un cuplu?', 'De exemplu dormeați separat sau aveați bani separați. Dacă da, de când?'],
+  ]],
+  ['Timpul copilului cu fiecare părinte', [
+    ['nights', 'Câte nopți din două săptămâni doarme copilul la dumneavoastră și câte la tată?', 'Descrieți programul obișnuit, de exemplu: duminică–marți la mine, miercuri–joi la tată, weekend alternativ.'],
+    ['since', 'De când există acest program?', ''],
+    ['how_set', 'Programul este stabilit în scris, printr-o decizie a instanței, sau doar verbal?', ''],
+    ['costs', 'Cine plătește aceste cheltuieli ale copilului și cât costă pe lună?', 'Școala și after-school-ul (צהרון) · haine și încălțăminte · medicamente, dentist, ochelari · activități după școală (חוגים) · telefon și bani de buzunar'],
+    ['father_pays', 'Tatăl plătește ceva pentru copil, în bani sau direct?', 'Ce anume și cât pe lună?'],
+    ['allowance', 'Alocația pentru copil de la Bituah Leumi intră în contul dumneavoastră?', ''],
+  ]],
+  ['Veniturile soțului', [
+    ['his_salary', 'De unde știți cât câștigă soțul?', 'Ați văzut un fluturaș de salariu, v-a spus el, altceva?'],
+    ['his_job', 'Unde lucrează exact (numele firmei)? Are și alte venituri?', ''],
+    ['his_assets', 'Ce are pe numele lui?', 'Mașină, economii, conturi, alte proprietăți, fond de pensie'],
+  ]],
+  ['Apartamentul', [
+    ['company', 'Cum se numește compania la care sunt înregistrate drepturile asupra apartamentului (חברה משכנת)?', 'Dacă aveți o scrisoare sau un document de la ea, atașați-l mai jos.'],
+    ['mortgage_left', 'Cât mai este de plătit din creditul ipotecar?', ''],
+    ['mortgage_paid', 'În ce perioadă ați plătit dumneavoastră jumătate din rata ipotecară?', 'De la ce lună până la ce lună? Aveți dovezi (transferuri bancare)?'],
+    ['furniture', 'Ce mobilă sau aparate ați cumpărat din banii dumneavoastră pentru apartament?', ''],
+    ['sale_risk', 'Soțul a spus sau a făcut ceva care arată că vrea să vândă apartamentul, să ia un credit pe el sau să-l treacă pe numele altcuiva?', 'Ce exact și când?'],
+  ]],
+  ['Banii și datoriile dumneavoastră', [
+    ['meitav', 'Ce sunt sumele primite în ianuarie și februarie 2026 de la Meitav Dash, și pentru ce le-ați folosit?', 'Retragere din keren hishtalmut, din fond de economii, altceva?'],
+    ['banks', 'Aveți conturi la Bank Hapoalim, Bank Habeinleumi sau la Banca Poștală?', 'De unde vin transferurile din aceste bănci în contul dumneavoastră?'],
+    ['debts', 'Cât mai aveți de plătit acum la fiecare împrumut și card de credit?', 'Bank Leumi, Mimun Yashir, carduri de credit'],
+    ['loan_2026', 'Pentru ce ați luat împrumutul din septembrie 2026?', ''],
+    ['car', 'Ați vândut mașina? Dacă da, când și cu ce preț?', ''],
+    ['funds', 'Ce fonduri de pensie, keren hishtalmut sau economii aveți pe numele dumneavoastră?', 'Numele fondului'],
+  ]],
+];
+const LIST = [
+  ['Documente (fotografii sunt suficiente)', [
+    ['mortgage_doc', 'Extras al creditului ipotecar', 'Soldul actual al împrumutului, de la bancă sau din aplicație'],
+    ['company_doc', 'Orice document de la compania la care este înregistrat apartamentul', ''],
+    ['funds_doc', 'Raportul anual de la fondul de pensie și de la keren hishtalmut', 'Din aplicație sau din e-mail'],
+    ['kid_receipts', 'Facturi sau chitanțe pentru cheltuielile copilului', 'Școală, after-school, activități, medic'],
+    ['msgs', 'Mesaje cu soțul despre programul copilului sau despre apartament', 'Capturi de ecran din WhatsApp'],
+    ['other', 'Orice alt document care vi se pare important', ''],
+  ]],
+];
+const ST = {}; const ANS = {}; const DK = {}; let current = null, SIGNED = false;
+let CLIENT = ''; try { CLIENT = decodeURIComponent(location.hash.slice(1)).replace(/[^A-Za-zÀ-žȘșȚț \-']/g, '').slice(0, 30).trim(); } catch (e) {}
+const SKEY = 'ro:' + (CLIENT || 'x');
+function save() { try { localStorage.setItem(SKEY, JSON.stringify({ st: Object.fromEntries(Object.entries(ST).map(([k, v]) => [k, v.state])), note: $('note').value, ans: ANS, dk: DK })); } catch (e) {} }
+function load() { try { const s = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (s) { for (const [k, st] of Object.entries(s.st || {})) ST[k] = { files: [], state: st }; $('note').value = s.note || ''; Object.assign(ANS, s.ans || {}); Object.assign(DK, s.dk || {}); } } catch (e) {} }
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function toast(msg, cls) { const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block'; setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'err' ? 6000 : 2800); }
+const answered = k => !!((ANS[k] || '').trim() || DK[k]);
+let qn = 0;
+function drawQs() {
+  const box = $('qsecs'); box.innerHTML = ''; let si = 0; qn = 0;
+  for (const [title, qs] of QSEC) {
+    si++; const sec = el('section'); const sh = el('div', 'sh');
+    sh.appendChild(el('span', 'n', String(si))); sh.appendChild(el('h2', null, title)); const cnt = el('span', 'cnt'); sh.appendChild(cnt); sec.appendChild(sh);
+    for (const [k, label, why] of qs) {
+      qn++; const q = el('div', 'q'); const qt = el('div', 'qt'); const lab = el('label'); lab.htmlFor = 'q_' + k;
+      lab.appendChild(el('span', 'qn', qn + '.')); lab.appendChild(document.createTextNode(label)); if (why) lab.appendChild(el('span', 'why', why));
+      qt.appendChild(lab); const badge = el('span', 'badge'); qt.appendChild(badge); q.appendChild(qt);
+      const ta = el('textarea'); ta.id = 'q_' + k; ta.value = ANS[k] || ''; q.appendChild(ta);
+      const acts = el('div', 'acts'); const dk = el('button', 'st-none', '🤷 Nu știu'); dk.type = 'button'; acts.appendChild(dk); q.appendChild(acts);
+      const paint = () => { const a = answered(k); q.className = 'q' + (a ? ' ans' : '') + (DK[k] ? ' dk' : ''); dk.className = 'st-none' + (DK[k] ? ' on' : '');
+        badge.textContent = DK[k] ? '🤷 Nu știu' : (ANS[k] || '').trim() ? '✓ Răspuns' : 'Încă nu'; badge.style.background = DK[k] ? 'var(--no-soft)' : a ? 'var(--ok-soft)' : ''; badge.style.color = DK[k] ? 'var(--ink2)' : a ? 'var(--ok)' : '';
+        const done = qs.filter(([kk]) => answered(kk)).length; cnt.textContent = done + '/' + qs.length; cnt.classList.toggle('full', done === qs.length); };
+      ta.oninput = () => { ANS[k] = ta.value; if (ta.value.trim()) DK[k] = false; save(); paint(); progress(); };
+      dk.onclick = () => { DK[k] = !DK[k]; save(); paint(); progress(); };
+      paint(); sec.appendChild(q);
+    }
+    box.appendChild(sec);
+  }
+}
+function drawDocs() {
+  const list = $('list'); list.innerHTML = ''; let si = QSEC.length;
+  for (const [title, items] of LIST) {
+    si++; const sec = el('section'); const sh = el('div', 'sh');
+    sh.appendChild(el('span', 'n', String(si))); sh.appendChild(el('h2', null, title)); const cnt = el('span', 'cnt'); sh.appendChild(cnt); sec.appendChild(sh); let sd = 0;
+    for (const [k, name, why] of items) {
+      const s = ST[k] || (ST[k] = { files: [], state: '' }); if (s.files.length || s.state) sd++;
+      const it = el('div', 'item' + (s.files.length ? ' has' : s.state ? ' ' + s.state : ''));
+      const top = el('div', 'top'); const nm = el('div', 'name', name); if (why) nm.appendChild(el('span', 'why', why));
+      top.appendChild(nm); top.appendChild(el('span', 'badge', s.files.length ? '📎 Atașate: ' + s.files.length : s.state === 'none' ? '🚫 Nu am' : s.state === 'later' ? '⏳ Trimit mai târziu' : 'Încă nu')); it.appendChild(top);
+      const acts = el('div', 'acts');
+      const add = el('button', 'add', s.files.length ? '📎 Atașați încă' : '📎 Atașați'); add.type = 'button'; add.onclick = () => { current = k; $('file').click(); }; acts.appendChild(add);
+      for (const [st, txt] of [['none', '🚫 Nu am'], ['later', '⏳ Trimit mai târziu']]) { const b = el('button', 'st-' + st + (s.state === st ? ' on' : ''), txt); b.type = 'button'; b.onclick = () => { s.state = s.state === st ? '' : st; save(); drawDocs(); progress(); }; acts.appendChild(b); }
+      it.appendChild(acts);
+      if (s.files.length) { const ul = el('ul', 'files'); s.files.forEach((f, i) => { const li = el('li'); li.appendChild(el('span', null, f.name));
+          const x = el('button', null, '🗑'); x.type = 'button'; x.setAttribute('aria-label', 'Șterge ' + f.name); x.onclick = () => { s.files.splice(i, 1); drawDocs(); progress(); toast('Fișierul a fost șters'); };
+          li.appendChild(x); ul.appendChild(li); }); it.appendChild(ul); }
+      sec.appendChild(it);
+    }
+    cnt.textContent = sd + '/' + items.length; if (sd === items.length) cnt.classList.add('full');
+    list.appendChild(sec);
+  }
+}
+function progress() {
+  const allQ = QSEC.flatMap(([, qs]) => qs.map(([k]) => k)); const dq = allQ.filter(answered).length;
+  const allD = LIST.flatMap(([, it]) => it.map(([k]) => k)); const dd = allD.filter(k => ST[k] && (ST[k].files.length || ST[k].state)).length;
+  const pct = Math.round((dq + dd) * 100 / (allQ.length + allD.length));
+  $('progress').innerHTML = '<div class="ptxt"><span>Întrebări: ' + dq + ' din ' + allQ.length + ' · Documente: ' + dd + ' din ' + allD.length + '</span><span class="sig' + (SIGNED ? ' ok' : '') + '">' + (SIGNED ? '✓ Semnat' : 'Nesemnat') + '</span></div><div class="ptrack"><div class="pfill" style="width:' + pct + '%"></div></div>';
+}
+async function toJpeg(f) {
+  if (!/^image\//.test(f.type)) return f;
+  try { const bmp = await createImageBitmap(f); const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+    return new File([blob], f.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) { return f; }
+}
+$('file').onchange = async e => {
+  const fs = [...e.target.files]; e.target.value = ''; if (!fs.length || !current) return;
+  const s = ST[current]; for (const f of fs) s.files.push(await toJpeg(f)); s.state = ''; save(); drawDocs(); progress();
+  toast('✓ Fișiere atașate: ' + fs.length, 'ok');
+};
+$('note').oninput = save;
+const DECLF = () => 'Eu' + (CLIENT ? ', ' + CLIENT + ',' : '') + ' confirm că răspunsurile date sunt adevărate după cunoștința mea și că documentele atașate sunt copii fidele ale originalelor. Îl autorizez pe avocatul Eran Ben Shoshan să pregătească pe baza lor cererile la instanță.';
+$('decl').textContent = DECLF();
+(function () {
+  const c = $('sig-canvas'); let drawing = false, lx = 0, ly = 0;
+  const pos = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) * c.width / r.width, (e.clientY - r.top) * c.height / r.height]; };
+  c.addEventListener('pointerdown', e => { drawing = true; [lx, ly] = pos(e); c.setPointerCapture(e.pointerId); e.preventDefault(); });
+  c.addEventListener('pointermove', e => { if (!drawing) return; const [x, y] = pos(e); const ctx = c.getContext('2d');
+    ctx.strokeStyle = '#1a3fa8'; ctx.lineWidth = 3.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke(); lx = x; ly = y; });
+  const end = () => { if (drawing) { drawing = false; SIGNED = !!trimmedPng(c); sigState(); progress(); } };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+})();
+function sigState() { $('sig-state').textContent = SIGNED ? '✓ Semnătura a fost primită' : '✍ Semnați în chenar'; $('sig-state').style.color = SIGNED ? 'var(--ok)' : 'var(--warn)'; }
+$('sig-clear').onclick = () => { const c = $('sig-canvas'); c.getContext('2d').clearRect(0, 0, c.width, c.height); SIGNED = false; sigState(); progress(); };
+function trimmedPng(canvas) {
+  const ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height, d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, x1 = 0, y0 = h, y1 = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 10) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 < x0 || (x1 - x0) * (y1 - y0) < 400) return null;
+  const p = 3, t = document.createElement('canvas'); t.width = x1 - x0 + p * 2; t.height = y1 - y0 + p * 2;
+  t.getContext('2d').drawImage(canvas, x0 - p, y0 - p, t.width, t.height, 0, 0, t.width, t.height);
+  return Uint8Array.from(atob(t.toDataURL('image/png').split(',')[1]), ch => ch.charCodeAt(0));
+}
+function today() { const d = new Date(); return d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getFullYear(); }
+function wrap(text, font, size, maxW) { const words = text.split(' '), lines = []; let cur = ''; for (const w of words) { const t = cur ? cur + ' ' + w : w; if (font.widthOfTextAtSize(t, size) > maxW && cur) { lines.push(cur); cur = w; } else cur = t; } if (cur) lines.push(cur); return lines; }
+async function bundle(sigPng) {
+  const { PDFDocument, rgb } = PDFLib; const A4 = [595.28, 841.89], M = 50;
+  const out = await PDFDocument.create(); out.registerFontkit(fontkit);
+  const fb = await out.embedFont(await (await fetch('docs/LiberationSans-Regular.ttf')).arrayBuffer());
+  const black = rgb(0, 0, 0), grey = rgb(0.4, 0.4, 0.4);
+  const L = (pg, txt, y, size, color) => pg.drawText(txt, { x: M, y, size, font: fb, color: color || black });
+  const answers = {}; const qlabels = {}; let n = 0;
+  for (const [, qs] of QSEC) for (const [k, label] of qs) { n++; qlabels[k] = n + '. ' + label; answers[k] = DK[k] ? 'Nu știu' : (ANS[k] || '').trim(); }
+  const manifest = { form: 'ro-questions', v: 1, client: CLIENT, sent: new Date().toISOString(), signed: !!sigPng, note: $('note').value.trim(), answers, qlabels, docs: [], missing: [] };
+  let pg = out.addPage(A4), y = A4[1] - 70;
+  const line = (txt, size, color, gap) => { for (const l of wrap(txt.replace(/\s+/g, ' '), fb, size, A4[0] - 2 * M)) { if (y < 60) { pg = out.addPage(A4); y = A4[1] - 60; } L(pg, l, y, size, color); y -= size + 6; } y -= gap || 0; };
+  line('Răspunsuri' + (CLIENT ? ' – ' + CLIENT : ''), 18, black, 4); line('Trimis ' + today(), 11, grey, 14);
+  for (const [title, qs] of QSEC) { line(title, 14, black, 4); for (const [k] of qs) { line(qlabels[k], 11, grey); line(answers[k] || '—', 12, black, 8); } y -= 6; }
+  if (manifest.note) { line('Observații', 14, black, 4); line(manifest.note, 12, black, 8); }
+  for (const [, items] of LIST) for (const [k, name] of items) {
+    const s = ST[k]; if (!s || !s.files.length) { manifest.missing.push({ key: k, name, state: s && s.state || 'open' }); continue; }
+    const d = out.addPage(A4); const w = fb.widthOfTextAtSize(name, 15); d.drawText(name, { x: Math.max(M, (A4[0] - w) / 2), y: A4[1] / 2, size: 15, font: fb, color: black });
+    const files = [];
+    for (const f of s.files) {
+      try {
+        if (f.type === 'application/pdf' || /\.pdf$/i.test(f.name)) { const src = await PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true }); const ps = await out.copyPages(src, src.getPageIndices()); ps.forEach(p => out.addPage(p)); files.push(f.name); }
+        else if (f.type === 'image/jpeg' || f.type === 'image/png') { const img = f.type === 'image/png' ? await out.embedPng(await f.arrayBuffer()) : await out.embedJpg(await f.arrayBuffer());
+          const p = out.addPage(A4); const k2 = Math.min((A4[0] - 40) / img.width, (A4[1] - 40) / img.height); const iw = img.width * k2, ih = img.height * k2; p.drawImage(img, { x: (A4[0] - iw) / 2, y: (A4[1] - ih) / 2, width: iw, height: ih }); files.push(f.name); }
+        else throw new Error('type');
+      } catch (e) { const p = out.addPage(A4); L(p, 'Fișier trimis separat: ' + f.name, A4[1] / 2, 12, grey); files.push(f.name + ' (separat)'); }
+    }
+    manifest.docs.push({ key: k, name, files });
+  }
+  const sp = out.addPage(A4); y = A4[1] - 90; pg = sp; line('Confirmare și semnătură', 18, black, 10); line(DECLF(), 12, black, 30);
+  L(sp, 'Data: ' + today(), y, 12);
+  if (sigPng) { const img = await out.embedPng(sigPng); const k2 = Math.min(200 / img.width, 80 / img.height); sp.drawImage(img, { x: A4[0] - M - 220, y: y - 10, width: img.width * k2, height: img.height * k2 }); }
+  sp.drawLine({ start: { x: A4[0] - M - 240, y: y - 16 }, end: { x: A4[0] - M, y: y - 16 }, thickness: 0.8, color: black });
+  L(sp, 'Semnătura' + (CLIENT ? ' ' + CLIENT : ''), y - 32, 11, grey);
+  return { pdf: await out.save(), manifest };
+}
+$('send').onclick = async () => {
+  const sig = trimmedPng($('sig-canvas'));
+  if (!sig) { toast('Lipsește semnătura. Semnați în chenarul de jos', 'err'); $('signsec').scrollIntoView({ behavior: 'smooth' }); return; }
+  const allQ = QSEC.flatMap(([, qs]) => qs.map(([k]) => k)); const open = allQ.filter(k => !answered(k)).length;
+  if (open && !confirm('Au rămas ' + open + ' întrebări fără răspuns. Trimiteți așa?')) return;
+  const btn = $('send'); btn.disabled = true; btn.textContent = '⏳ Pregătesc fișierul...';
+  try {
+    const { pdf, manifest } = await bundle(sig); const suffix = CLIENT ? ' - ' + CLIENT : '';
+    const all = [new File([pdf], 'Raspunsuri' + suffix + '.pdf', { type: 'application/pdf' }),
+                 new File([JSON.stringify(manifest, null, 1)], 'Raspunsuri' + suffix + '.json', { type: 'application/json' })];
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: all })) {
+      try { await navigator.share({ title: 'Răspunsuri', text: 'Răspunsuri' + suffix, files: all }); toast('Trimis ✓', 'ok'); return; }
+      catch (e) { if (e.name === 'AbortError') return; }
+    }
+    for (const f of all) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); }
+    $('send-modal').style.display = 'flex';
+  } catch (e) { toast('Eroare la pregătirea fișierului: ' + e.message, 'err'); }
+  finally { btn.disabled = false; btn.textContent = '📲 Trimite avocatului'; }
+};
+$('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
+$('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+window.addEventListener('beforeunload', e => { if (Object.values(ST).some(s => s.files.length)) { e.preventDefault(); e.returnValue = ''; } });
+(function inApp() { const ua = navigator.userAgent || ''; if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block'; })();
+$('hello').textContent = 'Bună ziua' + (CLIENT ? ', doamnă ' + CLIENT : '') + ',';
+load(); drawQs(); drawDocs(); sigState(); progress();
+</script>
+</body>
+</html>
