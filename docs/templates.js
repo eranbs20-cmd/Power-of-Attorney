@@ -310,6 +310,22 @@
       sigs: [{ p: 10, cx: 162, y: 303, w: 100, h: 38 }, { p: 20, cx: 162, y: 303, w: 100, h: 38 }],
       stamps: [{ p: 10, cx: 162, y: 456.5, w: 95 }, { p: 20, cx: 162, y: 456.5, w: 95 }],
     },
+    // ---- agreed motion to give the parties' agreement the force of a judgment (rabbinical court, Letter, 2 pages,
+    // enc:doc). The female applicant signs on her line on page index 1 (right side, line at y≈397); on the signed copy
+    // a read-and-agree confirmation line and the signing date are written under her name.
+    22: {
+      key: 'agreeF', file: 'enc:doc', encFile: true, title: 'בקשה מוסכמת למתן תוקף של פסק דין להסכמות הצדדים',
+      confirm: 'קראתי את כל ההסכם במלואו, על כל עמודיו, ואני מאשרת שאני מסכימה לכל האמור בו.',
+      intro: 'זו הבקשה המוסכמת עם ההסכמות שלכם, כפי שתוגש לבית הדין. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור שקראת, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בשורה שלך בעמוד 2.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'c_line', fixed: 'המבקשת אישרה, לפני חתימתה, כי קראה את כל ההסכם במלואו וכי היא מסכימה לכל האמור בו.', signed: true,
+          p: 1, x1: 540, y: 432, s: 10, al: 'r', f: 'r' },
+        { k: 'c_label', fixed: 'תאריך החתימה הדיגיטלית:', signed: true, p: 1, x1: 540, y: 447, s: 10, al: 'r', f: 'r' },
+        { k: 'c_date', auto: 'date', signed: true, p: 1, x1: 420, y: 447, s: 10, al: 'r', f: 'r' },
+      ],
+      sigs: [{ p: 1, cx: 494.6, y: 396, w: 100, h: 38 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
