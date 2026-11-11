@@ -422,9 +422,15 @@ $('send').onclick = async () => {
                  new File([sig], 'חתימה' + suffix + '.png', { type: 'image/png' }),
                  new File([JSON.stringify(manifest, null, 1)], 'מסמכים לשימוע' + suffix + '.json', { type: 'application/json' })];
     for (const x of manifest.extra_files) { const a = manifest.annexes.find(a => a.letter === x.annex); const f = a && ST[a.key].files.find(f => f.name === x.file); if (f) all.push(f); }
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: all })) {
-      try { await navigator.share({ title: 'מסמכים לשימוע', text: 'מסמכים לשימוע' + suffix, files: all }); toast('נשלח ✓', 'ok'); return; }
-      catch (e) { if (e.name === 'AbortError') return; }
+    // Phones refuse to share some types (Chrome on Android rejects .json, for example), and then refuse the whole set.
+    // Share every file the phone accepts; the PDF already holds all the documents and the signature.
+    if (navigator.share && navigator.canShare) {
+      let share = all;
+      try { if (!navigator.canShare({ files: share })) share = all.filter(f => { try { return navigator.canShare({ files: [f] }); } catch (e) { return false; } }); } catch (e) { share = []; }
+      if (share.length && navigator.canShare({ files: share })) {
+        try { await navigator.share({ title: 'מסמכים לשימוע', text: 'מסמכים לשימוע' + suffix, files: share }); toast('נשלח ✓', 'ok'); return; }
+        catch (e) { if (e.name === 'AbortError') return; }
+      }
     }
     for (const f of all) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); }
     $('send-modal').style.display = 'flex';
