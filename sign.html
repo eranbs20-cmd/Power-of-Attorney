@@ -119,6 +119,18 @@
     <button type="button" id="sent-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">הקובץ הגיע, סגור</button>
   </div>
 </div>
+<div class="modal" id="fail-modal" role="alertdialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:36px">📤</div>
+    <h2>שליחת הקובץ החתום</h2>
+    <p id="fail-text" style="text-align:right"></p>
+    <button type="button" id="fail-share" style="background:#25d366;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📤 שליחה בוואטסאפ – נסו שוב</button>
+    <button type="button" id="fail-copy" style="display:none;background:#25d366;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📋 העתק קישור לפתיחה ב-Chrome</button>
+    <button type="button" id="fail-dl" style="margin-top:8px;background:#22305a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">⬇ הורדת הקובץ החתום</button>
+    <button type="button" id="fail-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
+    <p id="fail-why" style="margin:10px 0 0;font-size:10.5px;color:#999;direction:ltr;text-align:left;word-break:break-all"></p>
+  </div>
+</div>
 <div class="modal" id="id-modal" role="alertdialog" aria-modal="true">
   <div class="card">
     <div style="font-size:36px">🪪</div>
@@ -187,8 +199,10 @@ async function render() {
   const ex = { idPhotos: [IDPHOTO, IDSEFACH].filter(Boolean), stamp };
   const d2 = STAGE === 3 ? DATE2 : today();
   if (TWO) { ex.partySigs = STAGE === 1 ? [SIG] : [SIG1, SIG]; ex.partyDates = STAGE === 1 ? [SIG ? today() : null] : [DATE1, SIG ? d2 : null]; ex.complete = STAGE >= 2 && !!SIG; }
-  const bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, TWO ? null : SIG, d2, ex);
+  const v = ++RV; RENDERING = true;
+  let bytes; try { bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, TWO ? null : SIG, d2, ex); } finally { if (v === RV) RENDERING = false; }
   const blob = new Blob([bytes], { type: 'application/pdf' });
+  if (v === RV) { READY = { blob, sig: SIG }; } // the newest render is the current state: send can use it at once
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = URL.createObjectURL(blob);
   $('preview').src = previewURL + '#toolbar=0&navpanes=0';
@@ -270,28 +284,48 @@ $('btn-send').onclick = async () => {
   if (TWO && STAGE === 3) return downloadSigned();
   if (NEED_ID && !idDone()) { $('id-modal-text').textContent = 'אי אפשר לשלוח לפני שמצרפים ' + idMissing() + '. צלמי בבירור, ואז לחצי שוב "שלח לעורך הדין".'; $('id-modal').style.display = 'flex'; return; }
   try {
-    const blob = await render();
+    // Use the PDF already built when the client signed: any wait here (rebuilding the PDF) can expire the tap's
+    // "user activation" on a slow phone, and then the share sheet silently refuses to open.
+    const blob = (READY && READY.sig === SIG && !RENDERING) ? READY.blob : await render();
     const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
-    const label = main.length === 1 ? SIGN_TEMPLATES[main[0].code].title.replace(/[()]/g, '').trim() : 'מסמכים';
+    const label = main.length === 1 ? SIGN_TEMPLATES[main[0].code].title.replace(/[()"']/g, '').trim() : 'מסמכים';
     const name = TWO ? TWO.title + ' חתום - ' + DOCS[0].values[TWO.parties[0].k] + ' ו' + DOCS[0].values[TWO.parties[1].k] + '.pdf'
-      : label + (NO_SIGN ? '' : ' חתום') + ' - ' + clientName() + '.pdf';
-    const file = new File([blob], name, { type: 'application/pdf' });
+      : label + (NO_SIGN ? '' : ' חתום') + ' - ' + clientName().replace(/["'\/\\:]/g, '') + '.pdf';
     LAST = { blob, name };
-    // Share the file ALONE: with text + file, WhatsApp on iPhone often keeps only the text and drops the PDF.
-    // The share sheet resolving does not mean the lawyer got it, so always ask to check and offer the download.
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file] }); $('sent-modal').style.display = 'flex'; return; }
-      catch (se) { if (se.name === 'AbortError') { toast('השליחה לא הושלמה. לחצי שוב "שלח לעורך הדין", בחרי וואטסאפ ואז את עו"ד ערן בן שושן.', 'err'); return; } }
-    }
-    downloadLast();
-  } catch (e) { toast('שגיאה: ' + e.message, 'err'); }
+    await shareLast(false);
+  } catch (e) { sendFailed('build: ' + (e.name || '') + ' ' + e.message); }
 };
-let LAST = null;
+let LAST = null, READY = null, RV = 0, RENDERING = false;
+function inAppBrowser() { const ua = navigator.userAgent || ''; return /FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua)); }
+// Share the file ALONE: with text + file, WhatsApp on iPhone often keeps only the text and drops the PDF.
+// asciiName: retry with a plain file name (some Android share targets reject long non-Latin names).
+async function shareLast(asciiName) {
+  if (!LAST) return;
+  const file = new File([LAST.blob], asciiName ? 'signed-document.pdf' : LAST.name, { type: 'application/pdf' });
+  let can = false; try { can = !!(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) {}
+  if (!can) return sendFailed(inAppBrowser() ? 'inapp' : 'noshare');
+  try { await navigator.share({ files: [file] }); $('fail-modal').style.display = 'none'; $('sent-modal').style.display = 'flex'; }
+  catch (se) {
+    if (se.name === 'AbortError') { toast('השליחה לא הושלמה. לחצי שוב "שלח לעורך הדין", בחרי וואטסאפ ואז את עו"ד ערן בן שושן.', 'err'); return; }
+    sendFailed((se.name || 'Error') + ': ' + (se.message || ''));
+  }
+}
+function sendFailed(why) {
+  const inapp = why === 'inapp';
+  $('fail-text').textContent = inapp
+    ? 'הדף נפתח בתוך אפליקציה ולא בדפדפן, ומשם אי אפשר לשלוח קבצים. לחצו "העתק קישור", פתחו את Chrome, הדביקו בשורת הכתובת, חתמו ושלחו משם.'
+    : why === 'noshare' ? 'הדפדפן הזה לא פותח שליחה ישירה. לחצו "הורדת הקובץ החתום", ואז בצ\'אט עם עורך הדין בוואטסאפ 📎 ← מסמך ← בחרו את הקובץ ושלחו.'
+    : 'השליחה לא נפתחה. נסו שוב בכפתור הירוק. אם גם זה לא עובד: לחצו "הורדת הקובץ החתום", ואז בצ\'אט עם עורך הדין 📎 ← מסמך ← בחרו את הקובץ.';
+  $('fail-share').style.display = (inapp || why === 'noshare') ? 'none' : '';
+  $('fail-copy').style.display = inapp ? '' : 'none';
+  $('fail-why').textContent = 'קוד לעורך הדין: ' + why + ' | ' + (navigator.userAgent || '').replace(/\s+/g, ' ').slice(0, 140);
+  $('sent-modal').style.display = 'none'; $('fail-modal').style.display = 'flex';
+}
 function downloadLast() {
   if (!LAST) return;
   const u = URL.createObjectURL(LAST.blob), a = document.createElement('a'); a.href = u; a.download = LAST.name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000);
-  $('sent-modal').style.display = 'none'; $('send-modal').style.display = 'flex';
+  $('sent-modal').style.display = 'none'; $('fail-modal').style.display = 'none'; $('send-modal').style.display = 'flex';
 }
 $('id-now').onclick = () => { $('id-modal').style.display = 'none'; $('id-input').click(); };
 $('id-close').onclick = () => { $('id-modal').style.display = 'none'; };
@@ -414,6 +448,11 @@ $('ask-save').onclick = async () => {
 $('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
 $('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
 $('sent-dl').onclick = () => downloadLast();
+let SHARE_TRIES = 0;
+$('fail-share').onclick = () => { SHARE_TRIES++; shareLast(SHARE_TRIES > 1); }; // 2nd retry: plain file name
+$('fail-dl').onclick = () => downloadLast();
+$('fail-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } catch (e) {} $('fail-copy').textContent = '✓ הועתק — פתחו את Chrome והדביקו בשורת הכתובת'; };
+$('fail-close').onclick = () => { $('fail-modal').style.display = 'none'; };
 $('sent-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); };
 $('sent-close').onclick = () => { $('sent-modal').style.display = 'none'; toast('תודה! הקובץ נשלח לעורך הדין ✓', 'ok'); };
 $('fwd-copy').onclick = () => { try { navigator.clipboard.writeText(FWD); $('fwd-copy').textContent = '✓ הועתק'; } catch (e) {} };
@@ -467,6 +506,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
       DOCS = SIGN_CORE.unpack(h.slice(2));
     } else { $('intro').textContent = 'הקישור לא נטען. חזרו לוואטסאפ ולחצו שוב על הקישור שעורך הדין שלח.'; return; }
   } catch (e) { $('intro').textContent = 'הקישור פגום, לא שלם או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
+  origHref = location.origin + location.pathname.replace(/sign\.html$/, 's') + h; // full link for "copy link", also after a reload
   try { history.replaceState({ sh: h }, '', location.pathname); } catch (e) {}
   NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
   NO_SIGN = DOCS.every(d => SIGN_TEMPLATES[d.code].noSign);
