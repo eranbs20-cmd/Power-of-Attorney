@@ -425,9 +425,11 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
 })();
 (async function init() {
   // The token is removed from the address bar once loaded. Android often reloads a background tab (e.g. after
-  // switching to WhatsApp to send), which used to show "link missing": keep the token for this tab only.
+  // switching to WhatsApp to send), which used to show "link missing". The token is kept in this history entry's
+  // state only (survives reload/tab restore, not readable by any other page of the origin, unlike web storage).
   let h = location.hash;
-  if (!h || h.length < 2) { try { h = sessionStorage.getItem('sign-h') || ''; } catch (e) { h = ''; } }
+  try { sessionStorage.removeItem('sign-h'); } catch (e) {} // clean up the short-lived earlier approach
+  if (!h || h.length < 2) h = (history.state && typeof history.state.sh === 'string') ? history.state.sh : '';
   try {
     const hm = h.match(/^#([A-Za-z0-9_-]{16})(?:\.([A-Za-z0-9_-]{20,}))?(?:\.([A-Za-z0-9_-]{20,}))?$/);
     if (hm) {
@@ -465,8 +467,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
       DOCS = SIGN_CORE.unpack(h.slice(2));
     } else { $('intro').textContent = 'הקישור לא נטען. חזרו לוואטסאפ ולחצו שוב על הקישור שעורך הדין שלח.'; return; }
   } catch (e) { $('intro').textContent = 'הקישור פגום, לא שלם או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
-  try { sessionStorage.setItem('sign-h', h); } catch (e) {}
-  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  try { history.replaceState({ sh: h }, '', location.pathname); } catch (e) {}
   NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
   NO_SIGN = DOCS.every(d => SIGN_TEMPLATES[d.code].noSign);
   const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
