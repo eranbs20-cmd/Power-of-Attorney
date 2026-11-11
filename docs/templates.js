@@ -334,6 +334,39 @@
       fields: [{ k: 'name', hidden: true }],
       sigs: [],
     },
+    // ---- rabbinical-court maintenance filings for a female client (enc:doc, 35 pages): pages 0-14 = urgent request to
+    // extend interim maintenance (Letter; affidavit on page 3), pages 15-34 = counterclaim package (A4 form 305-016-05
+    // signature on page 17; maintenance particulars affidavit on page 34). Template y values are relative to page 0
+    // height (792); A4 pages are offset by -50. Lawyer stamp/dates appear only on the signed copy.
+    24: {
+      key: 'rbcMz', file: 'enc:doc', encFile: true, title: 'בקשה דחופה להארכת מזונות ותביעה שכנגד',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהירים נכון.',
+      intro: 'אלה המסמכים שיוגשו לבית הדין הרבני: הבקשה הדחופה להארכת המזונות הזמניים, והתביעה שכנגד להגדלת המזונות עם הרצאת הפרטים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בכל המקומות הנדרשים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 3, x0: 256, x1: 312, y: 353, s: 10.5, f: 'r', white: [253, 342, 315, 356] },
+        { k: 'c_date1', auto: 'date', signed: true, p: 34, x0: 349, x1: 485, y: 347, s: 10.5, f: 'r' },
+        { k: 'l_date2', auto: 'date', signed: true, p: 34, x0: 107, x1: 191, y: 466, s: 10, f: 'r', white: [104, 455, 194, 469] },
+        { k: 'l_date3', auto: 'date', signed: true, p: 34, x0: 412, x1: 512, y: 594, s: 10.5, f: 'r' },
+      ],
+      sigs: [{ p: 3, cx: 162, y: 290, w: 100, h: 38 }, { p: 17, cx: 104, y: 617, w: 90, h: 34 }, { p: 34, cx: 176, y: 349, w: 100, h: 36 }],
+      stamps: [{ p: 3, cx: 162, y: 438, w: 68 }, { p: 34, cx: 143, y: 601, w: 68 }],
+    },
+    // ---- rabbinical-court custody filings for a female client (enc:doc, 45 pages): pages 0-8 = urgent request (A4 form
+    // 307-023-03 signature on page 1; Letter affidavit on page 8), pages 9-44 = custody claim (A4 form 305-016-05
+    // signature on page 11). Template y values are relative to page 0 height (842); Letter pages are offset by +50.
+    25: {
+      key: 'rbcCu', file: 'enc:doc', encFile: true, title: 'תביעת החזקת קטינים ובקשה דחופה',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהיר נכון.',
+      intro: 'אלה המסמכים שיוגשו לבית הדין הרבני בעניין הילדים: הבקשה הדחופה עם התצהיר שלך, והתביעה עם הנספחים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בכל המקומות הנדרשים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'c_date1', auto: 'date', signed: true, p: 8, x0: 445, x1: 501, y: 399, s: 10.5, f: 'r', white: [442, 388, 504, 402] },
+        { k: 'l_date1', auto: 'date', signed: true, p: 8, x0: 191, x1: 247, y: 475, s: 10.5, f: 'r', white: [188, 464, 250, 478] },
+      ],
+      sigs: [{ p: 1, cx: 105, y: 618, w: 90, h: 34 }, { p: 8, cx: 162, y: 358, w: 100, h: 38 }, { p: 11, cx: 104, y: 667, w: 90, h: 34 }],
+      stamps: [{ p: 8, cx: 162, y: 560, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
