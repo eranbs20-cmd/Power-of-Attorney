@@ -109,6 +109,16 @@
     <button type="button" id="send-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
   </div>
 </div>
+<div class="modal" id="sent-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:36px">📄</div>
+    <h2>בדקו שהקובץ הגיע</h2>
+    <p style="text-align:right">פתחו בוואטסאפ את הצ'אט עם <b>עו"ד ערן בן שושן</b> וודאו שמופיע שם <b>קובץ PDF</b> (לא צילום מסך).<br>אם הקובץ לא הגיע: לחצו "הורדת הקובץ החתום", ואז בצ'אט עם עורך הדין לחצו 📎 ← <b>מסמך</b> ← בחרו את הקובץ ושלחו.</p>
+    <button type="button" id="sent-dl" style="background:#22305a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">⬇ הורדת הקובץ החתום</button>
+    <button type="button" id="sent-wa" style="margin-top:8px;background:#25d366;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📲 פתח את הצ'אט עם עורך הדין</button>
+    <button type="button" id="sent-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">הקובץ הגיע, סגור</button>
+  </div>
+</div>
 <div class="modal" id="id-modal" role="alertdialog" aria-modal="true">
   <div class="card">
     <div style="font-size:36px">🪪</div>
@@ -265,15 +275,23 @@ $('btn-send').onclick = async () => {
     const name = TWO ? TWO.title + ' חתום - ' + DOCS[0].values[TWO.parties[0].k] + ' ו' + DOCS[0].values[TWO.parties[1].k] + '.pdf'
       : label + (NO_SIGN ? '' : ' חתום') + ' - ' + clientName() + '.pdf';
     const file = new File([blob], name, { type: 'application/pdf' });
+    LAST = { blob, name };
+    // Share the file ALONE: with text + file, WhatsApp on iPhone often keeps only the text and drops the PDF.
+    // The share sheet resolving does not mean the lawyer got it, so always ask to check and offer the download.
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ title: 'מסמכים חתומים', text: NO_SIGN ? 'שלום, מצורפים צילום תעודת הזהות והספח.' : 'שלום, חתמתי על המסמכים.', files: [file] }); toast('הקובץ נשלח ✓', 'ok'); return; }
-      catch (se) { if (se.name === 'AbortError') return; }
+      try { await navigator.share({ files: [file] }); $('sent-modal').style.display = 'flex'; return; }
+      catch (se) { if (se.name === 'AbortError') { toast('השליחה לא הושלמה. לחצי שוב "שלח לעורך הדין", בחרי וואטסאפ ואז את עו"ד ערן בן שושן.', 'err'); return; } }
     }
-    const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 8000);
-    $('send-modal').style.display = 'flex';
+    downloadLast();
   } catch (e) { toast('שגיאה: ' + e.message, 'err'); }
 };
+let LAST = null;
+function downloadLast() {
+  if (!LAST) return;
+  const u = URL.createObjectURL(LAST.blob), a = document.createElement('a'); a.href = u; a.download = LAST.name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000);
+  $('sent-modal').style.display = 'none'; $('send-modal').style.display = 'flex';
+}
 $('id-now').onclick = () => { $('id-modal').style.display = 'none'; $('id-input').click(); };
 $('id-close').onclick = () => { $('id-modal').style.display = 'none'; };
 // ---- two-party documents: the first signature travels to the second party inside her link, encrypted.
@@ -394,6 +412,9 @@ $('ask-save').onclick = async () => {
 };
 $('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
 $('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
+$('sent-dl').onclick = () => downloadLast();
+$('sent-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); };
+$('sent-close').onclick = () => { $('sent-modal').style.display = 'none'; toast('תודה! הקובץ נשלח לעורך הדין ✓', 'ok'); };
 $('fwd-copy').onclick = () => { try { navigator.clipboard.writeText(FWD); $('fwd-copy').textContent = '✓ הועתק'; } catch (e) {} };
 $('fwd-close').onclick = () => { $('fwd-modal').style.display = 'none'; };
 $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } catch (e) {} $('wv-copy').textContent = '✓ הועתק — הדביקו בדפדפן'; };
