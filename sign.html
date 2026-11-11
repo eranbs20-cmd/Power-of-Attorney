@@ -180,6 +180,7 @@ async function loadStamp() {
   return STAMP;
 }
 async function render() {
+  if (!DOCS) throw new Error('הקישור לא נטען. חזרו לוואטסאפ ולחצו שוב על הקישור שעורך הדין שלח.');
   toast('מכין את המסמכים…');
   const needStamp = SIG && DOCS.some(d => (SIGN_TEMPLATES[d.code].stamps || []).length);
   const stamp = needStamp ? await loadStamp() : null;
@@ -423,7 +424,10 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   if (/FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua))) $('wv').style.display = 'block';
 })();
 (async function init() {
-  const h = location.hash;
+  // The token is removed from the address bar once loaded. Android often reloads a background tab (e.g. after
+  // switching to WhatsApp to send), which used to show "link missing": keep the token for this tab only.
+  let h = location.hash;
+  if (!h || h.length < 2) { try { h = sessionStorage.getItem('sign-h') || ''; } catch (e) { h = ''; } }
   try {
     const hm = h.match(/^#([A-Za-z0-9_-]{16})(?:\.([A-Za-z0-9_-]{20,}))?(?:\.([A-Za-z0-9_-]{20,}))?$/);
     if (hm) {
@@ -459,8 +463,9 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
       }
     } else if (h.startsWith('#d')) {
       DOCS = SIGN_CORE.unpack(h.slice(2));
-    } else { $('intro').textContent = 'הקישור חסר. בקשו מעורך הדין קישור חדש.'; return; }
+    } else { $('intro').textContent = 'הקישור לא נטען. חזרו לוואטסאפ ולחצו שוב על הקישור שעורך הדין שלח.'; return; }
   } catch (e) { $('intro').textContent = 'הקישור פגום, לא שלם או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
+  try { sessionStorage.setItem('sign-h', h); } catch (e) {}
   try { history.replaceState(null, '', location.pathname); } catch (e) {}
   NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
   NO_SIGN = DOCS.every(d => SIGN_TEMPLATES[d.code].noSign);
