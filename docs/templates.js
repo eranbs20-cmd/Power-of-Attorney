@@ -326,6 +326,14 @@
       ],
       sigs: [{ p: 1, cx: 494.6, y: 396, w: 100, h: 38 }],
     },
+    // ---- read-only draft for a male client (enc:doc): no signature, no fields; shown for reading and comments only.
+    23: {
+      key: 'readM', file: 'enc:doc', encFile: true, title: 'טיוטה לקריאה', noSign: true,
+      confirm: 'קראתי את הטיוטה במלואה, על כל עמודיה.',
+      intro: 'זו טיוטה לקריאה בלבד, ואין צורך לחתום עליה. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך). הערות ותשובות לשאלות שלי שלח לי ישירות בוואטסאפ.',
+      fields: [{ k: 'name', hidden: true }],
+      sigs: [],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
