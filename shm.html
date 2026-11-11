@@ -133,6 +133,15 @@
 </main>
 <div class="bar"><button type="button" id="send">📲 שלח לעורך הדין</button><small id="barnote">אפשר לשלוח כמה פעמים. הקבצים לא נשמרים באתר, הם עוברים ישירות לוואטסאפ.</small></div>
 <input type="file" id="file" multiple accept="image/*,application/pdf,.pdf,.doc,.docx,.xls,.xlsx" style="display:none">
+<div class="modal" id="share-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:34px">✅</div>
+    <h2>הקובץ מוכן</h2>
+    <p>לחצי על הכפתור, בחרי <b>וואטסאפ</b> ואת עו"ד ערן בן שושן, ושלחי.</p>
+    <button type="button" id="share-now" style="background:#25d366;color:#fff">📲 שלחי לעורך הדין</button>
+    <button type="button" id="share-close" style="background:#f0f0f0;color:#555;font-weight:normal">סגור</button>
+  </div>
+</div>
 <div class="modal" id="send-modal" role="dialog" aria-modal="true">
   <div class="card">
     <div style="font-size:34px">✅</div>
@@ -429,7 +438,12 @@ $('send').onclick = async () => {
       try { if (!navigator.canShare({ files: share })) share = all.filter(f => { try { return navigator.canShare({ files: [f] }); } catch (e) { return false; } }); } catch (e) { share = []; }
       if (share.length && navigator.canShare({ files: share })) {
         try { await navigator.share({ title: 'מסמכים לשימוע', text: 'מסמכים לשימוע' + suffix, files: share }); toast('נשלח ✓', 'ok'); return; }
-        catch (e) { if (e.name === 'AbortError') return; }
+        catch (e) {
+          if (e.name === 'AbortError') return;
+          // Building the PDF can take long enough on a phone that the tap no longer counts as the user's action,
+          // and the phone refuses to open the share sheet. A second tap on a ready file always works.
+          PENDING = { files: share, all, suffix }; $('share-modal').style.display = 'flex'; return;
+        }
       }
     }
     for (const f of all) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); }
@@ -437,6 +451,14 @@ $('send').onclick = async () => {
   } catch (e) { toast('שגיאה בהכנת הקובץ: ' + e.message, 'err'); }
   finally { btn.disabled = false; btn.textContent = '📲 שלח לעורך הדין'; }
 };
+let PENDING = null;
+async function downloadAll(files) { for (const f of files) { const u = URL.createObjectURL(f), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 10000); await new Promise(r => setTimeout(r, 350)); } }
+$('share-now').onclick = async () => {
+  if (!PENDING) return; const p = PENDING;
+  try { await navigator.share({ title: 'מסמכים לשימוע', text: 'מסמכים לשימוע' + p.suffix, files: p.files }); $('share-modal').style.display = 'none'; toast('נשלח ✓', 'ok'); }
+  catch (e) { if (e.name === 'AbortError') return; $('share-modal').style.display = 'none'; await downloadAll(p.all); $('send-modal').style.display = 'flex'; }
+};
+$('share-close').onclick = () => { $('share-modal').style.display = 'none'; };
 $('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); $('send-modal').style.display = 'none'; };
 $('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
 $('done-close').onclick = () => { $('done-modal').style.display = 'none'; };
