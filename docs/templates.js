@@ -408,6 +408,19 @@
       sigs: [{ p: 19, cx: 162, y: 303, w: 100, h: 38 }, { p: 37, cx: 162, y: 303, w: 100, h: 38 }],
       stamps: [{ p: 19, cx: 162, y: 456.5, w: 95 }, { p: 37, cx: 162, y: 456.5, w: 95 }],
     },
+    // ---- 29: as 28 after the plaintiff-exhibit annexes were added (13.11.2026): 76801 = pages 0-19 (affidavit p19), 3473 = pages 20-38 (affidavit p38).
+    29: {
+      key: 'def4M', file: 'enc:doc', encFile: true, title: 'כתבי הגנה ותצהירים',
+      confirm: 'קראתי את שני כתבי ההגנה במלואם, על כל עמודיהם, ואני מאשר שתוכן התצהירים נכון.',
+      intro: 'אלה שני כתבי ההגנה בגרסתם הסופית, כפי שיוגשו לבית המשפט, ובסוף כל אחד מהם התצהיר שלך. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בשני התצהירים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 19, x0: 392, x1: 442, y: 379.5, s: 11, f: 'r', white: [391, 368.5, 443, 382.5] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 38, x0: 392, x1: 442, y: 379.5, s: 11, f: 'r', white: [391, 368.5, 443, 382.5] },
+      ],
+      sigs: [{ p: 19, cx: 162, y: 303, w: 100, h: 38 }, { p: 38, cx: 162, y: 303, w: 100, h: 38 }],
+      stamps: [{ p: 19, cx: 162, y: 456.5, w: 95 }, { p: 38, cx: 162, y: 456.5, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
