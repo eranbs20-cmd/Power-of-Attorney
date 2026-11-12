@@ -292,21 +292,27 @@ $('btn-send').onclick = async () => {
     const name = TWO ? TWO.title + ' חתום - ' + DOCS[0].values[TWO.parties[0].k] + ' ו' + DOCS[0].values[TWO.parties[1].k] + '.pdf'
       : label + (NO_SIGN ? '' : ' חתום') + ' - ' + clientName().replace(/["'\/\\:]/g, '') + '.pdf';
     LAST = { blob, name };
-    await shareLast(false);
+    // Samsung Internet refuses (NotAllowedError) files with a long Hebrew name: use a plain name there from the start.
+    await shareLast(isSamsung());
   } catch (e) { sendFailed('build: ' + (e.name || '') + ' ' + e.message); }
 };
 let LAST = null, READY = null, RV = 0, RENDERING = false;
 function inAppBrowser() { const ua = navigator.userAgent || ''; return /FBAN|FBAV|Instagram|Line\/|Twitter|MicroMessenger|WhatsApp/i.test(ua) || (/Android/.test(ua) && /\bwv\b/.test(ua)); }
 // Share the file ALONE: with text + file, WhatsApp on iPhone often keeps only the text and drops the PDF.
 // asciiName: retry with a plain file name (some Android share targets reject long non-Latin names).
+function isSamsung() { return /SamsungBrowser/i.test(navigator.userAgent || ''); }
+function plainName() { const d = new Date(); return 'signed-' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '.pdf'; }
 async function shareLast(asciiName) {
   if (!LAST) return;
-  const file = new File([LAST.blob], asciiName ? 'signed-document.pdf' : LAST.name, { type: 'application/pdf' });
+  const file = new File([LAST.blob], asciiName ? plainName() : LAST.name, { type: 'application/pdf' });
   let can = false; try { can = !!(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) {}
   if (!can) return sendFailed(inAppBrowser() ? 'inapp' : 'noshare');
   try { await navigator.share({ files: [file] }); $('fail-modal').style.display = 'none'; $('sent-modal').style.display = 'flex'; }
   catch (se) {
     if (se.name === 'AbortError') { toast('השליחה לא הושלמה. לחצי שוב "שלח לעורך הדין", בחרי וואטסאפ ואז את עו"ד ערן בן שושן.', 'err'); return; }
+    // The phone refused the share sheet even with a plain file name: do not leave the client stuck on a retry button.
+    // Save the signed PDF to the phone and show the 3 steps to attach it in the chat with the lawyer.
+    if (SHARE_TRIES > 0) { toast('הקובץ החתום נשמר בטלפון. עכשיו צרפו אותו בצ\'אט עם עורך הדין', 'ok'); return downloadLast(); }
     sendFailed((se.name || 'Error') + ': ' + (se.message || ''));
   }
 }
@@ -449,7 +455,7 @@ $('send-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank
 $('send-close').onclick = () => { $('send-modal').style.display = 'none'; };
 $('sent-dl').onclick = () => downloadLast();
 let SHARE_TRIES = 0;
-$('fail-share').onclick = () => { SHARE_TRIES++; shareLast(SHARE_TRIES > 1); }; // 2nd retry: plain file name
+$('fail-share').onclick = () => { SHARE_TRIES++; shareLast(true); }; // retry (a fresh tap) with a plain file name; if refused again, download
 $('fail-dl').onclick = () => downloadLast();
 $('fail-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } catch (e) {} $('fail-copy').textContent = '✓ הועתק — פתחו את Chrome והדביקו בשורת הכתובת'; };
 $('fail-close').onclick = () => { $('fail-modal').style.display = 'none'; };
