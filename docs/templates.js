@@ -367,6 +367,20 @@
       sigs: [{ p: 1, cx: 105, y: 618, w: 90, h: 34 }, { p: 8, cx: 162, y: 358, w: 100, h: 38 }, { p: 11, cx: 104, y: 667, w: 90, h: 34 }],
       stamps: [{ p: 8, cx: 162, y: 560, w: 68 }],
     },
+    // ---- applicants' position (family court, Letter, 3 pages, enc:doc) signed by a male declarant: the affidavit is on
+    // page index 2 (declarant line at y≈339). Signed copy only: the attestation date replaces "ביום ____" and the lawyer
+    // stamp sits on his line (y≈519).
+    26: {
+      key: 'amdaM', file: 'enc:doc', encFile: true, title: 'עמדה לבית המשפט, כולל תצהיר',
+      confirm: 'קראתי את כל המסמך במלואו, על כל עמודיו, ואני מאשר שתוכן התצהיר נכון.',
+      intro: 'זה המסמך המלא שיוגש לבית המשפט. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בתצהיר.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 2, x0: 197, x1: 266, y: 428.5, s: 11, f: 'r', white: [196, 418, 267, 432] },
+      ],
+      sigs: [{ p: 2, cx: 162, y: 339, w: 100, h: 38 }],
+      stamps: [{ p: 2, cx: 162, y: 519, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
