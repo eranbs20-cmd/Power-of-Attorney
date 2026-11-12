@@ -381,6 +381,20 @@
       sigs: [{ p: 2, cx: 162, y: 339, w: 100, h: 38 }],
       stamps: [{ p: 2, cx: 162, y: 519, w: 68 }],
     },
+    // ---- same as 26 (amdaM) with a date blank to the right of the declarant's line (page index 2, x 450-520):
+    // the signing date is written on it on the signed copy.
+    27: {
+      key: 'amdaM2', file: 'enc:doc', encFile: true, title: 'עמדה לבית המשפט, כולל תצהיר',
+      confirm: 'קראתי את כל המסמך במלואו, על כל עמודיו, ואני מאשר שתוכן התצהיר נכון.',
+      intro: 'זה המסמך המלא שיוגש לבית המשפט. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה ותאריך החתימה ייכנסו בתצהיר.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'c_date', auto: 'date', signed: true, p: 2, x0: 450, x1: 520, y: 336, s: 11, f: 'r' },
+        { k: 'l_date1', auto: 'date', signed: true, p: 2, x0: 197, x1: 266, y: 428.5, s: 11, f: 'r', white: [196, 418, 267, 432] },
+      ],
+      sigs: [{ p: 2, cx: 162, y: 339, w: 100, h: 38 }],
+      stamps: [{ p: 2, cx: 162, y: 519, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
