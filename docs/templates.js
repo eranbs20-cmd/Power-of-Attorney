@@ -49,7 +49,7 @@
         { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 364, x1: 537, y: 66, s: 11 },
       ],
       sigs: [{ cx: 161, y: 355, w: 110, h: 42 }, { cx: 161, y: 692, w: 110, h: 42 }],
-      // lawyer stamp (stamp.png), only on the signed copy: "חתימת עורך דין" and the waiver confirmation on page 2
+      // lawyer stamp (docs/enc/st.bin, encrypted), only on the signed copy: "חתימת עורך דין" and the waiver confirmation on page 2
       stamps: [{ cx: 161, y: 504, w: 95 }, { p: 1, cx: 161, y: 67, w: 95 }],
     },
     // ---- appendices (no signature). `appendix` = description on the cover page; letters (א', ב'...) follow link order.

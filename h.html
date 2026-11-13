@@ -120,7 +120,7 @@
 <script>if(window['pdfjs-dist/build/pdf']){window.pdfjsLib=window['pdfjs-dist/build/pdf'];}pdfjsLib.GlobalWorkerOptions.workerSrc='./lib/pdf.worker.min.js';</script>
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/h-core.js?v=3"></script>
+<script src="docs/h-core.js?v=4"></script>
 <script>
 const $ = id => document.getElementById(id);
 let META = null, ORIG = null, SIGNED = null, CODE = '', origHref = location.href, G = null, IDIMGS = [], SELFIE = null, ACKS = [], SCROLLED = null;
@@ -136,7 +136,18 @@ async function toJpeg(file) {
     return { bytes: Uint8Array.from(atob(c.toDataURL('image/jpeg', 0.85).split(',')[1]), ch => ch.charCodeAt(0)), src: c.toDataURL('image/jpeg', 0.5) };
   } finally { URL.revokeObjectURL(url); }
 }
-async function assets() { return { heebo: await bytes('Heebo-Bold.ttf'), latin: await bytes('docs/LiberationSans-Regular.ttf'), stampPng: await bytes('stamp.png') }; }
+// The lawyer stamp is not public: the encrypted request may carry stampKey, which unlocks docs/enc/st.bin.
+let STAMP = null;
+async function loadStamp() {
+  if (STAMP || !META || !META.stampKey) return STAMP;
+  try {
+    const b = await bytes('docs/enc/st.bin?v=1');
+    const k = await crypto.subtle.importKey('raw', b64u(META.stampKey), 'AES-GCM', false, ['decrypt']);
+    STAMP = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(0, 12) }, k, b.slice(12)));
+  } catch (e) { console.warn('stamp', e); }
+  return STAMP;
+}
+async function assets() { return { heebo: await bytes('Heebo-Bold.ttf'), latin: await bytes('docs/LiberationSans-Regular.ttf'), stampPng: await loadStamp() }; }
 function toast(msg, cls) {
   const t = $('toast'); t.textContent = msg; t.style.background = cls === 'err' ? '#c0392b' : cls === 'ok' ? '#1a6b3a' : '#333'; t.style.display = 'block';
   if (cls) setTimeout(() => { if (t.textContent === msg) t.style.display = 'none'; }, cls === 'ok' ? 3000 : 8000);

@@ -22,7 +22,7 @@
     doc.registerFontkit(fontkit);
     const fb = await doc.embedFont(a.heebo), fl = await doc.embedFont(a.latin);
     const blue = PDFLib.rgb(0.102, 0.247, 0.659), grey = PDFLib.rgb(0.35, 0.35, 0.4), ink = PDFLib.rgb(0.1, 0.1, 0.15);
-    const sig = a.sig ? await doc.embedPng(a.sig) : null, st = await doc.embedPng(a.stampPng);
+    const sig = a.sig ? await doc.embedPng(a.sig) : null, st = a.stampPng ? await doc.embedPng(a.stampPng) : null;
     const t = stamp(a.when), short = meta.sha.slice(0, 12); let pages = doc.getPages();
     const fit = (img, w, h) => { const s = Math.min(w / img.width, h / img.height); return [img.width * s, img.height * s]; };
     const center = (pg, txt, cx, y, size, font, color) => {
@@ -59,8 +59,8 @@
       }
     }
     for (const m of (meta.marks || [])) {
-      const pg = pages[m.p], img = m.kind === 'lawyer' ? st : sig, [w, h] = fit(img, m.w, m.h);
-      pg.drawImage(img, { x: m.cx - w / 2, y: m.y, width: w, height: h });
+      const pg = pages[m.p], img = m.kind === 'lawyer' ? st : sig;
+      if (img) { const [w, h] = fit(img, m.w, m.h); pg.drawImage(img, { x: m.cx - w / 2, y: m.y, width: w, height: h }); }
       center(pg, 'נחתם ' + t.date + ' בשעה ' + t.time, m.cx, m.dy, 7.5, fb, blue);
     }
     // identification images (guarantor): ID card, selfie with ID — one page each

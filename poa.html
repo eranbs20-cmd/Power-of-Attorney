@@ -562,9 +562,9 @@ async function _buildPDFBlob(includeSig){
   // Lawyer stamp is NOT inside base.pdf; it is added only to the final copy, after the client has signed.
   if(includeSig&&_sigP){
     try{
-      const sr=await fetch('./stamp.png');
-      if(sr.ok){
-        const st=await pdfDoc.embedPng(await sr.arrayBuffer());
+      const stb=await _loadStamp();
+      if(stb){
+        const st=await pdfDoc.embedPng(stb);
         const sw=95,sh=sw*st.height/st.width;
         page.drawImage(st,{x:171-sw/2,y:120,width:sw,height:sh});
       }
@@ -712,16 +712,32 @@ function _packText(str,out){for(const ch of str){const c=ch.codePointAt(0);
   if(c>=0x5D0&&c<=0x5EA)out.push(0x80+(c-0x5D0));else if(c>0&&c<0x80)out.push(c);else{out.push(0xFF,(c>>8)&255,c&255);}}}
 function _unpackText(b,i,end){let s='';while(i<end){const c=b[i++];
   if(c===0xFF){s+=String.fromCharCode((b[i]<<8)|b[i+1]);i+=2;}else if(c>=0x80)s+=String.fromCharCode(0x5D0+c-0x80);else s+=String.fromCharCode(c);}return s;}
+// v2 = [2][stamp key x16] then the v1 body. The key unlocks docs/enc/st.bin (the lawyer stamp is not public).
+// On the lawyer's own device the key is kept in localStorage (set once by opening poa.html#sk=<key>).
+let _STAMP_KEY=null,_STAMP=null;
+function _devKey(){try{const k=localStorage.getItem('poa_stamp_key');return k?_B64U.dec(k):null;}catch(e){return null;}}
+async function _loadStamp(){
+  if(_STAMP)return _STAMP;
+  const key=_STAMP_KEY||_devKey(); if(!key||key.length!==16)return null;
+  const r=await fetch('docs/enc/st.bin?v=1'); if(!r.ok)return null;
+  const b=new Uint8Array(await r.arrayBuffer());
+  const k=await crypto.subtle.importKey('raw',key,'AES-GCM',false,['decrypt']);
+  _STAMP=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},k,b.slice(12)));
+  return _STAMP;
+}
 function _packState(){
   const id=parseInt((v('p_id')||'0').replace(/\D/g,''),10)||0;
   const svc=(v('p_service')||'').trim(); const code=_SVC.indexOf(svc);
-  const out=[1,(id>>>24)&255,(id>>>16)&255,(id>>>8)&255,id&255,code>0?code:0];
+  const dk=_devKey();
+  const out=[...(dk&&dk.length===16?[2,...dk]:[1]),(id>>>24)&255,(id>>>16)&255,(id>>>8)&255,id&255,code>0?code:0];
   _packText((v('p_name')||'').trim(),out);
   if(!(code>0)&&svc){out.push(0);_packText(svc,out);}
   return _B64U.enc(out);
 }
 function _unpackState(t){
-  const b=_B64U.dec(t); if(b[0]!==1)throw new Error('bad version');
+  let b=_B64U.dec(t);
+  if(b[0]===2){_STAMP_KEY=b.slice(1,17);b=Uint8Array.from([1,...b.slice(17)]);}
+  if(b[0]!==1)throw new Error('bad version');
   const id=((b[1]<<24)>>>0)+(b[2]<<16)+(b[3]<<8)+b[4]; const code=b[5];
   let z=b.indexOf(0,6); if(z<0)z=b.length;
   const o={n:_unpackText(b,6,z),i:String(id).padStart(9,'0')};
@@ -772,6 +788,13 @@ function _showSendModal(){
 function _fillState(o){const map={n:'p_name',i:'p_id',s:'p_service',d:'p_date'};Object.entries(map).forEach(([k,id])=>{if(k in o&&$(id))$(id).value=o[k];});_enterClientMode();}
 function _checkHash(){
   const h=location.hash;
+  if(h.startsWith('#sk=')){
+    const k=h.slice(4);
+    try{if(_B64U.dec(k).length!==16)throw 0;localStorage.setItem('poa_stamp_key',k);showToast('✓ מפתח החותמת נשמר במכשיר הזה','ok');}
+    catch(e){showToast('מפתח חותמת לא תקין','err');}
+    try{history.replaceState(null,'',location.pathname);}catch(e){}
+    return;
+  }
   if(h.startsWith('#p')){
     window._origHref=location.href;
     try{_fillState(_unpackState(h.slice(2)));}

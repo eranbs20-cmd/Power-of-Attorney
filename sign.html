@@ -154,7 +154,7 @@
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
 <script src="docs/templates.js?v=33"></script>
-<script src="docs/sign-core.js?v=13"></script>
+<script src="docs/sign-core.js?v=14"></script>
 <script>
 const LAWYER_WA = '972522499887';
 const $ = id => document.getElementById(id);
@@ -186,9 +186,7 @@ async function loadStamp() {
     const b = new Uint8Array(await r.arrayBuffer());
     const k = await crypto.subtle.importKey('raw', DOCS.key, 'AES-GCM', false, ['decrypt']);
     STAMP = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.slice(0, 12) }, k, b.slice(12)));
-  } else {
-    STAMP = await getBytes('stamp.png'); // links sent before the stamp was encrypted
-  }
+  } // links without a key (sent before the stamp was encrypted): no stamp; the lawyer stamps the returned copy locally
   return STAMP;
 }
 async function render() {

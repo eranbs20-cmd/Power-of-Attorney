@@ -126,8 +126,7 @@
         page.drawLine({ start: { x: c.x, y: H - c.y - 4 }, end: { x: c.x + 3, y: H - c.y - 7.5 }, thickness: 1.4, color: blue });
         page.drawLine({ start: { x: c.x + 3, y: H - c.y - 7.5 }, end: { x: c.x + 8, y: H - c.y }, thickness: 1.4, color: blue });
       }
-      if (sigImg && t.stamps && t.stamps.length) {
-        if (!extra.stamp) throw new Error('stamp unavailable');
+      if (sigImg && t.stamps && t.stamps.length && extra.stamp) { // no stamp (old link without key): leave it for the lawyer
         const st = await out.embedPng(new Uint8Array(extra.stamp));
         for (const s of t.stamps) {
           const w = s.w, h = w * st.height / st.width;
