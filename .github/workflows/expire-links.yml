@@ -1,0 +1,38 @@
+# Deletes client signing data automatically, so nothing stays in the repo.
+# Every encrypted client file (docs/l/*.bin, docs/enc/*.bin except the stamp) is removed
+# DAYS days after it was added. The link then shows "expired". Runs every night.
+name: expire client links
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: expire-links
+jobs:
+  expire:
+    runs-on: ubuntu-latest
+    env:
+      DAYS: "14"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: delete expired client files
+        run: |
+          now=$(date +%s); limit=$((DAYS * 86400)); n=0
+          for f in docs/l/*.bin docs/enc/*.bin; do
+            [ -f "$f" ] || continue
+            [ "$f" = "docs/enc/st.bin" ] && continue
+            added=$(git log --diff-filter=A --format=%at -1 -- "$f")
+            [ -n "$added" ] || continue
+            if [ $((now - added)) -gt $limit ]; then git rm -q "$f"; n=$((n + 1)); fi
+          done
+          echo "expired: $n"
+          if [ "$n" -gt 0 ]; then
+            git config user.name "expire-links"
+            git config user.email "expire-links@users.noreply.github.com"
+            git commit -q -m "Expire $n client file(s) older than $DAYS days"
+            for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done
+          fi
