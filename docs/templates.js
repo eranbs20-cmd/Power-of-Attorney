@@ -421,6 +421,16 @@
       sigs: [{ p: 19, cx: 162, y: 303, w: 100, h: 38 }, { p: 38, cx: 162, y: 303, w: 100, h: 38 }],
       stamps: [{ p: 19, cx: 162, y: 456.5, w: 95 }, { p: 38, cx: 162, y: 456.5, w: 95 }],
     },
+    // ---- AI tools consent (Bar ethics opinion 60/24, s.43.2). Blank page with the office letterhead; name + ID from the link.
+    30: {
+      key: 'aiConsent', file: 'docs/ai-consent.pdf', title: 'הסכמה לשימוש בכלי בינה מלאכותית',
+      fields: [
+        { k: 'name', x0: 302, x1: 478, y: 190.5, s: 12, al: 'c', f: 'r' },
+        { k: 'id', x0: 167, x1: 269, y: 190.5, s: 12, al: 'c', f: 'r' },
+        { k: 'date', auto: 'date', x0: 382, x1: 490, y: 539.5, s: 12, al: 'c', f: 'r' },
+      ],
+      sigs: [{ cx: 143, y: 541, w: 110, h: 40 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
