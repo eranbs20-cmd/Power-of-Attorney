@@ -516,6 +516,18 @@
       sigs: [{ p: 2, cx: 162, y: 596, w: 100, h: 38 }, { p: 3, cx: 162, y: 592, w: 100, h: 38 }],
       stamps: [{ p: 4, cx: 162, y: 191, w: 68 }],
     },
+    // ---- enforcement-office response, counsel-signed version (15.11.2026), 21 pages Letter: affidavit sig p3, attestation p4.
+    37: {
+      key: 'hlpPr2', file: 'enc:doc', encFile: true, title: 'תצהיר לתגובה לבקשת "פרעתי" בהוצאה לפועל',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהיר נכון.',
+      intro: 'אלה המסמכים: ייפוי הכוח לעו"ד ערן בן שושן לתיק ההוצאה לפועל, והתגובה לבקשת "פרעתי" של נהוראי עם התצהיר שלך. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בכל המקומות הנדרשים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 4, x0: 252, x1: 308, y: 106, s: 10.5, f: 'r', white: [249, 94, 311, 108] },
+      ],
+      sigs: [{ p: 3, cx: 162, y: 592, w: 100, h: 38 }],
+      stamps: [{ p: 4, cx: 162, y: 191, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
