@@ -473,6 +473,49 @@
       sigs: [{ p: 11, cx: 153.7, y: 319.9, w: 100, h: 38 }, { p: 14, cx: 153.7, y: 545.9, w: 100, h: 38 }],
       stamps: [{ p: 11, cx: 153.7, y: 473.4, w: 95 }],
     },
+    // ---- v2 (15.11.2026) rabbinical maintenance package, 80 pages: 0-15 urgent extension request (Letter; affidavit p4),
+    // 16-79 counterclaim package (A4 form 305 signature p18; disclosure affidavit p78). y relative to page 0 (792); A4 -50.
+    34: {
+      key: 'rbcMz2', file: 'enc:doc', encFile: true, title: 'בקשה דחופה להארכת מזונות ותביעה שכנגד',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהירים נכון.',
+      intro: 'אלה המסמכים שיוגשו: הבקשה הדחופה להארכת המזונות, והתביעה שכנגד להגדלת המזונות עם הרצאת הפרטים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בכל המקומות הנדרשים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 4, x0: 256, x1: 312, y: 353, s: 10.5, f: 'r', white: [253, 342, 315, 356] },
+        { k: 'c_date1', auto: 'date', signed: true, p: 78, x0: 349, x1: 485, y: 348, s: 10.5, f: 'r' },
+        { k: 'l_date2', auto: 'date', signed: true, p: 78, x0: 107, x1: 191, y: 466, s: 10, f: 'r', white: [104, 455, 194, 469] },
+        { k: 'l_date3', auto: 'date', signed: true, p: 78, x0: 412, x1: 512, y: 595, s: 10.5, f: 'r' },
+      ],
+      sigs: [{ p: 4, cx: 162, y: 290, w: 100, h: 38 }, { p: 18, cx: 104, y: 617, w: 90, h: 34 }, { p: 78, cx: 176, y: 350, w: 100, h: 36 }],
+      stamps: [{ p: 4, cx: 162, y: 438, w: 68 }, { p: 78, cx: 143, y: 601, w: 68 }],
+    },
+    // ---- v2 custody package, 52 pages: 0-11 urgent request (A4 form 307 sig p1; Letter affidavit p11), 12-51 claim
+    // (A4 form 305 sig p14). y relative to page 0 (842); Letter +50.
+    35: {
+      key: 'rbcCu2', file: 'enc:doc', encFile: true, title: 'תביעת החזקת קטינים ובקשה דחופה',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהיר נכון.',
+      intro: 'אלה המסמכים שיוגשו: הבקשה הדחופה בעניין הילדים עם התצהיר שלך, והתביעה עם הנספחים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בכל המקומות הנדרשים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'c_date1', auto: 'date', signed: true, p: 11, x0: 445, x1: 501, y: 548, s: 10.5, f: 'r', white: [442, 536, 504, 551] },
+        { k: 'l_date1', auto: 'date', signed: true, p: 11, x0: 191, x1: 247, y: 624, s: 10.5, f: 'r', white: [188, 612, 250, 627] },
+      ],
+      sigs: [{ p: 1, cx: 105, y: 618, w: 90, h: 34 }, { p: 11, cx: 162, y: 507, w: 100, h: 38 }, { p: 14, cx: 104, y: 667, w: 90, h: 34 }],
+      stamps: [{ p: 11, cx: 162, y: 709, w: 68 }],
+    },
+    // ---- enforcement-office response to a debtor's "paid" claim, 21 pages Letter: response sig p2, affidavit sig p3,
+    // attestation p4.
+    36: {
+      key: 'hlpPr', file: 'enc:doc', encFile: true, title: 'תגובה לבקשת "פרעתי" בהוצאה לפועל',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהיר נכון.',
+      intro: 'אלה המסמכים שיוגשו: התגובה לבקשת "פרעתי" של נהוראי בהוצאה לפועל, עם התצהיר והנספחים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בכל המקומות הנדרשים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 4, x0: 252, x1: 308, y: 106, s: 10.5, f: 'r', white: [249, 94, 311, 108] },
+      ],
+      sigs: [{ p: 2, cx: 162, y: 596, w: 100, h: 38 }, { p: 3, cx: 162, y: 592, w: 100, h: 38 }],
+      stamps: [{ p: 4, cx: 162, y: 191, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
