@@ -625,6 +625,18 @@
       sigs: [{ p: 3, cx: 162, y: 358, w: 100, h: 38 }, { p: 5, cx: 162, y: 115, w: 100, h: 38 }],
       stamps: [{ p: 5, cx: 162, y: 263, w: 68 }],
     },
+    // ---- enforcement response, counsel-signed (17.11.2026), 28 pages Letter: client signs the affidavit only (p5), attestation p5.
+    45: {
+      key: 'hlpPr4', file: 'enc:doc', encFile: true, title: 'תצהיר לתגובה לבקשת "פרעתי" בהוצאה לפועל',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהיר נכון.',
+      intro: 'זו התגובה לבקשת "פרעתי" של נהוראי בהוצאה לפועל, לפי מה ששלחת על החוב לעוגן. עו"ד ערן מגיש אותה בשמך, ואת חותמת רק על התצהיר. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס במקום הנדרש.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 5, x0: 252, x1: 308, y: 178, s: 10.5, f: 'r', white: [249, 166, 311, 181] },
+      ],
+      sigs: [{ p: 5, cx: 162, y: 115, w: 100, h: 38 }],
+      stamps: [{ p: 5, cx: 162, y: 263, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
