@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; img-src 'self' blob: data:; frame-src blob:; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' blob: data:; frame-src blob:; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <title>חתימה על מסמכים</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap">
 <style>
@@ -109,6 +109,15 @@
     <button type="button" id="send-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
   </div>
 </div>
+<div class="modal" id="box-modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div style="font-size:40px">✅</div>
+    <h2>המסמך נשלח לעורך הדין</h2>
+    <p id="box-text" style="text-align:right">הקובץ החתום נשלח מוצפן ישירות למשרד עו"ד ערן בן שושן. אין צורך לשלוח אותו בוואטסאפ.</p>
+    <button type="button" id="box-dl" style="background:#22305a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">⬇ שמירת עותק במכשיר</button>
+    <button type="button" id="box-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
+  </div>
+</div>
 <div class="modal" id="sent-modal" role="dialog" aria-modal="true">
   <div class="card">
     <div style="font-size:36px">📄</div>
@@ -157,6 +166,42 @@
 <script src="docs/sign-core.js?v=14"></script>
 <script>
 const LAWYER_WA = '972522499887';
+// Encrypted receipt box (office_box.py / gas/Code.gs, Apps Script URL ending in /exec). Empty = old WhatsApp-only flow.
+// The box sees only sid (hash of the token), an auth proof, and AES-GCM ciphertext keyed from the token.
+const BOX = 'https://script.google.com/macros/s/AKfycbzuXSR4wDqpVqkNA5HwlFl-Yzob3WVgCDYm4jczZ3JDPHA--U0JBmtb9ai7tmm2TKl8/exec';
+let BOXID = null;
+async function boxIds(t) {
+  const enc = new TextEncoder(), h = async s => new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)));
+  const hx = b => [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+  return { sid: hx(await h('u:' + t)).slice(0, 32), auth: hx(await h('a:' + t)), key: (await h('r:' + t)).slice(0, 16) };
+}
+// Apps Script web app: one POST URL, text/plain body (no CORS preflight), answer {status,...} after a redirect.
+function boxPost(o, keepalive) {
+  return fetch(BOX, { method: 'POST', headers: { 'content-type': 'text/plain;charset=utf-8' }, body: JSON.stringify(o),
+    redirect: 'follow', credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: !!keepalive }).then(r => r.json());
+}
+function boxEvent(type) {
+  if (!BOX || !BOXID) return;
+  try { boxPost({ op: 'e', sid: BOXID.sid, auth: BOXID.auth, type, ua: navigator.userAgent }, true).catch(() => {}); } catch (e) {}
+}
+function b64(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+// returns 'ok' | 'dup' | null (failed -> caller falls back to WhatsApp)
+async function boxUpload(blob) {
+  if (!BOX || !BOXID) return null;
+  try {
+    const meta = new TextEncoder().encode(JSON.stringify({ v: 1, signedAt: new Date().toISOString(), ua: navigator.userAgent,
+      docs: DOCS.map(d => d.code), name: LAST && LAST.name }));
+    const pdf = new Uint8Array(await blob.arrayBuffer());
+    const plain = new Uint8Array(4 + meta.length + pdf.length);
+    new DataView(plain.buffer).setUint32(0, meta.length); plain.set(meta, 4); plain.set(pdf, 4 + meta.length);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const k = await crypto.subtle.importKey('raw', BOXID.key, 'AES-GCM', false, ['encrypt']);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, plain));
+    const body = new Uint8Array(12 + ct.length); body.set(iv); body.set(ct, 12);
+    const r = await boxPost({ op: 'u', sid: BOXID.sid, auth: BOXID.auth, ua: navigator.userAgent, data: b64(body) });
+    return r.status === 200 ? 'ok' : r.status === 409 ? 'dup' : null;
+  } catch (e) { return null; }
+}
 const $ = id => document.getElementById(id);
 let TWO = null, STAGE = 1, TOKEN = null, TKEY = null, SIG1 = null, DATE1 = null, DATE2 = null, P1 = null, PREP = null, STROKES = [], PARTY = null;
 let CONFIRM = null, DOCS = null, SIG = null, IDPHOTO = null, IDSEFACH = null, STAMP = null, NEED_ID = false, NO_SIGN = false, previewURL = null, origHref = location.href;
@@ -239,7 +284,7 @@ $('sig-close').onclick = () => { $('sig-modal').style.display = 'none'; };
 $('sig-save').onclick = async () => {
   const png = trimmedPng($('sig-canvas'));
   if (!png) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
-  SIG = png; $('sig-modal').style.display = 'none';
+  SIG = png; $('sig-modal').style.display = 'none'; boxEvent('sign');
   if (TWO && STAGE < 3) { PREP = null; prepareTwo().catch(e => toast('שגיאה: ' + e.message, 'err')); }
   try { await render(); updateSend(); $('btn-sign').textContent = '✍ חתימה מחדש';
     if (NEED_ID && !idDone()) toast('✓ החתימה נוספה. עכשיו צלמי את תעודת הזהות מקדימה ואת הספח (שתי תמונות)', 'ok'); else toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
@@ -290,6 +335,16 @@ $('btn-send').onclick = async () => {
     const name = TWO ? TWO.title + ' חתום - ' + DOCS[0].values[TWO.parties[0].k] + ' ו' + DOCS[0].values[TWO.parties[1].k] + '.pdf'
       : label + (NO_SIGN ? '' : ' חתום') + ' - ' + clientName().replace(/["'\/\\:]/g, '') + '.pdf';
     LAST = { blob, name };
+    let sent = null;
+    if (BOX && BOXID) { // Apps Script answers in ~5-15s: show progress and block a second tap meanwhile
+      const btn = $('btn-send'), txt = btn.textContent; btn.disabled = true; btn.textContent = '⏳ שולח לעורך הדין... נא להמתין';
+      try { sent = await boxUpload(blob); } finally { btn.disabled = false; btn.textContent = txt; }
+    }
+    if (sent) {
+      $('box-text').textContent = sent === 'dup' ? 'המסמך כבר נשלח לעורך הדין קודם לכן. אין צורך לשלוח שוב.'
+        : 'הקובץ החתום נשלח מוצפן ישירות למשרד עו"ד ערן בן שושן. אין צורך לשלוח אותו בוואטסאפ.';
+      $('box-modal').style.display = 'flex'; return;
+    }
     // Samsung Internet refuses (NotAllowedError) files with a long Hebrew name: use a plain name there from the start.
     await shareLast(isSamsung());
   } catch (e) { sendFailed('build: ' + (e.name || '') + ' ' + e.message); }
@@ -458,6 +513,8 @@ $('fail-dl').onclick = () => downloadLast();
 $('fail-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } catch (e) {} $('fail-copy').textContent = '✓ הועתק — פתחו את Chrome והדביקו בשורת הכתובת'; };
 $('fail-close').onclick = () => { $('fail-modal').style.display = 'none'; };
 $('sent-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); };
+$('box-close').onclick = () => { $('box-modal').style.display = 'none'; toast('תודה! המסמך התקבל אצל עורך הדין ✓', 'ok'); };
+$('box-dl').onclick = () => { if (!LAST) return; const a = document.createElement('a'); a.href = URL.createObjectURL(LAST.blob); a.download = LAST.name; a.click(); };
 $('sent-close').onclick = () => { $('sent-modal').style.display = 'none'; toast('תודה! הקובץ נשלח לעורך הדין ✓', 'ok'); };
 $('fwd-copy').onclick = () => { try { navigator.clipboard.writeText(FWD); $('fwd-copy').textContent = '✓ הועתק'; } catch (e) {} };
 $('fwd-close').onclick = () => { $('fwd-modal').style.display = 'none'; };
@@ -480,7 +537,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
       // so the repo never shows which file belongs to which link, and nothing readable is stored.
       const tok = new TextEncoder();
       const sha = async t => new Uint8Array(await crypto.subtle.digest('SHA-256', tok.encode(t)));
-      const t = hm[1]; TOKEN = t;
+      const t = hm[1]; TOKEN = t; if (BOX) { BOXID = await boxIds(t); boxEvent('open'); }
       const fname = [...(await sha('f:' + t)).slice(0, 8)].map(x => x.toString(16).padStart(2, '0')).join('');
       const key = (await sha('k:' + t)).slice(0, 16); TKEY = key;
       const r = await fetch('docs/l/' + fname + '.bin', { cache: 'no-store' });
