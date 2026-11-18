@@ -166,14 +166,19 @@
 <script src="docs/sign-core.js?v=14"></script>
 <script>
 const LAWYER_WA = '972522499887';
-// Encrypted receipt box (office_box.py / gas/Code.gs, Apps Script URL ending in /exec). Empty = old WhatsApp-only flow.
+// Encrypted receipt box (office_box.py / gas/Code.gs v2, Apps Script URL ending in /exec). Empty = old WhatsApp-only flow.
 // The box sees only sid (hash of the token), an auth proof, and AES-GCM ciphertext keyed from the token.
 const BOX = 'https://script.google.com/macros/s/AKfycbzuXSR4wDqpVqkNA5HwlFl-Yzob3WVgCDYm4jczZ3JDPHA--U0JBmtb9ai7tmm2TKl8/exec';
+// Office public key (RSA-OAEP 3072, SPKI base64): only the office Mac can open what is sent. office_box.py keygen.
+const BOX_PUB = 'MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAwMHuSbHv+so8WoZIOLsPieSJcp1tiumrOeBOFzphqGY6HWdW4M3nMCDI1vJjG0H2OlP39Bkb10tg24Z7bWBUf6ZPpNn1ImGJ2X+4tvNV//S6emRn56ivxPDMxCfsqVjv/ZP9UqsgznF1jAMxeBlWQpNmyj2Xgpga/PCLamsjgSC+xEUmvvDGRUAsWmFK+NmjHbFGxDYciBPQDIKh/0nlYnCZC2HyhBqWjpJOg5pIPCp6JWKDBC+0TjwfTYLq2BToRfAxW9ESZpWsS0u5teUEhBLFEBTxMD0yaPe6Rjj5Tyg0FsOVfn4aoQan3V8QgKEQZXzqn4rHRXNY0YyHxTITtopaU2KNbRtZXHpdqjYYcqnpOrTJGPUECaOR/jb70xROTwQFtQDQZiAEzjn81iLNdNjj+7sSAqcjELBBfpt2gpzYlf6eaxTzTldkx+nNMqBlLwAD8rnWdScGVrAytNE4aFLsLVdWQtYs3Ia0mmV9QYe8HG0K2oBxocwd617VHsF7AgMBAAE=';
 let BOXID = null;
+// sid = the request's own file name (sha256('f:'+t)[:8]); the box accepts it only while docs/l/<sid>.bin is live.
+// tag = sha256('e:'+t): lets the office drop events that did not come from this link. The token itself travels
+// only inside the office-key encryption, so the office can prove the upload came from the link.
 async function boxIds(t) {
   const enc = new TextEncoder(), h = async s => new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)));
   const hx = b => [...b].map(x => x.toString(16).padStart(2, '0')).join('');
-  return { sid: hx(await h('u:' + t)).slice(0, 32), auth: hx(await h('a:' + t)), key: (await h('r:' + t)).slice(0, 16) };
+  return { sid: hx((await h('f:' + t)).slice(0, 8)), tag: hx(await h('e:' + t)), token: t };
 }
 // Apps Script web app: one POST URL, text/plain body (no CORS preflight), answer {status,...} after a redirect.
 function boxPost(o, keepalive) {
@@ -182,23 +187,28 @@ function boxPost(o, keepalive) {
 }
 function boxEvent(type) {
   if (!BOX || !BOXID) return;
-  try { boxPost({ op: 'e', sid: BOXID.sid, auth: BOXID.auth, type, ua: navigator.userAgent }, true).catch(() => {}); } catch (e) {}
+  try { boxPost({ op: 'e', sid: BOXID.sid, tag: BOXID.tag, type, ua: navigator.userAgent }, true).catch(() => {}); } catch (e) {}
 }
 function b64(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
 // returns 'ok' | 'dup' | null (failed -> caller falls back to WhatsApp)
 async function boxUpload(blob) {
-  if (!BOX || !BOXID) return null;
+  if (!BOX || !BOXID || !BOX_PUB || BOX_PUB.length < 100) return null;
   try {
-    const meta = new TextEncoder().encode(JSON.stringify({ v: 1, signedAt: new Date().toISOString(), ua: navigator.userAgent,
-      docs: DOCS.map(d => d.code), name: LAST && LAST.name }));
+    const meta = new TextEncoder().encode(JSON.stringify({ v: 2, token: BOXID.token, signedAt: new Date().toISOString(),
+      ua: navigator.userAgent, docs: DOCS.map(d => d.code), name: clientName(), file: LAST && LAST.name }));
     const pdf = new Uint8Array(await blob.arrayBuffer());
     const plain = new Uint8Array(4 + meta.length + pdf.length);
     new DataView(plain.buffer).setUint32(0, meta.length); plain.set(meta, 4); plain.set(pdf, 4 + meta.length);
+    const aes = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt']);
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const k = await crypto.subtle.importKey('raw', BOXID.key, 'AES-GCM', false, ['encrypt']);
-    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, plain));
-    const body = new Uint8Array(12 + ct.length); body.set(iv); body.set(ct, 12);
-    const r = await boxPost({ op: 'u', sid: BOXID.sid, auth: BOXID.auth, ua: navigator.userAgent, data: b64(body) });
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aes, plain));
+    const pub = await crypto.subtle.importKey('spki', Uint8Array.from(atob(BOX_PUB), c => c.charCodeAt(0)),
+      { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
+    const wrapped = new Uint8Array(await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pub, await crypto.subtle.exportKey('raw', aes)));
+    const body = new Uint8Array(3 + wrapped.length + 12 + ct.length);
+    body[0] = 2; body[1] = wrapped.length >> 8; body[2] = wrapped.length & 255;
+    body.set(wrapped, 3); body.set(iv, 3 + wrapped.length); body.set(ct, 15 + wrapped.length);
+    const r = await boxPost({ op: 'u', sid: BOXID.sid, tag: BOXID.tag, ua: navigator.userAgent, data: b64(body) });
     return r.status === 200 ? 'ok' : r.status === 409 ? 'dup' : null;
   } catch (e) { return null; }
 }
