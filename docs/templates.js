@@ -637,6 +637,18 @@
       sigs: [{ p: 5, cx: 162, y: 115, w: 100, h: 38 }],
       stamps: [{ p: 5, cx: 162, y: 263, w: 68 }],
     },
+    // ---- client-specific POA (custom wording, e.g. a second attorney), built from docs/poa.pdf and stored encrypted
+    // like 8-12. Date, client signature and stamp at the same places as code 6.
+    46: {
+      key: 'poaF', file: 'enc:doc', encFile: true, title: 'ייפוי כוח',
+      confirm: 'קראתי את ייפוי הכוח במלואו, ואני מאשר/ת את תוכנו.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'date', auto: 'date', x0: 316, x1: 364, y: 670.68, s: 11, al: 'r' },
+      ],
+      sigs: [{ cx: 458.75, y: 723.68, w: 88, h: 45 }],
+      stamps: [{ cx: 171, y: 721.68, w: 95 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
