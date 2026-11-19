@@ -115,8 +115,8 @@
     <h2>המסמך נשלח לעורך הדין</h2>
     <p id="box-text" style="text-align:right">הקובץ החתום נשלח מוצפן ישירות למשרד עו"ד ערן בן שושן. אין צורך לשלוח אותו בוואטסאפ.</p>
     <div id="otp-wrap" style="display:none;margin:4px 0 12px;padding:12px;background:#eefaf2;border:1px solid #9fd8b4;border-radius:10px;text-align:right">
-      <p style="margin:0 0 8px;font-weight:bold">שלב אחרון: אישור שזה אתם</p>
-      <p style="margin:0 0 10px;font-size:14px">לחצו על הכפתור. תיפתח הודעה מוכנה למשרד, ונשאר רק ללחוץ "שלח".</p>
+      <p style="margin:0 0 8px;font-weight:bold">שלב אחרון וחובה: אישור מהטלפון שלכם</p>
+      <p style="margin:0 0 10px;font-size:14px">בלי האישור עורך הדין לא יכול לקבל את המסמך. לחצו על הכפתור, תיפתח הודעה מוכנה למשרד, ונשאר רק ללחוץ "שלח".</p>
       <button type="button" id="otp-wa" style="background:#25d366;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">✅ אישור בוואטסאפ</button>
       <button type="button" id="otp-sms" style="margin-top:8px;background:#fff;color:#1f7a4d;border:1px solid #9fd8b4;border-radius:8px;padding:10px;width:100%;font-family:inherit">אין וואטסאפ? אישור ב-SMS</button>
     </div>
@@ -177,7 +177,7 @@ const LAWYER_WA = '972522499887';
 const BOX = 'https://script.google.com/macros/s/AKfycbzuXSR4wDqpVqkNA5HwlFl-Yzob3WVgCDYm4jczZ3JDPHA--U0JBmtb9ai7tmm2TKl8/exec';
 // Office public key (RSA-OAEP 3072, SPKI base64): only the office Mac can open what is sent. office_box.py keygen.
 const BOX_PUB = 'MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAwMHuSbHv+so8WoZIOLsPieSJcp1tiumrOeBOFzphqGY6HWdW4M3nMCDI1vJjG0H2OlP39Bkb10tg24Z7bWBUf6ZPpNn1ImGJ2X+4tvNV//S6emRn56ivxPDMxCfsqVjv/ZP9UqsgznF1jAMxeBlWQpNmyj2Xgpga/PCLamsjgSC+xEUmvvDGRUAsWmFK+NmjHbFGxDYciBPQDIKh/0nlYnCZC2HyhBqWjpJOg5pIPCp6JWKDBC+0TjwfTYLq2BToRfAxW9ESZpWsS0u5teUEhBLFEBTxMD0yaPe6Rjj5Tyg0FsOVfn4aoQan3V8QgKEQZXzqn4rHRXNY0YyHxTITtopaU2KNbRtZXHpdqjYYcqnpOrTJGPUECaOR/jb70xROTwQFtQDQZiAEzjn81iLNdNjj+7sSAqcjELBBfpt2gpzYlf6eaxTzTldkx+nNMqBlLwAD8rnWdScGVrAytNE4aFLsLVdWQtYs3Ia0mmV9QYe8HG0K2oBxocwd617VHsF7AgMBAAE=';
-let BOXID = null, OTP = null;
+let BOXID = null, OTP = null, OTP_SENT = false;
 // Reverse confirmation: after sending, the client sends a ready-made message with a code to the office number from
 // their own phone. code = 8 digits of SHA-256('o:' + token + ':' + hex SHA-256(signed PDF)): bound to this link and
 // to the exact file sent, so the office Mac (office_box.py fetch) recomputes it and finds it in WhatsApp/Messages.
@@ -387,7 +387,8 @@ $('btn-send').onclick = async () => {
     if (sent) {
       $('box-text').textContent = sent === 'dup' ? 'המסמך כבר נשלח לעורך הדין קודם לכן. אין צורך לשלוח שוב.'
         : 'הקובץ החתום נשלח מוצפן ישירות למשרד עו"ד ערן בן שושן. אין צורך לשלוח אותו בוואטסאפ.';
-      $('otp-wrap').style.display = (sent === 'ok' && OTP) ? 'block' : 'none';
+      $('otp-wrap').style.display = (sent === 'ok' && OTP) ? 'block' : 'none'; OTP_SENT = false;
+      if (sent === 'ok' && OTP) $('box-text').textContent = 'הקובץ החתום נשלח מוצפן ישירות למשרד עו"ד ערן בן שושן.';
       $('box-modal').style.display = 'flex'; return;
     }
     // Samsung Internet refuses (NotAllowedError) files with a long Hebrew name: use a plain name there from the start.
@@ -558,9 +559,11 @@ $('fail-dl').onclick = () => downloadLast();
 $('fail-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } catch (e) {} $('fail-copy').textContent = '✓ הועתק — פתחו את Chrome והדביקו בשורת הכתובת'; };
 $('fail-close').onclick = () => { $('fail-modal').style.display = 'none'; };
 $('sent-wa').onclick = () => { window.open('https://wa.me/' + LAWYER_WA, '_blank'); };
-$('otp-wa').onclick = () => { if (OTP) location.href = 'https://wa.me/' + OFFICE_PHONE + '?text=' + encodeURIComponent(otpMessage()); };
-$('otp-sms').onclick = () => { if (OTP) location.href = 'sms:+' + OFFICE_PHONE + '?&body=' + encodeURIComponent(otpMessage()); };
-$('box-close').onclick = () => { $('box-modal').style.display = 'none'; toast('תודה! המסמך התקבל אצל עורך הדין ✓', 'ok'); };
+$('otp-wa').onclick = () => { if (OTP) OTP_SENT = true; if (OTP) location.href = 'https://wa.me/' + OFFICE_PHONE + '?text=' + encodeURIComponent(otpMessage()); };
+$('otp-sms').onclick = () => { if (OTP) OTP_SENT = true; if (OTP) location.href = 'sms:+' + OFFICE_PHONE + '?&body=' + encodeURIComponent(otpMessage()); };
+$('box-close').onclick = () => {
+  // first tap warns, a second tap closes (never trap the client)
+  if (OTP && !OTP_SENT && $('otp-wrap').style.display === 'block' && !$('box-close').dataset.warned) { $('box-close').dataset.warned = '1'; toast('עוד לא אישרתם מהטלפון. בלי האישור המסמך לא ייקלט — לחצו על "אישור בוואטסאפ"', 'err'); return; } $('box-modal').style.display = 'none'; toast('תודה! המסמך התקבל אצל עורך הדין ✓', 'ok'); };
 $('box-dl').onclick = () => { if (!LAST) return; const a = document.createElement('a'); a.href = URL.createObjectURL(LAST.blob); a.download = LAST.name; a.click(); };
 $('sent-close').onclick = () => { $('sent-modal').style.display = 'none'; toast('תודה! הקובץ נשלח לעורך הדין ✓', 'ok'); };
 $('fwd-copy').onclick = () => { try { navigator.clipboard.writeText(FWD); $('fwd-copy').textContent = '✓ הועתק'; } catch (e) {} };
