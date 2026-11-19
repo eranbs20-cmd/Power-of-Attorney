@@ -563,7 +563,9 @@ $('otp-wa').onclick = () => { if (OTP) OTP_SENT = true; if (OTP) location.href =
 $('otp-sms').onclick = () => { if (OTP) OTP_SENT = true; if (OTP) location.href = 'sms:+' + OFFICE_PHONE + '?&body=' + encodeURIComponent(otpMessage()); };
 $('box-close').onclick = () => {
   // first tap warns, a second tap closes (never trap the client)
-  if (OTP && !OTP_SENT && $('otp-wrap').style.display === 'block' && !$('box-close').dataset.warned) { $('box-close').dataset.warned = '1'; toast('עוד לא אישרתם מהטלפון. בלי האישור המסמך לא ייקלט — לחצו על "אישור בוואטסאפ"', 'err'); return; } $('box-modal').style.display = 'none'; toast('תודה! המסמך התקבל אצל עורך הדין ✓', 'ok'); };
+  if (OTP && !OTP_SENT && $('otp-wrap').style.display === 'block' && !$('box-close').dataset.warned) { $('box-close').dataset.warned = '1'; toast('עוד לא אישרתם מהטלפון. בלי האישור המסמך לא ייקלט — לחצו על "אישור בוואטסאפ"', 'err'); return; } $('box-modal').style.display = 'none';
+  if (OTP && !OTP_SENT && $('otp-wrap').style.display === 'block') toast('המסמך נשלח, אבל עוד חסר האישור מהטלפון. בלי האישור עורך הדין לא יוכל לקבל אותו.', 'err');
+  else toast('תודה! המסמך התקבל אצל עורך הדין ✓', 'ok'); };
 $('box-dl').onclick = () => { if (!LAST) return; const a = document.createElement('a'); a.href = URL.createObjectURL(LAST.blob); a.download = LAST.name; a.click(); };
 $('sent-close').onclick = () => { $('sent-modal').style.display = 'none'; toast('תודה! הקובץ נשלח לעורך הדין ✓', 'ok'); };
 $('fwd-copy').onclick = () => { try { navigator.clipboard.writeText(FWD); $('fwd-copy').textContent = '✓ הועתק'; } catch (e) {} };
