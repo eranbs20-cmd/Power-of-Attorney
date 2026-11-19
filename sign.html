@@ -174,7 +174,7 @@
 const LAWYER_WA = '972522499887';
 // Encrypted receipt box (office_box.py / gas/Code.gs v2, Apps Script URL ending in /exec). Empty = old WhatsApp-only flow.
 // The box sees only sid (hash of the token), an auth proof, and AES-GCM ciphertext keyed from the token.
-const BOX = 'https://script.google.com/macros/s/AKfycbzuXSR4wDqpVqkNA5HwlFl-Yzob3WVgCDYm4jczZ3JDPHA--U0JBmtb9ai7tmm2TKl8/exec';
+const BOX = ''; // 19.11.2026: box disabled — uploads could not be opened at the office (no working office_box.py / key passphrase). Previous URL: https://script.google.com/macros/s/AKfycbzuXSR4wDqpVqkNA5HwlFl-Yzob3WVgCDYm4jczZ3JDPHA--U0JBmtb9ai7tmm2TKl8/exec
 // Office public key (RSA-OAEP 3072, SPKI base64): only the office Mac can open what is sent. office_box.py keygen.
 const BOX_PUB = 'MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAwMHuSbHv+so8WoZIOLsPieSJcp1tiumrOeBOFzphqGY6HWdW4M3nMCDI1vJjG0H2OlP39Bkb10tg24Z7bWBUf6ZPpNn1ImGJ2X+4tvNV//S6emRn56ivxPDMxCfsqVjv/ZP9UqsgznF1jAMxeBlWQpNmyj2Xgpga/PCLamsjgSC+xEUmvvDGRUAsWmFK+NmjHbFGxDYciBPQDIKh/0nlYnCZC2HyhBqWjpJOg5pIPCp6JWKDBC+0TjwfTYLq2BToRfAxW9ESZpWsS0u5teUEhBLFEBTxMD0yaPe6Rjj5Tyg0FsOVfn4aoQan3V8QgKEQZXzqn4rHRXNY0YyHxTITtopaU2KNbRtZXHpdqjYYcqnpOrTJGPUECaOR/jb70xROTwQFtQDQZiAEzjn81iLNdNjj+7sSAqcjELBBfpt2gpzYlf6eaxTzTldkx+nNMqBlLwAD8rnWdScGVrAytNE4aFLsLVdWQtYs3Ia0mmV9QYe8HG0K2oBxocwd617VHsF7AgMBAAE=';
 let BOXID = null, OTP = null, OTP_SENT = false;
