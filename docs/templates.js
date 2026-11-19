@@ -649,6 +649,18 @@
       sigs: [{ cx: 458.75, y: 723.68, w: 88, h: 45 }],
       stamps: [{ cx: 171, y: 721.68, w: 95 }],
     },
+    // ---- property claim (declaratory relief + resource balancing), 8 pages Letter: affidavit sig and attestation on p7.
+    47: {
+      key: 'claimF', file: 'enc:doc', encFile: true, title: 'כתב תביעה רכושית, כולל תצהיר',
+      confirm: 'קראתי את כל כתב התביעה במלואו, על כל עמודיו, ואני מאשרת שתוכן התצהיר נכון.',
+      intro: 'זה כתב התביעה המלא שיוגש לבית המשפט לענייני משפחה. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בתצהיר.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 7, x0: 252, x1: 316, y: 325.5, s: 10.5, f: 'r', white: [247, 314, 321, 329] },
+      ],
+      sigs: [{ p: 7, cx: 162, y: 250, w: 100, h: 38 }],
+      stamps: [{ p: 7, cx: 162, y: 404, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
