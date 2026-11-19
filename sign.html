@@ -190,7 +190,7 @@ async function otpCode(token, pdf) {
   const d = String(n).padStart(8, '0'); return d.slice(0, 4) + '-' + d.slice(4);
 }
 function otpMessage() {
-  return 'אישור חתימה דיגיטלית\nאני ' + clientName() + ' מאשר/ת שחתמתי על ' + (LAST ? LAST.name.replace(/\.pdf$/i, '') : 'המסמך') +
+  return 'אישור חתימה דיגיטלית\nאני ' + clientName() + ' מאשר/ת שחתמתי על ' + (LAST ? LAST.name.replace(/\.pdf$/i, '').split(' - ')[0].replace(/ חתום$/, '') : 'המסמך') +
     ' ושלחתי אותו למשרד.\nקוד אימות: ' + OTP;
 }
 // sid = the request's own file name (sha256('f:'+t)[:8]); the box accepts it only while docs/l/<sid>.bin is live.
