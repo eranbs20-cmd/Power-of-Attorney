@@ -185,32 +185,44 @@ function boxPost(o, keepalive) {
   return fetch(BOX, { method: 'POST', headers: { 'content-type': 'text/plain;charset=utf-8' }, body: JSON.stringify(o),
     redirect: 'follow', credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: !!keepalive }).then(r => r.json());
 }
-function boxEvent(type) {
+// Each event carries x = proof sealed to the office key (token + who + which documents), so the office
+// dashboard can show who opened/signed. Only the link holder can make a proof that matches the sid.
+async function boxEvent(type) {
   if (!BOX || !BOXID) return;
-  try { boxPost({ op: 'e', sid: BOXID.sid, tag: BOXID.tag, type, ua: navigator.userAgent }, true).catch(() => {}); } catch (e) {}
+  let x;
+  try {
+    x = await sealForOffice({ v: 3, token: BOXID.token, type, name: clientName(), stage: STAGE,
+      docs: (DOCS || []).map(d => SIGN_TEMPLATES[d.code] ? SIGN_TEMPLATES[d.code].title : d.code) }, new Uint8Array(0));
+  } catch (e) {}
+  try { boxPost({ op: 'e', sid: BOXID.sid, tag: BOXID.tag, type, ua: navigator.userAgent, x }, true).catch(() => {}); } catch (e) {}
 }
 function b64(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
 // returns 'ok' | 'dup' | null (failed -> caller falls back to WhatsApp)
 async function boxUpload(blob) {
   if (!BOX || !BOXID || !BOX_PUB || BOX_PUB.length < 100) return null;
   try {
-    const meta = new TextEncoder().encode(JSON.stringify({ v: 2, token: BOXID.token, signedAt: new Date().toISOString(),
-      ua: navigator.userAgent, docs: DOCS.map(d => d.code), name: clientName(), file: LAST && LAST.name }));
-    const pdf = new Uint8Array(await blob.arrayBuffer());
-    const plain = new Uint8Array(4 + meta.length + pdf.length);
-    new DataView(plain.buffer).setUint32(0, meta.length); plain.set(meta, 4); plain.set(pdf, 4 + meta.length);
-    const aes = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt']);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aes, plain));
-    const pub = await crypto.subtle.importKey('spki', Uint8Array.from(atob(BOX_PUB), c => c.charCodeAt(0)),
-      { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
-    const wrapped = new Uint8Array(await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pub, await crypto.subtle.exportKey('raw', aes)));
-    const body = new Uint8Array(3 + wrapped.length + 12 + ct.length);
-    body[0] = 2; body[1] = wrapped.length >> 8; body[2] = wrapped.length & 255;
-    body.set(wrapped, 3); body.set(iv, 3 + wrapped.length); body.set(ct, 15 + wrapped.length);
-    const r = await boxPost({ op: 'u', sid: BOXID.sid, tag: BOXID.tag, ua: navigator.userAgent, data: b64(body) });
+    const data = await sealForOffice({ v: 2, token: BOXID.token, signedAt: new Date().toISOString(),
+      ua: navigator.userAgent, docs: DOCS.map(d => d.code), name: clientName(), file: LAST && LAST.name },
+      new Uint8Array(await blob.arrayBuffer()));
+    const r = await boxPost({ op: 'u', sid: BOXID.sid, tag: BOXID.tag, ua: navigator.userAgent, data });
     return r.status === 200 ? 'ok' : r.status === 409 ? 'dup' : null;
   } catch (e) { return null; }
+}
+// [0x02][len16][RSA-OAEP(aesKey)][iv12][AES-GCM([len32][meta json][payload])] -> base64. Only the office Mac opens it.
+async function sealForOffice(metaObj, pdf) {
+  const meta = new TextEncoder().encode(JSON.stringify(metaObj));
+  const plain = new Uint8Array(4 + meta.length + pdf.length);
+  new DataView(plain.buffer).setUint32(0, meta.length); plain.set(meta, 4); plain.set(pdf, 4 + meta.length);
+  const aes = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt']);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aes, plain));
+  const pub = await crypto.subtle.importKey('spki', Uint8Array.from(atob(BOX_PUB), c => c.charCodeAt(0)),
+    { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
+  const wrapped = new Uint8Array(await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pub, await crypto.subtle.exportKey('raw', aes)));
+  const body = new Uint8Array(3 + wrapped.length + 12 + ct.length);
+  body[0] = 2; body[1] = wrapped.length >> 8; body[2] = wrapped.length & 255;
+  body.set(wrapped, 3); body.set(iv, 3 + wrapped.length); body.set(ct, 15 + wrapped.length);
+  return b64(body);
 }
 const $ = id => document.getElementById(id);
 let TWO = null, STAGE = 1, TOKEN = null, TKEY = null, SIG1 = null, DATE1 = null, DATE2 = null, P1 = null, PREP = null, STROKES = [], PARTY = null;
@@ -547,7 +559,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
       // so the repo never shows which file belongs to which link, and nothing readable is stored.
       const tok = new TextEncoder();
       const sha = async t => new Uint8Array(await crypto.subtle.digest('SHA-256', tok.encode(t)));
-      const t = hm[1]; TOKEN = t; if (BOX) { BOXID = await boxIds(t); boxEvent('open'); }
+      const t = hm[1]; TOKEN = t; if (BOX) BOXID = await boxIds(t);
       const fname = [...(await sha('f:' + t)).slice(0, 8)].map(x => x.toString(16).padStart(2, '0')).join('');
       const key = (await sha('k:' + t)).slice(0, 16); TKEY = key;
       const r = await fetch('docs/l/' + fname + '.bin', { cache: 'no-store' });
@@ -579,6 +591,8 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   } catch (e) { $('intro').textContent = 'הקישור פגום, לא שלם או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
   origHref = location.origin + location.pathname.replace(/sign\.html$/, 's') + h; // full link for "copy link", also after a reload
   try { history.replaceState({ sh: h }, '', location.pathname); } catch (e) {}
+  if (TWO && STAGE < 3) PARTY = TWO.parties[STAGE - 1];
+  if (!(TWO && STAGE === 3)) boxEvent('open'); // stage 3 = the lawyer viewing the finished agreement
   NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
   NO_SIGN = DOCS.every(d => SIGN_TEMPLATES[d.code].noSign);
   const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
