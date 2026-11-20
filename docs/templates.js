@@ -50,7 +50,7 @@
       ],
       sigs: [{ cx: 161, y: 355, w: 110, h: 42 }, { cx: 161, y: 692, w: 110, h: 42 }],
       // lawyer stamp (docs/enc/st.bin, encrypted), only on the signed copy: "חתימת עורך דין" and the waiver confirmation on page 2
-      stamps: [{ cx: 161, y: 504, w: 95 }, { p: 1, cx: 161, y: 67, w: 95 }],
+      stamps: [{ cx: 161, y: 504, w: 95 }, { p: 1, cx: 142, y: 67, w: 90 }],
     },
     // ---- appendices (no signature). `appendix` = description on the cover page; letters (א', ב'...) follow link order.
     3: {
@@ -170,7 +170,7 @@
         { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 365, x1: 538, y: 127, s: 11 },
       ],
       sigs: [{ cx: 160, y: 414, w: 110, h: 40 }, { cx: 160, y: 750, w: 110, h: 40 }],
-      stamps: [{ cx: 160, y: 562, w: 95 }, { p: 1, cx: 160, y: 128, w: 95 }],
+      stamps: [{ cx: 160, y: 562, w: 95 }, { p: 1, cx: 142, y: 128, w: 90 }],
     },
     // ---- client fee agreement (Eran's own docx, Letter, 3 pages). Stored encrypted like 8-11. The signing date is
     // written on the "נערך ונחתם ביום" line only on the signed copy; the client's signature goes on page index 2.
@@ -202,7 +202,7 @@
         { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 365, x1: 538, y: 112, s: 11 },
       ],
       sigs: [{ cx: 160, y: 385, w: 110, h: 40 }, { cx: 160, y: 736, w: 110, h: 40 }],
-      stamps: [{ cx: 160, y: 548, w: 95 }, { p: 1, cx: 160, y: 113, w: 95 }],
+      stamps: [{ cx: 160, y: 548, w: 95 }, { p: 1, cx: 142, y: 113, w: 90 }],
     },
     // ---- two-party agreement signed in sequence (Davidov parenting-time agreement, Letter, 3 pages, enc:doc).
     // Stage 1: the first party (male) signs; sign.html then builds a link for the second party that carries his
@@ -263,7 +263,7 @@
         { k: 'l_date2', auto: 'date', signed: true, p: 1, x0: 365, x1: 538, y: 66, s: 11 },
       ],
       sigs: [{ cx: 160, y: 357, w: 110, h: 40 }, { cx: 160, y: 693, w: 110, h: 40 }],
-      stamps: [{ cx: 160, y: 519, w: 95 }, { p: 1, cx: 160, y: 67, w: 95 }],
+      stamps: [{ cx: 160, y: 519, w: 95 }, { p: 1, cx: 142, y: 67, w: 90 }],
     },
     // ---- two witness affidavits of a female declarant, merged (Letter, 4 pages, 2 per affidavit, enc:doc).
     // She signs once; the signature goes on her line in both affidavits (pages 0 and 2). On the signed copy only,
