@@ -661,6 +661,22 @@
       sigs: [{ p: 7, cx: 162, y: 250, w: 100, h: 38 }],
       stamps: [{ p: 7, cx: 162, y: 404, w: 68 }],
     },
+    // ---- flight-compensation affidavit (FC-1121), A4, 42 pages incl. annexes; lawyer stamp + date already in the PDF.
+    // Two separate links: 48 = main declarant (female) signs on p2 line 1; 49 = accompanying passenger (male) on p2 line 2.
+    48: {
+      key: 'flAffF', file: 'enc:doc', encFile: true, title: 'תצהיר דרישת פיצוי - ביטול טיסה',
+      confirm: 'קראתי את התצהיר במלואו, על כל עמודיו, ואני מאשרת שתוכנו נכון.',
+      intro: 'זה התצהיר המתוקן לתביעה נגד אל על, עם הנספחים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס במקום של המצהירה הראשית.',
+      fields: [{ k: 'name', hidden: true }],
+      sigs: [{ p: 1, cx: 232.6, y: 484, w: 100, h: 30 }],
+    },
+    49: {
+      key: 'flAffM2', file: 'enc:doc', encFile: true, title: 'תצהיר דרישת פיצוי - חתימת נוסע נלווה',
+      confirm: 'קראתי את התצהיר במלואו, על כל עמודיו, ואני מאשר שתוכנו נכון.',
+      intro: 'זה התצהיר המתוקן לתביעה נגד אל על, עם הנספחים. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס במקום של הנוסע הנלווה.',
+      fields: [{ k: 'name', hidden: true }],
+      sigs: [{ p: 1, cx: 232.6, y: 559, w: 100, h: 30 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
