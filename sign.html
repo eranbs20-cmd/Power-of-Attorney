@@ -168,7 +168,7 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=51"></script>
+<script src="docs/templates.js?v=52"></script>
 <script src="docs/sign-core.js?v=14"></script>
 <script>
 const LAWYER_WA = '972522499887';
@@ -247,7 +247,13 @@ async function sealForOffice(metaObj, pdf) {
   return b64(body);
 }
 const $ = id => document.getElementById(id);
-let TWO = null, STAGE = 1, TOKEN = null, TKEY = null, SIG1 = null, DATE1 = null, DATE2 = null, P1 = null, PREP = null, STROKES = [], PARTY = null;
+let TWO = null, STAGE = 1, TOKEN = null, TKEY = null, PS = [], PD = [], PP = [], DATE2 = null, PREP = null, STROKES = [], PARTY = null;
+// multi-party documents (twoStep): N = number of parties; STAGE k = party k signs; STAGE N+1 = the lawyer's finished copy.
+// PS/PD/PP = signatures (PNG), dates and sealed strokes of the parties who already signed, in order.
+const NP = () => TWO ? TWO.parties.length : 2, DONE = () => NP() + 1;
+const pName = i => DOCS[0].values[TWO.parties[i].k];
+const joinHe = a => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' ו' + a[a.length - 1];
+const allNames = () => joinHe(TWO.parties.map((q, i) => pName(i)));
 let CONFIRM = null, DOCS = null, SIG = null, IDPHOTO = null, IDSEFACH = null, STAMP = null, NEED_ID = false, NO_SIGN = false, previewURL = null, origHref = location.href;
 const cache = {};
 async function getBytes(p) {
@@ -284,8 +290,8 @@ async function render() {
   const needStamp = SIG && DOCS.some(d => (SIGN_TEMPLATES[d.code].stamps || []).length);
   const stamp = needStamp ? await loadStamp() : null;
   const ex = { idPhotos: [IDPHOTO, IDSEFACH].filter(Boolean), stamp };
-  const d2 = STAGE === 3 ? DATE2 : today();
-  if (TWO) { ex.partySigs = STAGE === 1 ? [SIG] : [SIG1, SIG]; ex.partyDates = STAGE === 1 ? [SIG ? today() : null] : [DATE1, SIG ? d2 : null]; ex.complete = STAGE >= 2 && !!SIG; }
+  const d2 = TWO && STAGE === DONE() ? DATE2 : today();
+  if (TWO) { ex.partySigs = [...PS, SIG]; ex.partyDates = [...PD, SIG ? d2 : null]; ex.complete = STAGE >= NP() && !!SIG; }
   const v = ++RV; RENDERING = true;
   let bytes; try { bytes = await SIGN_CORE.build(PDFLib, fontkit, getBytes, DOCS, TWO ? null : SIG, d2, ex); } finally { if (v === RV) RENDERING = false; }
   const blob = new Blob([bytes], { type: 'application/pdf' });
@@ -329,7 +335,7 @@ $('sig-save').onclick = async () => {
   const png = trimmedPng($('sig-canvas'));
   if (!png) { toast('יש לחתום במסגרת תחילה', 'err'); return; }
   SIG = png; $('sig-modal').style.display = 'none'; boxEvent('sign');
-  if (TWO && STAGE < 3) { PREP = null; prepareTwo().catch(e => toast('שגיאה: ' + e.message, 'err')); }
+  if (TWO && STAGE < DONE()) { PREP = null; prepareTwo().catch(e => toast('שגיאה: ' + e.message, 'err')); }
   try { await render(); updateSend(); $('btn-sign').textContent = '✍ חתימה מחדש';
     if (NEED_ID && !idDone()) toast('✓ החתימה נוספה. עכשיו צלמי את תעודת הזהות מקדימה ואת הספח (שתי תמונות)', 'ok'); else toast('✓ החתימה נוספה לכל המסמכים', 'ok'); }
   catch (e) { toast('שגיאה: ' + e.message, 'err'); }
@@ -367,8 +373,8 @@ $('id-input').onchange = async e => {
 };
 $('btn-send').onclick = async () => {
   if (!SIG && !NO_SIGN) { toast('יש לחתום תחילה', 'err'); return; }
-  if (TWO && STAGE < 3) return sendTwo();
-  if (TWO && STAGE === 3) return downloadSigned();
+  if (TWO && STAGE < DONE()) return sendTwo();
+  if (TWO && STAGE === DONE()) return downloadSigned();
   if (NEED_ID && !idDone()) { $('id-modal-text').textContent = 'אי אפשר לשלוח לפני שמצרפים ' + idMissing() + '. צלמי בבירור, ואז לחצי שוב "שלח לעורך הדין".'; $('id-modal').style.display = 'flex'; return; }
   try {
     // Use the PDF already built when the client signed: any wait here (rebuilding the PDF) can expire the tap's
@@ -376,7 +382,7 @@ $('btn-send').onclick = async () => {
     const blob = (READY && READY.sig === SIG && !RENDERING) ? READY.blob : await render();
     const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
     const label = main.length === 1 ? SIGN_TEMPLATES[main[0].code].title.replace(/[()"']/g, '').trim() : 'מסמכים';
-    const name = TWO ? TWO.title + ' חתום - ' + DOCS[0].values[TWO.parties[0].k] + ' ו' + DOCS[0].values[TWO.parties[1].k] + '.pdf'
+    const name = TWO ? TWO.title + ' חתום - ' + allNames() + '.pdf'
       : label + (NO_SIGN ? '' : ' חתום') + ' - ' + clientName().replace(/["'\/\\:]/g, '') + '.pdf';
     LAST = { blob, name };
     let sent = null;
@@ -485,34 +491,38 @@ const BASE_LINK = () => location.origin + location.pathname.replace(/sign\.html$
 // sent as a plain text message straight to the lawyer's WhatsApp chat — no file, no contact search.
 async function prepareTwo() {
   if (!STROKES.length) return;
-  if (STAGE === 1) {
-    const link = BASE_LINK() + TOKEN + '.' + await seal(encStrokes(today()));
-    const other = firstName(DOCS[0].values[TWO.parties[1].k]);
-    PREP = { link, url: 'https://wa.me/?text=', msg: 'שלום ' + other + ',\n' + clientName() + (TWO.parties[0].g === 'f' ? ' חתמה על ' : ' חתם על ') + TWO.title + '. זה הקישור לחתימה שלך:\n' + link +
-      '\n' + (TWO.hint2 || 'קראי את ההסכם, מלאי את מספר תעודת הזהות, לחצי "חתימה" ואז "שלח לעורך הדין".') + '\nעו"ד ערן בן שושן' };
+  const prior = PP.map(x => '.' + x).join('');
+  if (STAGE < NP()) { // forward to the next party (all signatures so far travel inside the link, encrypted)
+    const link = BASE_LINK() + TOKEN + prior + '.' + await seal(encStrokes(today()));
+    const nx = TWO.parties[STAGE], other = firstName(pName(STAGE));
+    const signed = TWO.parties.slice(0, STAGE).map((q, i) => firstName(pName(i)));
+    const who = signed.length === 1 ? signed[0] + (TWO.parties[0].g === 'f' ? ' חתמה על ' : ' חתם על ') : joinHe(signed) + ' חתמו על ';
+    PREP = { link, url: 'https://wa.me/?text=', msg: 'שלום ' + other + ',\n' + who + TWO.title + '. זה הקישור לחתימה שלך:\n' + link +
+      '\n' + (nx.hint || TWO.hint2 || 'קראי את ההסכם, מלאי את מספר תעודת הזהות, לחצי "חתימה" ואז "שלח לעורך הדין".').replace(/\{next\}/g, STAGE + 1 < NP() ? firstName(pName(STAGE + 1)) : '') + '\nעו"ד ערן בן שושן' };
   } else {
     const rid = DOCS[0].values.r_id || '';
-    const link = BASE_LINK() + TOKEN + '.' + P1 + '.' + await seal(encStrokes(today(), rid));
-    PREP = { link, url: 'https://wa.me/' + LAWYER_WA + '?text=', msg: 'שלום עו"ד בן שושן,\n' + DOCS[0].values[TWO.parties[0].k] + ' ו' +
-      DOCS[0].values[TWO.parties[1].k] + ' חתמו על ' + TWO.title + '. זה הקישור ' + (TWO.nounTo || 'להסכם') + ' החתום:\n' + link };
+    const link = BASE_LINK() + TOKEN + prior + '.' + await seal(encStrokes(today(), rid));
+    PREP = { link, url: 'https://wa.me/' + LAWYER_WA + '?text=', msg: 'שלום עו"ד בן שושן,\n' + allNames() + ' חתמו על ' + TWO.title + '. זה הקישור ' + (TWO.nounTo || 'להסכם') + ' החתום:\n' + link };
   }
   FWD = PREP.msg;
 }
 function sendTwo() {
   if (!PREP) { toast('רגע, מכין את הקישור… נסו שוב בעוד שנייה', 'err'); prepareTwo().catch(() => {}); return; }
-  if (STAGE === 1 && navigator.share) {
+  if (STAGE < NP() && navigator.share) {
     navigator.share({ text: PREP.msg }).then(() => { $('fwd-modal').style.display = 'flex'; }).catch(se => { if (se.name !== 'AbortError') { location.href = PREP.url + encodeURIComponent(PREP.msg); } });
     return;
   }
   const w = window.open(PREP.url + encodeURIComponent(PREP.msg), '_blank');
   if (!w) location.href = PREP.url + encodeURIComponent(PREP.msg);
-  if (STAGE === 2) { $('fwd-title').textContent = 'נפתח צ\'אט עם עו"ד ערן בן שושן';
+  if (STAGE < NP() && NP() > 2) { $('fwd-title').textContent = 'הקישור לחתימה של ' + firstName(pName(STAGE)) + ' מוכן';
+    $('fwd-text').textContent = 'אם וואטסאפ נפתח – בחרו את ' + firstName(pName(STAGE)) + ' ושלחו. אם לא, לחצו "העתק הודעה" והדביקו אותה בצ\'אט. המסמך יגיע לעורך הדין רק אחרי שכל החותמים חתמו.'; }
+  if (STAGE === NP()) { $('fwd-title').textContent = 'נפתח צ\'אט עם עו"ד ערן בן שושן';
     $('fwd-text').textContent = PARTY && PARTY.g === 'm' ? 'בצ\'אט שנפתח כבר כתובה הודעה עם הקישור ' + (TWO.nounTo || 'להסכם') + ' החתום. לחץ על כפתור השליחה ➤. אם הצ\'אט לא נפתח, לחץ "העתק הודעה" ושלח אותה בוואטסאפ ל-052-2499887.' : 'בצ\'אט שנפתח כבר כתובה הודעה עם הקישור ' + (TWO.nounTo || 'להסכם') + ' החתום. לחצי על כפתור השליחה ➤. אם הצ\'אט לא נפתח, לחצי "העתק הודעה" ושלחי אותה בוואטסאפ ל-052-2499887.'; }
   $('fwd-modal').style.display = 'flex';
 }
 async function downloadSigned() {
   const blob = await render();
-  const name = TWO.title + ' חתום - ' + DOCS[0].values[TWO.parties[0].k] + ' ו' + DOCS[0].values[TWO.parties[1].k] + '.pdf';
+  const name = TWO.title + ' חתום - ' + allNames() + '.pdf';
   const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 8000);
 }
@@ -583,7 +593,7 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   try { sessionStorage.removeItem('sign-h'); } catch (e) {} // clean up the short-lived earlier approach
   if (!h || h.length < 2) h = (history.state && typeof history.state.sh === 'string') ? history.state.sh : '';
   try {
-    const hm = h.match(/^#([A-Za-z0-9_-]{16})(?:\.([A-Za-z0-9_-]{20,}))?(?:\.([A-Za-z0-9_-]{20,}))?$/);
+    const hm = h.match(/^#([A-Za-z0-9_-]{16})((?:\.[A-Za-z0-9_-]{20,}){0,8})$/);
     if (hm) {
       // short link: #<token> (16 chars = 96-bit secret). File name and AES key are both derived from the token,
       // so the repo never shows which file belongs to which link, and nothing readable is stored.
@@ -606,13 +616,18 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
         cache['enc:doc'] = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b2.slice(0, 12) }, k, b2.slice(12)));
       }
       TWO = SIGN_TEMPLATES[DOCS[0].code].twoStep ? SIGN_TEMPLATES[DOCS[0].code] : null;
-      if (TWO && hm[2]) { // second party: unlock the first party's signature
-        P1 = hm[2];
-        const st = decStrokes(await unseal(hm[2], k)); DATE1 = st.date; SIG1 = strokesPng(st.strokes); if (!SIG1) throw new Error('sig');
-        STAGE = 2;
-        if (hm[3]) { // lawyer: both signatures present
-          const s2 = decStrokes(await unseal(hm[3], k)); DATE2 = s2.date; SIG = strokesPng(s2.strokes); if (!SIG) throw new Error('sig');
-          DOCS[0].values.r_id = s2.id; STAGE = 3;
+      const seals = TWO && hm[2] ? hm[2].slice(1).split('.') : [];
+      if (seals.length) { // later party (or the lawyer): unlock the signatures made so far
+        if (seals.length > NP()) throw new Error('sig');
+        const done = seals.length === NP(), upto = done ? seals.length - 1 : seals.length;
+        for (let i = 0; i < upto; i++) {
+          const st = decStrokes(await unseal(seals[i], k)), png = strokesPng(st.strokes); if (!png) throw new Error('sig');
+          PS.push(png); PD.push(st.date); PP.push(seals[i]);
+        }
+        STAGE = seals.length + 1;
+        if (done) { // lawyer: all signatures present
+          const sl = decStrokes(await unseal(seals[seals.length - 1], k)); DATE2 = sl.date; SIG = strokesPng(sl.strokes); if (!SIG) throw new Error('sig');
+          DOCS[0].values.r_id = sl.id;
         }
       }
     } else if (h.startsWith('#d')) {
@@ -621,8 +636,8 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   } catch (e) { $('intro').textContent = 'הקישור פגום, לא שלם או שפג תוקפו — בקשו מעורך הדין קישור חדש.'; return; }
   origHref = location.origin + location.pathname.replace(/sign\.html$/, 's') + h; // full link for "copy link", also after a reload
   try { history.replaceState({ sh: h }, '', location.pathname); } catch (e) {}
-  if (TWO && STAGE < 3) PARTY = TWO.parties[STAGE - 1];
-  if (!(TWO && STAGE === 3)) boxEvent('open'); // stage 3 = the lawyer viewing the finished agreement
+  if (TWO && STAGE < DONE()) PARTY = TWO.parties[STAGE - 1];
+  if (!(TWO && STAGE === DONE())) boxEvent('open'); // stage 3 = the lawyer viewing the finished agreement
   NEED_ID = SIGN_CORE.needsIdPhoto(DOCS);
   NO_SIGN = DOCS.every(d => SIGN_TEMPLATES[d.code].noSign);
   const main = DOCS.filter(d => !SIGN_TEMPLATES[d.code].appendix);
@@ -634,18 +649,20 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
   if (NEED_ID) $('btn-id').style.display = '';
   if (NO_SIGN) { $('btn-sign').style.display = 'none'; updateSend();
     $('intro').textContent = 'שלום ' + clientName() + ', כאן מצרפים רק צילומים, בלי חתימה. לחצי על כפתור הצילום וצלמי את תעודת הזהות מקדימה, אחר כך את הספח, ואז לחצי "שלח לעורך הדין".'; }
-  if (TWO && STAGE === 3) {
-    document.querySelector('header h1').textContent = TWO.title + ' – חתום על ידי שני הצדדים';
-    $('intro').textContent = (TWO.noun || 'ההסכם') + ' נחתם על ידי ' + DOCS[0].values[TWO.parties[0].k] + ' ביום ' + DATE1 + ' ועל ידי ' + DOCS[0].values[TWO.parties[1].k] + ' ביום ' + DATE2 + '. לחץ על הכפתור כדי להוריד את הקובץ החתום.';
+  if (TWO && STAGE === DONE()) {
+    document.querySelector('header h1').textContent = TWO.title + (NP() === 2 ? ' – חתום על ידי שני הצדדים' : ' – חתום על ידי כל הצדדים');
+    const by = [...PD, DATE2].map((d, i) => pName(i) + ' ביום ' + d);
+    $('intro').textContent = (TWO.noun || 'ההסכם') + ' נחתם על ידי ' + by.slice(0, -1).join(', ') + ' ועל ידי ' + by[by.length - 1] + '. לחץ על הכפתור כדי להוריד את הקובץ החתום.';
     $('btn-sign').style.display = 'none'; $('btn-send').disabled = false; $('btn-send').textContent = '⬇ הורדת ' + (TWO.noun || 'ההסכם') + ' החתום';
     try { await render(); } catch (e) { toast('שגיאה: ' + e.message, 'err'); } return; }
+  const nextName = () => STAGE < NP() ? firstName(pName(STAGE)) : '', prevName = () => STAGE > 1 ? firstName(pName(STAGE - 2)) : '';
+  const otherName = () => STAGE < NP() ? nextName() : prevName();
   if (TWO) { PARTY = TWO.parties[STAGE - 1];
-    const other = firstName(DOCS[0].values[TWO.parties[2 - STAGE].k]);
-    if (STAGE === 1) $('btn-send').textContent = '📤 שלח ל' + other + ' לחתימה';
-    document.querySelector('header h1').textContent = TWO.title + (STAGE === 1 ? ' – חתימה ראשונה' : ' – חתימה שנייה'); }
+    if (STAGE < NP()) $('btn-send').textContent = '📤 שלח ל' + nextName() + ' לחתימה';
+    document.querySelector('header h1').textContent = TWO.title + ' – חתימה ' + (['ראשונה', 'שנייה', 'שלישית', 'רביעית', 'חמישית'][STAGE - 1] || STAGE); }
   buildAsk();
   CONFIRM = TWO ? PARTY.confirm : (DOCS.map(d => SIGN_TEMPLATES[d.code].confirm).find(Boolean) || null);
-  const INTRO = TWO ? PARTY.intro.replace(/\{other\}/g, firstName(DOCS[0].values[TWO.parties[2 - STAGE].k])) : (DOCS.map(d => SIGN_TEMPLATES[d.code].intro).find(Boolean) || null);
+  const INTRO = TWO ? PARTY.intro.replace(/\{other\}/g, otherName()).replace(/\{next\}/g, nextName()).replace(/\{prev\}/g, prevName()) : (DOCS.map(d => SIGN_TEMPLATES[d.code].intro).find(Boolean) || null);
   if (CONFIRM) { $('confirm-text').textContent = CONFIRM; $('confirm-wrap').style.display = 'block';
     if (INTRO) $('intro').textContent = 'שלום ' + clientName() + ', ' + INTRO; else
     $('intro').textContent = 'שלום ' + clientName() + ', זה המסמך המלא. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בהצהרה ובתצהיר.'; }

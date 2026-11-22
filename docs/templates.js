@@ -728,6 +728,31 @@
       fields: [{ k: 'name', hidden: true }, { k: 'name2', hidden: true }],
       sigs: [],
     },
+    // ---- 53: flight-compensation affidavit (FC-1124), three signers on ONE copy (multi-step, N parties):
+    // main declarant (female) -> first accompanying passenger (male) -> second accompanying passenger (male) -> lawyer.
+    // Signature lines on p2 (index 1) at y 511.6 / 587 / 662.4; lawyer stamp + date already in the PDF.
+    53: {
+      key: 'flAff3p', file: 'enc:doc', encFile: true, title: 'תצהיר דרישת פיצוי - ביטול טיסה', twoStep: true,
+      noun: 'התצהיר', nounTo: 'לתצהיר',
+      hint2: 'קרא את התצהיר, סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין".',
+      parties: [
+        { k: 'name', g: 'f',
+          intro: 'זה התצהיר המתוקן לתביעה נגד אל על, עם הנספחים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור ולחצי "חתימה". אחר כך לחצי "שלח ל{next} לחתימה" ובחרי את {next} בוואטסאפ. אחרי שכל הנוסעים יחתמו, התצהיר החתום יישלח לעורך הדין.',
+          confirm: 'קראתי את התצהיר במלואו, על כל עמודיו, ואני מאשרת שתוכנו נכון.',
+          sigs: [{ p: 1, cx: 232.6, y: 511.6, w: 100, h: 30 }] },
+        { k: 'name2', g: 'm',
+          hint: 'קרא את התצהיר, סמן את תיבת האישור, לחץ "חתימה" ואז "שלח ל{next} לחתימה".',
+          intro: '{prev} כבר חתמה על התצהיר. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור ולחץ "חתימה". אחר כך לחץ "שלח ל{next} לחתימה" ובחר את {next} בוואטסאפ. החתימה שלך תיכנס במקום של הנוסע הנלווה הראשון.',
+          confirm: 'קראתי את התצהיר במלואו, על כל עמודיו, ואני מאשר שתוכנו נכון.',
+          sigs: [{ p: 1, cx: 232.6, y: 587, w: 100, h: 30 }] },
+        { k: 'name3', g: 'm',
+          intro: 'שאר הנוסעים כבר חתמו על התצהיר. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה שלך תיכנס במקום של הנוסע הנלווה השני.',
+          confirm: 'קראתי את התצהיר במלואו, על כל עמודיו, ואני מאשר שתוכנו נכון.',
+          sigs: [{ p: 1, cx: 232.6, y: 662.4, w: 100, h: 30 }] },
+      ],
+      fields: [{ k: 'name', hidden: true }, { k: 'name2', hidden: true }, { k: 'name3', hidden: true }],
+      sigs: [],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
