@@ -159,7 +159,7 @@
   <div class="card">
     <div style="font-size:36px">📤</div>
     <h2 id="fwd-title">הקישור לחתימה השנייה מוכן</h2>
-    <p id="fwd-text" style="text-align:right">אם וואטסאפ נפתח – בחר את איש הקשר ושלח. אם לא, לחץ "העתק הודעה" והדבק אותה בצ'אט. ההסכם יגיע לעורך הדין רק אחרי ששני הצדדים חתמו.</p>
+    <p id="fwd-text" style="text-align:right">אם וואטסאפ נפתח – בחר את איש הקשר ושלח. אם לא, לחץ "העתק הודעה" והדבק אותה בצ'אט. המסמך יגיע לעורך הדין רק אחרי ששני הצדדים חתמו.</p>
     <button type="button" id="fwd-copy" style="background:#22305a;color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:bold;width:100%;font-family:inherit">📋 העתק הודעה</button>
     <button type="button" id="fwd-close" style="margin-top:8px;background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:10px;width:100%;font-family:inherit">סגור</button>
   </div>
@@ -168,7 +168,7 @@
 
 <script src="lib/pdf-lib.min.js"></script>
 <script src="lib/fontkit.umd.min.js"></script>
-<script src="docs/templates.js?v=47"></script>
+<script src="docs/templates.js?v=48"></script>
 <script src="docs/sign-core.js?v=14"></script>
 <script>
 const LAWYER_WA = '972522499887';
@@ -488,13 +488,13 @@ async function prepareTwo() {
   if (STAGE === 1) {
     const link = BASE_LINK() + TOKEN + '.' + await seal(encStrokes(today()));
     const other = firstName(DOCS[0].values[TWO.parties[1].k]);
-    PREP = { link, url: 'https://wa.me/?text=', msg: 'שלום ' + other + ',\n' + clientName() + ' חתם על ' + TWO.title + '. זה הקישור לחתימה שלך:\n' + link +
-      '\nקראי את ההסכם, מלאי את מספר תעודת הזהות, לחצי "חתימה" ואז "שלח לעורך הדין".\nעו"ד ערן בן שושן' };
+    PREP = { link, url: 'https://wa.me/?text=', msg: 'שלום ' + other + ',\n' + clientName() + (TWO.parties[0].g === 'f' ? ' חתמה על ' : ' חתם על ') + TWO.title + '. זה הקישור לחתימה שלך:\n' + link +
+      '\n' + (TWO.hint2 || 'קראי את ההסכם, מלאי את מספר תעודת הזהות, לחצי "חתימה" ואז "שלח לעורך הדין".') + '\nעו"ד ערן בן שושן' };
   } else {
     const rid = DOCS[0].values.r_id || '';
     const link = BASE_LINK() + TOKEN + '.' + P1 + '.' + await seal(encStrokes(today(), rid));
     PREP = { link, url: 'https://wa.me/' + LAWYER_WA + '?text=', msg: 'שלום עו"ד בן שושן,\n' + DOCS[0].values[TWO.parties[0].k] + ' ו' +
-      DOCS[0].values[TWO.parties[1].k] + ' חתמו על ' + TWO.title + '. זה הקישור להסכם החתום:\n' + link };
+      DOCS[0].values[TWO.parties[1].k] + ' חתמו על ' + TWO.title + '. זה הקישור ' + (TWO.nounTo || 'להסכם') + ' החתום:\n' + link };
   }
   FWD = PREP.msg;
 }
@@ -507,7 +507,7 @@ function sendTwo() {
   const w = window.open(PREP.url + encodeURIComponent(PREP.msg), '_blank');
   if (!w) location.href = PREP.url + encodeURIComponent(PREP.msg);
   if (STAGE === 2) { $('fwd-title').textContent = 'נפתח צ\'אט עם עו"ד ערן בן שושן';
-    $('fwd-text').textContent = 'בצ\'אט שנפתח כבר כתובה הודעה עם הקישור להסכם החתום. לחצי על כפתור השליחה ➤. אם הצ\'אט לא נפתח, לחצי "העתק הודעה" ושלחי אותה בוואטסאפ ל-052-2499887.'; }
+    $('fwd-text').textContent = PARTY && PARTY.g === 'm' ? 'בצ\'אט שנפתח כבר כתובה הודעה עם הקישור ' + (TWO.nounTo || 'להסכם') + ' החתום. לחץ על כפתור השליחה ➤. אם הצ\'אט לא נפתח, לחץ "העתק הודעה" ושלח אותה בוואטסאפ ל-052-2499887.' : 'בצ\'אט שנפתח כבר כתובה הודעה עם הקישור ' + (TWO.nounTo || 'להסכם') + ' החתום. לחצי על כפתור השליחה ➤. אם הצ\'אט לא נפתח, לחצי "העתק הודעה" ושלחי אותה בוואטסאפ ל-052-2499887.'; }
   $('fwd-modal').style.display = 'flex';
 }
 async function downloadSigned() {
@@ -636,8 +636,8 @@ $('wv-copy').onclick = () => { try { navigator.clipboard.writeText(origHref); } 
     $('intro').textContent = 'שלום ' + clientName() + ', כאן מצרפים רק צילומים, בלי חתימה. לחצי על כפתור הצילום וצלמי את תעודת הזהות מקדימה, אחר כך את הספח, ואז לחצי "שלח לעורך הדין".'; }
   if (TWO && STAGE === 3) {
     document.querySelector('header h1').textContent = TWO.title + ' – חתום על ידי שני הצדדים';
-    $('intro').textContent = 'ההסכם נחתם על ידי ' + DOCS[0].values[TWO.parties[0].k] + ' ביום ' + DATE1 + ' ועל ידי ' + DOCS[0].values[TWO.parties[1].k] + ' ביום ' + DATE2 + '. לחץ על הכפתור כדי להוריד את הקובץ החתום.';
-    $('btn-sign').style.display = 'none'; $('btn-send').disabled = false; $('btn-send').textContent = '⬇ הורדת ההסכם החתום';
+    $('intro').textContent = (TWO.noun || 'ההסכם') + ' נחתם על ידי ' + DOCS[0].values[TWO.parties[0].k] + ' ביום ' + DATE1 + ' ועל ידי ' + DOCS[0].values[TWO.parties[1].k] + ' ביום ' + DATE2 + '. לחץ על הכפתור כדי להוריד את הקובץ החתום.';
+    $('btn-sign').style.display = 'none'; $('btn-send').disabled = false; $('btn-send').textContent = '⬇ הורדת ' + (TWO.noun || 'ההסכם') + ' החתום';
     try { await render(); } catch (e) { toast('שגיאה: ' + e.message, 'err'); } return; }
   if (TWO) { PARTY = TWO.parties[STAGE - 1];
     const other = firstName(DOCS[0].values[TWO.parties[2 - STAGE].k]);

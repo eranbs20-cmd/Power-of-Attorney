@@ -677,6 +677,25 @@
       fields: [{ k: 'name', hidden: true }],
       sigs: [{ p: 1, cx: 232.6, y: 559, w: 100, h: 30 }],
     },
+    // ---- same affidavit as 48/49, both signatures on ONE copy (two-step): the main declarant (female) signs first and
+    // forwards a link to the accompanying passenger (male); the lawyer receives one PDF with both signatures.
+    50: {
+      key: 'flAff2', file: 'enc:doc', encFile: true, title: 'תצהיר דרישת פיצוי - ביטול טיסה', twoStep: true,
+      noun: 'התצהיר', nounTo: 'לתצהיר',
+      hint2: 'קרא את התצהיר, סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין".',
+      parties: [
+        { k: 'name', g: 'f',
+          intro: 'זה התצהיר המתוקן לתביעה נגד אל על, עם הנספחים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור ולחצי "חתימה". אחר כך לחצי "שלח ל{other} לחתימה" ובחרי את {other} בוואטסאפ. אחרי שגם הוא יחתום, התצהיר החתום יישלח לעורך הדין.',
+          confirm: 'קראתי את התצהיר במלואו, על כל עמודיו, ואני מאשרת שתוכנו נכון.',
+          sigs: [{ p: 1, cx: 232.6, y: 484, w: 100, h: 30 }] },
+        { k: 'name2', g: 'm',
+          intro: '{other} כבר חתמה על התצהיר. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה שלך תיכנס במקום של הנוסע הנלווה.',
+          confirm: 'קראתי את התצהיר במלואו, על כל עמודיו, ואני מאשר שתוכנו נכון.',
+          sigs: [{ p: 1, cx: 232.6, y: 559, w: 100, h: 30 }] },
+      ],
+      fields: [{ k: 'name', hidden: true }, { k: 'name2', hidden: true }],
+      sigs: [],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
