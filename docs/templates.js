@@ -696,6 +696,20 @@
       fields: [{ k: 'name', hidden: true }, { k: 'name2', hidden: true }],
       sigs: [],
     },
+    // ---- maintenance claim (7 pages) + temporary maintenance request (4 pages), 11 pages Letter:
+    // claim affidavit and attestation on p6, request affidavit and attestation on p10.
+    51: {
+      key: 'mezF', file: 'enc:doc', encFile: true, title: 'תביעת מזונות ובקשה למזונות זמניים, כולל תצהירים',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהירים נכון.',
+      intro: 'אלה המסמכים שיוגשו לבית המשפט לענייני משפחה: תביעת המזונות של יצחק והבקשה למזונות זמניים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בשני התצהירים.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 6, x0: 252, x1: 316, y: 343.5, s: 10.5, f: 'r', white: [247, 332, 321, 347] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 10, x0: 252, x1: 316, y: 442.5, s: 10.5, f: 'r', white: [247, 431, 321, 446] },
+      ],
+      sigs: [{ p: 6, cx: 162, y: 268, w: 100, h: 38 }, { p: 10, cx: 162, y: 367, w: 100, h: 38 }],
+      stamps: [{ p: 6, cx: 162, y: 422, w: 68 }, { p: 10, cx: 162, y: 521, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
