@@ -710,8 +710,8 @@
       sigs: [{ p: 6, cx: 162, y: 268, w: 100, h: 38 }, { p: 10, cx: 162, y: 367, w: 100, h: 38 }],
       stamps: [{ p: 6, cx: 162, y: 422, w: 68 }, { p: 10, cx: 162, y: 521, w: 68 }],
     },
-    // ---- 51: same as 50 after adding section 9c (affidavit body now 3 pages; signature lines moved down on p2).
-    51: {
+    // ---- 52: same as 50 after adding section 9c (affidavit body now 3 pages; signature lines moved down on p2).
+    52: {
       key: 'flAff3', file: 'enc:doc', encFile: true, title: 'תצהיר דרישת פיצוי - ביטול טיסה', twoStep: true,
       noun: 'התצהיר', nounTo: 'לתצהיר',
       hint2: 'קרא את התצהיר, סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין".',
