@@ -770,6 +770,22 @@
              { p: 20, cx: 224, y: 721, w: 100, h: 38 }, { p: 25, cx: 162, y: 349, w: 100, h: 38 }],
       stamps: [{ p: 8, cx: 162, y: 404, w: 68 }, { p: 17, cx: 162, y: 422, w: 68 }, { p: 21, cx: 224, y: 153, w: 68 }, { p: 25, cx: 162, y: 503, w: 68 }],
     },
+    // ---- 55: family-court filing set for a female client (property claim p0-7, affidavit p6, attestation p7; maintenance claim
+    // p8-15, affidavit p14, attestation p15; form 4 p16-19, declaration + attestation p19). One signature in 3 places;
+    // lawyer stamp + auto date on 3 attestations. Letter, 20 pages, enc:doc.
+    55: {
+      key: 'famSet2', file: 'enc:doc', encFile: true, title: 'תביעה רכושית, תביעת מזונות והרצאת פרטים (טופס 4)',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהירים וההצהרות נכון.',
+      intro: 'אלה המסמכים שיוגשו לבית המשפט לענייני משפחה: התביעה הרכושית, תביעת המזונות והרצאת הפרטים (טופס 4). קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בשני התצהירים ובטופס 4.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 7, x0: 258, x1: 312, y: 118, s: 10.5, f: 'r', white: [258, 107, 312, 122] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 15, x0: 258, x1: 312, y: 118, s: 10.5, f: 'r', white: [258, 107, 312, 122] },
+        { k: 'l_date3', auto: 'date', signed: true, p: 19, x0: 223, x1: 273, y: 499.5, s: 10, f: 'r', white: [223, 489, 273, 503] },
+      ],
+      sigs: [{ p: 6, cx: 162, y: 588, w: 100, h: 38 }, { p: 14, cx: 162, y: 624, w: 100, h: 38 }, { p: 19, cx: 224, y: 445, w: 100, h: 38 }],
+      stamps: [{ p: 7, cx: 123, y: 215, w: 68 }, { p: 15, cx: 123, y: 215, w: 68 }, { p: 19, cx: 128, y: 578, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
