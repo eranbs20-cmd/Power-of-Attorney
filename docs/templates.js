@@ -753,6 +753,23 @@
       fields: [{ k: 'name', hidden: true }, { k: 'name2', hidden: true }, { k: 'name3', hidden: true }],
       sigs: [],
     },
+    // ---- 54: family-court filing set (property claim + form 3 + maintenance claim + form 4 + temp request), one client signature
+    // in 5 places; lawyer stamp + auto date on 4 attestations. Letter, 26 pages, enc:doc.
+    54: {
+      key: 'famSet', file: 'enc:doc', encFile: true, title: 'תביעה רכושית, תביעת מזונות, בקשה למזונות זמניים, טופס 3 וטופס 4',
+      confirm: 'קראתי את כל המסמכים במלואם, על כל עמודיהם, ואני מאשרת שתוכן התצהירים וההצהרות נכון.',
+      intro: 'אלה המסמכים שיוגשו לבית המשפט לענייני משפחה: התביעה הרכושית על הדירה, טופס 3, תביעת המזונות של יצחק, טופס 4 והבקשה למזונות זמניים. קראי את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמני את תיבת האישור, לחצי "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בכל התצהירים וההצהרות.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 8, x0: 252, x1: 316, y: 325.5, s: 10.5, f: 'r', white: [247, 314, 321, 329] },
+        { k: 'l_date2', auto: 'date', signed: true, p: 17, x0: 252, x1: 316, y: 343.5, s: 10.5, f: 'r', white: [247, 332, 321, 347] },
+        { k: 'l_date3', auto: 'date', signed: true, p: 21, x0: 223, x1: 281, y: 96.5, s: 10, f: 'r', white: [217, 85, 286, 100] },
+        { k: 'l_date4', auto: 'date', signed: true, p: 25, x0: 252, x1: 316, y: 424.5, s: 10.5, f: 'r', white: [247, 413, 321, 428] },
+      ],
+      sigs: [{ p: 8, cx: 162, y: 250, w: 100, h: 38 }, { p: 10, cx: 162, y: 570, w: 100, h: 38 }, { p: 17, cx: 162, y: 268, w: 100, h: 38 },
+             { p: 20, cx: 224, y: 721, w: 100, h: 38 }, { p: 25, cx: 162, y: 349, w: 100, h: 38 }],
+      stamps: [{ p: 8, cx: 162, y: 404, w: 68 }, { p: 17, cx: 162, y: 422, w: 68 }, { p: 21, cx: 224, y: 153, w: 68 }, { p: 25, cx: 162, y: 503, w: 68 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
