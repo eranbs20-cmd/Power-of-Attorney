@@ -786,6 +786,20 @@
       sigs: [{ p: 6, cx: 162, y: 588, w: 100, h: 38 }, { p: 14, cx: 162, y: 624, w: 100, h: 38 }, { p: 19, cx: 224, y: 445, w: 100, h: 38 }],
       stamps: [{ p: 7, cx: 123, y: 215, w: 68 }, { p: 15, cx: 123, y: 215, w: 68 }, { p: 19, cx: 128, y: 578, w: 68 }],
     },
+    // ---- 56: response with a supporting affidavit of a male declarant (company signatory), Letter, 9 pages incl. one
+    // landscape page, enc:doc. Signature on his line (page index 6); on the signed copy only, the attestation date
+    // replaces the "ביום ____" blank and the lawyer stamp sits on his line.
+    56: {
+      key: 'respAffM', file: 'enc:doc', encFile: true, title: 'תגובה לבקשה להפקדת ערובה, כולל תצהיר',
+      confirm: 'קראתי את התגובה ואת התצהיר במלואם, על כל עמודיהם, ואני מאשר שתוכן התצהיר נכון.',
+      intro: 'זו התגובה שתוגש לבית המשפט, והתצהיר שלך בעמוד 7. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בתצהיר.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'l_date1', auto: 'date', signed: true, p: 6, x0: 174, x1: 226, y: 402.5, s: 10.5, f: 'r', white: [174, 391, 226, 406] },
+      ],
+      sigs: [{ p: 6, cx: 162, y: 326, w: 100, h: 38 }],
+      stamps: [{ p: 6, cx: 152, y: 468, w: 72 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
