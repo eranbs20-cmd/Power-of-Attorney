@@ -798,7 +798,7 @@
         { k: 'l_date1', auto: 'date', signed: true, p: 6, x0: 174, x1: 226, y: 402.5, s: 10.5, f: 'r', white: [174, 391, 226, 406] },
       ],
       sigs: [{ p: 6, cx: 162, y: 326, w: 100, h: 38 }],
-      stamps: [{ p: 6, cx: 152, y: 468, w: 72 }],
+      stamps: [{ p: 6, cx: 154, y: 463, w: 66 }],
     },
   };
   root.SIGN_TEMPLATES = T;
