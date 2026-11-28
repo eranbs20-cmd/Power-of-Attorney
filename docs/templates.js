@@ -800,6 +800,20 @@
       sigs: [{ p: 6, cx: 162, y: 326, w: 100, h: 38 }],
       stamps: [{ p: 6, cx: 154, y: 463, w: 66 }],
     },
+    // ---- 57: client fee agreement of a male client (Eran's docx, Letter, 5 pages, enc:doc). The client's signature goes
+    // on the "ראשי תיבות הלקוח" footer line of every page (index 0-4) and on his signature line on page index 4;
+    // on the signed copy only, the signing date fills the "ביום ____" blank on page index 0.
+    57: {
+      key: 'feeM5', file: 'enc:doc', encFile: true, title: 'הסכם שכר טרחה',
+      confirm: 'קראתי את כל ההסכם, על כל עמודיו, ואני מסכים לתנאיו.',
+      intro: 'זה הסכם שכר הטרחה. קרא את כל העמודים (אפשר לפתוח במסך מלא בכפתור שמתחת למסמך), סמן את תיבת האישור, לחץ "חתימה" ואז "שלח לעורך הדין". החתימה תיכנס בתחתית כל עמוד ובסוף ההסכם, ותאריך החתימה ייכנס אוטומטית.',
+      fields: [
+        { k: 'name', hidden: true },
+        { k: 'date', auto: 'date', signed: true, x0: 192, x1: 256, y: 159.5, s: 11, f: 'r' },
+      ],
+      sigs: [{ p: 0, cx: 264, y: 756, w: 52, h: 22 }, { p: 1, cx: 264, y: 756, w: 52, h: 22 }, { p: 2, cx: 264, y: 756, w: 52, h: 22 },
+             { p: 3, cx: 264, y: 756, w: 52, h: 22 }, { p: 4, cx: 264, y: 756, w: 52, h: 22 }, { p: 4, cx: 418, y: 547, w: 110, h: 40 }],
+    },
   };
   root.SIGN_TEMPLATES = T;
   if (typeof module !== 'undefined') module.exports = T;
